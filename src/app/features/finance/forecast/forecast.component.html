@@ -1,0 +1,57 @@
+<div class="mdp-container">
+  <div class="page-header">
+    <div>
+      <h2>Revenue Forecast</h2>
+      <p class="subtitle">Projection and trend analysis</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="exportCsv()">
+        <mat-icon>download</mat-icon> Export CSV
+      </button>
+      <button mat-stroked-button (click)="loadForecast()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="mdp-grid cols-4">
+    <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
+  </div>
+
+  <!-- Revenue forecast chart -->
+  <mat-card class="mdp-card" style="margin-top: 16px">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>show_chart</mat-icon>
+      <mat-card-title>Revenue Trend & Forecast</mat-card-title>
+      <mat-card-subtitle>Actual vs. projected revenue (last 12 months + 3 month forecast)</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chart-container">
+        <canvas baseChart
+          [data]="revenueChartConfig.data"
+          [type]="'line'"
+          [options]="revenueChartConfig.options!">
+        </canvas>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Expense breakdown chart -->
+  <mat-card class="mdp-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>bar_chart</mat-icon>
+      <mat-card-title>Expense Breakdown by Category</mat-card-title>
+      <mat-card-subtitle>Monthly average</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chart-container-sm">
+        <canvas baseChart
+          [data]="expenseChartConfig.data"
+          [type]="'bar'"
+          [options]="expenseChartConfig.options!">
+        </canvas>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

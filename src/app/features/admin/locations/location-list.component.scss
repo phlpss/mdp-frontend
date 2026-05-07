@@ -1,0 +1,21 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  h2 { margin: 0; }
+  .subtitle { margin: 4px 0 0; color: #666; }
+}
+
+.loc-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loc-icon {
+  color: #795548;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}

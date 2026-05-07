@@ -1,0 +1,87 @@
+<div class="mdp-container">
+  <div class="dashboard-header">
+    <div>
+      <h2>Business Analytics</h2>
+      <p class="subtitle">Performance overview across all locations</p>
+    </div>
+    <mat-button-toggle-group [value]="selectedPeriod" (change)="onPeriodChange($event.value)" aria-label="Period">
+      <mat-button-toggle value="week">Week</mat-button-toggle>
+      <mat-button-toggle value="month">Month</mat-button-toggle>
+      <mat-button-toggle value="quarter">Quarter</mat-button-toggle>
+      <mat-button-toggle value="year">Year</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="mdp-grid cols-3" *ngIf="kpis$ | async as kpis">
+    <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
+  </div>
+
+  <!-- Revenue Chart -->
+  <mat-card class="mdp-card" *ngIf="revenueChartData$ | async as chartData">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>show_chart</mat-icon>
+      <mat-card-title>Revenue vs Expenses</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chart-container">
+        <canvas baseChart
+          [data]="chartData"
+          [type]="'line'"
+          [options]="revenueChartConfig.options!">
+        </canvas>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="charts-row">
+    <!-- Expense Breakdown -->
+    <mat-card class="mdp-card" *ngIf="expenseChartData$ | async as expChartData">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>donut_large</mat-icon>
+        <mat-card-title>Expense Breakdown</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container-sm">
+          <canvas baseChart
+            [data]="expChartData"
+            [type]="'doughnut'"
+            [options]="expenseChartConfig.options!">
+          </canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Quick Navigation -->
+    <mat-card class="mdp-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>apps</mat-icon>
+        <mat-card-title>Management</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/finance/payroll">
+            <mat-icon matListItemIcon>payments</mat-icon>
+            <span matListItemTitle>Payroll</span>
+          </a>
+          <a mat-list-item routerLink="/finance/forecast">
+            <mat-icon matListItemIcon>trending_up</mat-icon>
+            <span matListItemTitle>Revenue Forecast</span>
+          </a>
+          <a mat-list-item routerLink="/finance/closing-report">
+            <mat-icon matListItemIcon>summarize</mat-icon>
+            <span matListItemTitle>Closing Reports</span>
+          </a>
+          <a mat-list-item routerLink="/admin/locations">
+            <mat-icon matListItemIcon>store</mat-icon>
+            <span matListItemTitle>Locations</span>
+          </a>
+          <a mat-list-item routerLink="/admin/metadata">
+            <mat-icon matListItemIcon>schema</mat-icon>
+            <span matListItemTitle>Metadata Studio</span>
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

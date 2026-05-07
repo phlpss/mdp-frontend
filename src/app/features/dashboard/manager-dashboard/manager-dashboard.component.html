@@ -1,0 +1,95 @@
+<div class="mdp-container">
+  <div class="dashboard-header">
+    <div>
+      <h2>Operations Dashboard</h2>
+      <p class="subtitle">{{ todayDate | date:'EEEE, MMMM d, y' }}</p>
+    </div>
+    <div class="header-actions">
+      <a mat-raised-button color="primary" routerLink="/finance/closing-report">
+        <mat-icon>summarize</mat-icon> Closing Report
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="mdp-grid cols-3" *ngIf="kpis$ | async as kpis">
+    <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
+  </div>
+
+  <div class="dashboard-row">
+    <!-- Alerts -->
+    <mat-card class="mdp-card alerts-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar color="warn">notifications_active</mat-icon>
+        <mat-card-title>Active Alerts</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ng-container *ngIf="alerts$ | async as alerts">
+          <div *ngIf="alerts.length === 0" class="empty-state">
+            <mat-icon color="primary">check_circle</mat-icon>
+            <p>All clear! No active alerts.</p>
+          </div>
+          <div *ngFor="let alert of alerts" class="alert-item" [ngClass]="getAlertClass(alert.type)">
+            <mat-icon>{{ alert.icon }}</mat-icon>
+            <span class="alert-message">{{ alert.message }}</span>
+            <a *ngIf="alert.actionRoute" mat-button [routerLink]="alert.actionRoute" class="alert-action">
+              {{ alert.action }}
+            </a>
+          </div>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pending Approvals -->
+    <mat-card class="mdp-card approvals-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>pending_actions</mat-icon>
+        <mat-card-title>Pending Leave Requests</mat-card-title>
+        <a mat-button routerLink="/hr/leaves" style="margin-left: auto">View All</a>
+      </mat-card-header>
+      <mat-card-content>
+        <ng-container *ngIf="pendingApprovals$ | async as approvals">
+          <div *ngIf="approvals.length === 0" class="empty-state">
+            <p>No pending approvals</p>
+          </div>
+          <mat-list>
+            <mat-list-item *ngFor="let item of approvals">
+              <mat-icon matListItemIcon>person</mat-icon>
+              <div matListItemTitle>{{ item.employeeName }}</div>
+              <div matListItemLine>{{ item.type }} · {{ item.date | date:'d MMM' }}</div>
+              <div matListItemMeta>
+                <a mat-icon-button [routerLink]="['/hr/leaves']" color="primary">
+                  <mat-icon>open_in_new</mat-icon>
+                </a>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions -->
+  <mat-card class="mdp-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>flash_on</mat-icon>
+      <mat-card-title>Quick Actions</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="quick-actions">
+        <a mat-raised-button routerLink="/hr/shifts">
+          <mat-icon>schedule</mat-icon> Manage Shifts
+        </a>
+        <a mat-raised-button routerLink="/finance/expenses">
+          <mat-icon>receipt_long</mat-icon> Add Expense
+        </a>
+        <a mat-raised-button routerLink="/finance/inventory">
+          <mat-icon>inventory_2</mat-icon> Check Stock
+        </a>
+        <a mat-raised-button routerLink="/hr/employees">
+          <mat-icon>people</mat-icon> Employees
+        </a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

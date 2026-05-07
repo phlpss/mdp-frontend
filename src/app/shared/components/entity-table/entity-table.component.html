@@ -1,0 +1,87 @@
+<div class="table-wrapper">
+  <!-- Loading bar -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="table-loading"></mat-progress-bar>
+
+  <div class="mdp-table-container">
+    <table mat-table [dataSource]="data" matSort (matSortChange)="onSort($event)"
+      class="entity-table" [class.clickable-rows]="rowClick.observed">
+
+      <!-- Checkbox column -->
+      <ng-container matColumnDef="__select__" *ngIf="selectable">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (change)="toggleSelect(row)" [checked]="isSelected(row)" (click)="$event.stopPropagation()"></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Dynamic data columns -->
+      <ng-container *ngFor="let attr of attributes" [matColumnDef]="attr.name">
+        <th mat-header-cell *matHeaderCellDef [mat-sort-header]="attr.sortable ? attr.name : ''" [disabled]="!attr.sortable">
+          {{ attr.label }}
+          <mat-icon *ngIf="attr.sensitive" class="sens-icon" matTooltip="Sensitive data">visibility_off</mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let row" (click)="onRowClick(row)">
+          <!-- Enum with badge -->
+          <ng-container *ngIf="attr.fieldType === 'enum'; else plainCell">
+            <span *ngIf="getCellValue(row, attr) !== '——'"
+              class="badge"
+              [style.background-color]="getEnumColor(row, attr) ? getEnumColor(row, attr) + '22' : ''"
+              [style.color]="getEnumColor(row, attr) || ''">
+              {{ getCellValue(row, attr) }}
+            </span>
+            <span *ngIf="getCellValue(row, attr) === '—'">—</span>
+          </ng-container>
+
+          <!-- Boolean -->
+          <ng-template #plainCell>
+            <ng-container *ngIf="attr.fieldType === 'boolean'; else defaultCell">
+              <mat-icon [color]="(row | json).includes('true') ? 'primary' : ''">
+                {{ getCellValue(row, attr) === 'Yes' ? 'check_circle' : 'cancel' }}
+              </mat-icon>
+            </ng-container>
+          </ng-template>
+
+          <!-- Default -->
+          <ng-template #defaultCell>
+            <span [class.masked-value]="attr.sensitive && !canViewSensitive">
+              {{ getCellValue(row, attr) }}
+            </span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Actions column -->
+      <ng-container matColumnDef="__actions__" *ngIf="actions.length">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <ng-container *ngFor="let action of visibleActions(row)">
+            <button mat-icon-button [color]="action.color" [matTooltip]="action.label"
+              (click)="action.handler(row); $event.stopPropagation()">
+              <mat-icon>{{ action.icon }}</mat-icon>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [class.selected-row]="isSelected(row)"></tr>
+
+      <!-- Empty state -->
+      <tr class="mat-row" *matNoDataRow>
+        <td [colSpan]="displayedColumns.length" class="empty-table">
+          <mat-icon>search_off</mat-icon>
+          <p>No records found</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    showFirstLastButtons
+    (page)="onPage($event)">
+  </mat-paginator>
+</div>

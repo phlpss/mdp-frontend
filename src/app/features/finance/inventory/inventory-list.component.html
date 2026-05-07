@@ -1,0 +1,27 @@
+<div class="mdp-container">
+  <div class="page-header">
+    <div>
+      <h2>Inventory</h2>
+      <p class="subtitle">Track supplies and stock levels</p>
+    </div>
+    <button *ngIf="canEdit" mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add Item
+    </button>
+  </div>
+
+  <div class="mdp-grid cols-3" style="margin-bottom: 16px">
+    <mdp-kpi-card [data]="lowStockKpi"></mdp-kpi-card>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <mdp-meta-filter-bar typeName="inventory_item" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
+      <mdp-entity-table
+        typeName="inventory_item"
+        apiPath="inventory"
+        [filters]="filters"
+        [actions]="tableActions">
+      </mdp-entity-table>
+    </mat-card-content>
+  </mat-card>
+</div>

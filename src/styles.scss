@@ -1,0 +1,115 @@
+// Global styles
+@import '@angular/material/theming';
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+// Custom MDP theme colors
+$mdp-primary: #4a2c2a;  // Coffee brown
+$mdp-accent: #d4a76a;   // Caramel
+$mdp-warn: #e53935;
+
+// Layout utilities
+.mdp-container {
+  padding: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.mdp-card {
+  margin-bottom: 16px;
+}
+
+.mdp-spacer {
+  flex: 1 1 auto;
+}
+
+.mdp-full-width {
+  width: 100%;
+}
+
+// Status badge colors
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.badge-active    { background: #e8f5e9; color: #2e7d32; }
+  &.badge-inactive  { background: #fce4ec; color: #c62828; }
+  &.badge-pending   { background: #fff8e1; color: #f57f17; }
+  &.badge-approved  { background: #e3f2fd; color: #1565c0; }
+  &.badge-rejected  { background: #fce4ec; color: #c62828; }
+  &.badge-draft     { background: #f3e5f5; color: #6a1b9a; }
+  &.badge-closed    { background: #eceff1; color: #546e7a; }
+}
+
+// Sensitive data masking
+.masked-value {
+  filter: blur(5px);
+  cursor: not-allowed;
+  user-select: none;
+  &:hover { filter: blur(3px); }
+}
+
+// Table improvements
+.mdp-table-container {
+  overflow-x: auto;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+mat-table {
+  width: 100%;
+}
+
+// Responsive grid
+.mdp-grid {
+  display: grid;
+  gap: 16px;
+
+  &.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  &.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  &.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+  @media (max-width: 960px) {
+    &.cols-3, &.cols-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    &.cols-2, &.cols-3, &.cols-4 { grid-template-columns: 1fr; }
+  }
+}
+
+// Snackbar
+.snack-success .mdc-snackbar__surface { background: #2e7d32 !important; }
+.snack-error   .mdc-snackbar__surface { background: #c62828 !important; }
+.snack-info    .mdc-snackbar__surface { background: #1565c0 !important; }
+
+// Scrollbar
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #888; }
+
+// Loading overlay
+.loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+// Dialog improvements
+.wide-dialog .mat-mdc-dialog-container { width: 800px; max-width: 95vw; }
+.full-dialog .mat-mdc-dialog-container { width: 95vw; height: 90vh; }

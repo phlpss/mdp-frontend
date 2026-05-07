@@ -1,0 +1,67 @@
+.kpi-card {
+  height: 100%;
+  transition: box-shadow 0.2s;
+  &:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
+}
+
+.kpi-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.kpi-icon {
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 28px; width: 28px; height: 28px; }
+}
+
+.kpi-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.kpi-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666;
+  margin-left: 4px;
+}
+
+.kpi-change {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 500;
+
+  .change-icon { font-size: 14px; width: 14px; height: 14px; }
+  .vs-text { color: #999; margin-left: 4px; font-weight: 400; }
+
+  &.increase { color: #388e3c; }
+  &.decrease { color: #e53935; }
+  &.neutral   { color: #888; }
+}

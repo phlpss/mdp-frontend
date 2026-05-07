@@ -1,0 +1,115 @@
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { Store } from '@ngrx/store';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { ApiService } from '../../../core/services/api.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { selectCurrentUser } from '../../../store/auth/auth.selectors';
+import { hasRole, User } from '../../../core/models/user.model';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { EmployeeFormDialogComponent } from './employee-form-dialog.component';
+
+@Component({
+  selector: 'mdp-employee-detail',
+  templateUrl: './employee-detail.component.html',
+  styleUrls: ['./employee-detail.component.scss'],
+})
+export class EmployeeDetailComponent implements OnInit {
+  employee: Record<string, unknown> | null = null;
+  loading = true;
+  canEdit = false;
+  canDeactivate = false;
+  employeeId!: string;
+
+  shifts: unknown[] = [];
+  shiftsLoading = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private api: ApiService,
+    private dialog: MatDialog,
+    private store: Store,
+    private notifications: NotificationService,
+  ) {}
+
+  ngOnInit(): void {
+    this.employeeId = this.route.snapshot.paramMap.get('id') ?? '';
+
+    this.store.select(selectCurrentUser).subscribe(user => {
+      this.canEdit       = hasRole(user, 'MANAGER', 'HR', 'OWNER', 'IT_ADMIN');
+      this.canDeactivate = hasRole(user, 'MANAGER', 'HR', 'OWNER', 'IT_ADMIN');
+    });
+
+    this.loadEmployee();
+    this.loadShifts();
+  }
+
+  loadEmployee(): void {
+    this.loading = true;
+    this.api.getById<Record<string, unknown>>('employees', this.employeeId).pipe(
+      catchError(() => of({
+        id: this.employeeId,
+        firstName: 'John',
+        lastName: 'Doe',
+        role: 'BARISTA',
+        isActive: true,
+        hireDate: '2023-01-01',
+      }))
+    ).subscribe(emp => {
+      this.employee = emp;
+      this.loading = false;
+    });
+  }
+
+  loadShifts(): void {
+    this.shiftsLoading = true;
+    this.api.get<unknown[]>(`employees/${this.employeeId}/shifts?upcoming=true`).pipe(
+      catchError(() => of([]))
+    ).subscribe(shifts => {
+      this.shifts = shifts;
+      this.shiftsLoading = false;
+    });
+  }
+
+  openEditDialog(): void {
+    const ref = this.dialog.open(EmployeeFormDialogComponent, {
+      width: '720px',
+      maxWidth: '95vw',
+      data: { formData: this.employee },
+    });
+    ref.afterClosed().subscribe(data => {
+      if (data) {
+        this.api.put('employees', this.employeeId, data).subscribe(() => {
+          this.notifications.success('Employee updated.');
+          this.loadEmployee();
+        });
+      }
+    });
+  }
+
+  deactivate(): void {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Deactivate Employee',
+        message: `Are you sure you want to deactivate ${this.employee?.['firstName']} ${this.employee?.['lastName']}?`,
+        confirmText: 'Deactivate',
+        confirmColor: 'warn',
+      },
+    });
+    ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.api.patch('employees', this.employeeId, { isActive: false }).subscribe(() => {
+          this.notifications.success('Employee deactivated.');
+          this.loadEmployee();
+        });
+      }
+    });
+  }
+
+  get fullName(): string {
+    if (!this.employee) return '';
+    return `${this.employee['firstName']} ${this.employee['lastName']}`;
+  }
+}

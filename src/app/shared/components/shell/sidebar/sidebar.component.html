@@ -1,0 +1,13 @@
+<nav class="sidebar" [class.sidebar-closed]="!opened">
+  <mat-nav-list>
+    <ng-container *ngFor="let item of navItems$ | async">
+      <mat-divider *ngIf="item.divider" class="nav-divider"></mat-divider>
+      <a mat-list-item [routerLink]="item.route" routerLinkActive="active-link"
+        [matTooltip]="!opened ? item.label : ''"
+        matTooltipPosition="right">
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle class="nav-label">{{ item.label }}</span>
+      </a>
+    </ng-container>
+  </mat-nav-list>
+</nav>

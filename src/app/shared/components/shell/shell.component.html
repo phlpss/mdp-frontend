@@ -1,0 +1,24 @@
+<div class="shell-container" *ngIf="sidebarOpen$ | async as sidebarOpen">
+  <!-- Top bar -->
+  <mdp-topbar
+    [sidebarOpen]="sidebarOpen"
+    (toggleSidebar)="onToggleSidebar()"
+    (logoutClick)="onLogout()">
+  </mdp-topbar>
+
+  <!-- Body -->
+  <div class="shell-body">
+    <!-- Sidebar -->
+    <mdp-sidebar [opened]="sidebarOpen"></mdp-sidebar>
+
+    <!-- Main content -->
+    <main class="shell-content" [class.sidebar-open]="sidebarOpen">
+      <!-- Global loading overlay -->
+      <div class="loading-overlay" *ngIf="loading$ | async">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

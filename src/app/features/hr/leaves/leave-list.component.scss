@@ -1,0 +1,11 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+  h2 { margin: 0; }
+  .subtitle { margin: 4px 0 0; color: #666; }
+}
+.header-actions { display: flex; gap: 8px; align-items: center; }

@@ -1,0 +1,201 @@
+<div class="mdp-container">
+  <div class="studio-header">
+    <div>
+      <h2>Metadata Studio</h2>
+      <p class="subtitle">View and extend the data schema</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="store.dispatch(metadataActions.loadTypes())">
+      <mat-icon>refresh</mat-icon> Refresh
+    </button>
+  </div>
+
+  <div class="studio-layout">
+    <!-- Left: Type list -->
+    <mat-card class="types-panel">
+      <mat-card-header>
+        <mat-card-title>Entity Types</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-progress-bar *ngIf="loading$ | async" mode="indeterminate"></mat-progress-bar>
+        <mat-nav-list>
+          <mat-list-item
+            *ngFor="let type of types$ | async"
+            (click)="selectType(type.name)"
+            [activated]="selectedTypeName === type.name"
+            class="type-item">
+            <mat-icon matListItemIcon>{{ type.icon || 'table_chart' }}</mat-icon>
+            <span matListItemTitle>{{ type.label }}</span>
+            <span matListItemLine class="attr-count">{{ type.attributes.length }} attributes</span>
+          </mat-list-item>
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Right: Attribute editor -->
+    <div class="attributes-panel" *ngIf="selectedType$ | async as type; else selectPrompt">
+      <mat-card class="mdp-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar>{{ type.icon || 'table_chart' }}</mat-icon>
+          <mat-card-title>{{ type.label }}</mat-card-title>
+          <mat-card-subtitle>{{ type.pluralLabel }} · {{ type.attributes.length }} attributes</mat-card-subtitle>
+          <div class="card-actions-right">
+            <button mat-raised-button color="primary" (click)="toggleAddAttrForm()">
+              <mat-icon>{{ showAddAttrForm ? 'close' : 'add' }}</mat-icon>
+              {{ showAddAttrForm ? 'Cancel' : 'Add Attribute' }}
+            </button>
+          </div>
+        </mat-card-header>
+
+        <!-- Add attribute form -->
+        <mat-card-content *ngIf="showAddAttrForm">
+          <div class="add-attr-form">
+            <h4>New Attribute</h4>
+            <form [formGroup]="addAttrForm" (ngSubmit)="submitAddAttr()">
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Field Name (camelCase)</mat-label>
+                  <input matInput formControlName="name" placeholder="e.g. employeeCode">
+                  <mat-error>Required, camelCase only</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Display Label</mat-label>
+                  <input matInput formControlName="label" placeholder="e.g. Employee Code">
+                  <mat-error>Required</mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Field Type</mat-label>
+                  <mat-select formControlName="fieldType">
+                    <mat-option *ngFor="let ft of fieldTypes" [value]="ft">{{ ft }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Display Order</mat-label>
+                  <input matInput type="number" formControlName="order">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Placeholder</mat-label>
+                  <input matInput formControlName="placeholder">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Group</mat-label>
+                  <input matInput formControlName="group" placeholder="e.g. Personal Info">
+                </mat-form-field>
+              </div>
+
+              <div class="checkbox-row">
+                <mat-checkbox formControlName="required">Required</mat-checkbox>
+                <mat-checkbox formControlName="sensitive">Sensitive</mat-checkbox>
+                <mat-checkbox formControlName="sortable">Sortable</mat-checkbox>
+                <mat-checkbox formControlName="filterable">Filterable</mat-checkbox>
+                <mat-checkbox formControlName="showInList">Show in List</mat-checkbox>
+                <mat-checkbox formControlName="showInForm">Show in Form</mat-checkbox>
+                <mat-checkbox formControlName="readOnly">Read Only</mat-checkbox>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit">Add Attribute</button>
+                <button mat-button type="button" (click)="toggleAddAttrForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <mat-divider></mat-divider>
+        </mat-card-content>
+
+        <!-- Attributes table -->
+        <mat-card-content>
+          <div class="mdp-table-container">
+            <table mat-table [dataSource]="type.attributes.slice().sort((a,b) => a.order - b.order)">
+              <ng-container matColumnDef="order">
+                <th mat-header-cell *matHeaderCellDef>#</th>
+                <td mat-cell *matCellDef="let attr">{{ attr.order }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="label">
+                <th mat-header-cell *matHeaderCellDef>Label / Name</th>
+                <td mat-cell *matCellDef="let attr">
+                  <strong>{{ attr.label }}</strong><br>
+                  <span class="attr-name">{{ attr.name }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="fieldType">
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let attr">
+                  <span class="type-chip">{{ attr.fieldType }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="required">
+                <th mat-header-cell *matHeaderCellDef>Req</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="getBoolColor(attr.required)" class="bool-icon">{{ getBoolIcon(attr.required) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="sensitive">
+                <th mat-header-cell *matHeaderCellDef>Sens</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="attr.sensitive ? 'warn' : ''" class="bool-icon">{{ getBoolIcon(attr.sensitive) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="sortable">
+                <th mat-header-cell *matHeaderCellDef>Sort</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="getBoolColor(attr.sortable)" class="bool-icon">{{ getBoolIcon(attr.sortable) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="filterable">
+                <th mat-header-cell *matHeaderCellDef>Filter</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="getBoolColor(attr.filterable)" class="bool-icon">{{ getBoolIcon(attr.filterable) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="showInList">
+                <th mat-header-cell *matHeaderCellDef>List</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="getBoolColor(attr.showInList)" class="bool-icon">{{ getBoolIcon(attr.showInList) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="showInForm">
+                <th mat-header-cell *matHeaderCellDef>Form</th>
+                <td mat-cell *matCellDef="let attr">
+                  <mat-icon [color]="getBoolColor(attr.showInForm)" class="bool-icon">{{ getBoolIcon(attr.showInForm) }}</mat-icon>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let attr">
+                  <button mat-icon-button color="warn" (click)="deleteAttribute(type.name, attr)"
+                    [disabled]="attr.readOnly" [matTooltip]="attr.readOnly ? 'System attribute' : 'Delete'">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <ng-template #selectPrompt>
+      <div class="select-prompt">
+        <mat-icon>schema</mat-icon>
+        <h3>Select a type from the left panel</h3>
+        <p>to view and manage its attributes</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

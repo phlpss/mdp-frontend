@@ -1,0 +1,47 @@
+<div class="login-wrapper">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <div class="login-logo">
+        <mat-icon>local_cafe</mat-icon>
+      </div>
+      <mat-card-title>MDP Coffee</mat-card-title>
+      <mat-card-subtitle>Management Platform</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="error$ | async as error" class="error-alert">
+        <mat-icon>error_outline</mat-icon>
+        {{ error }}
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="mdp-full-width">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" autocomplete="username" cdkFocusInitial>
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="form.get('username')?.hasError('required')">Username is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="mdp-full-width">
+          <mat-label>Password</mat-label>
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" autocomplete="current-password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="mdp-full-width login-btn"
+          [disabled]="loading$ | async">
+          <mat-spinner *ngIf="loading$ | async" diameter="20"></mat-spinner>
+          <span *ngIf="!(loading$ | async)">Sign In</span>
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

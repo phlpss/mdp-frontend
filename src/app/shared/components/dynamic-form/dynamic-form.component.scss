@@ -1,0 +1,71 @@
+.dynamic-form { display: block; }
+
+.field-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+
+  .group-label {
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #888;
+  }
+
+  mat-divider { flex: 1; }
+}
+
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.field-wrapper { width: 100%; }
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  padding: 12px 0 4px;
+}
+
+.masked-field {
+  padding: 8px 0;
+
+  .masked-label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+}
+
+.sensitive-icon {
+  font-size: 16px;
+  color: #f57c00;
+  opacity: 0.7;
+}
+
+.masked-input {
+  filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}

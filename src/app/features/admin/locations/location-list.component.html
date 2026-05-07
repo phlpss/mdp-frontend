@@ -1,0 +1,73 @@
+<div class="mdp-container">
+  <div class="page-header">
+    <div>
+      <h2>Locations</h2>
+      <p class="subtitle">Manage coffee shop branches</p>
+    </div>
+    <button mat-raised-button color="primary">
+      <mat-icon>add</mat-icon> Add Location
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+      <div class="mdp-table-container">
+        <table mat-table [dataSource]="locations">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Location</th>
+            <td mat-cell *matCellDef="let loc">
+              <div class="loc-name">
+                <mat-icon class="loc-icon">store</mat-icon>
+                <strong>{{ loc.name }}</strong>
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>Address</th>
+            <td mat-cell *matCellDef="let loc">{{ loc.address }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let loc">{{ loc.phone || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="manager">
+            <th mat-header-cell *matHeaderCellDef>Manager</th>
+            <td mat-cell *matCellDef="let loc">{{ loc.manager || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="isActive">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let loc">
+              <span class="badge" [ngClass]="loc.isActive ? 'badge-active' : 'badge-inactive'">
+                {{ loc.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let loc">
+              <button mat-icon-button matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button
+                [color]="loc.isActive ? 'warn' : 'primary'"
+                [matTooltip]="loc.isActive ? 'Deactivate' : 'Activate'"
+                (click)="toggleActive(loc)">
+                <mat-icon>{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

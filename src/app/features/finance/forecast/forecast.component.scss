@@ -1,0 +1,13 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+  h2 { margin: 0; }
+  .subtitle { margin: 4px 0 0; color: #666; }
+}
+.header-actions { display: flex; gap: 8px; }
+.chart-container { height: 360px; padding: 8px 0; }
+.chart-container-sm { height: 280px; padding: 8px 0; }

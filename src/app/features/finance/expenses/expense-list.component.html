@@ -1,0 +1,27 @@
+<div class="mdp-container">
+  <div class="page-header">
+    <div>
+      <h2>Expenses</h2>
+      <p class="subtitle">Track and manage operational expenses</p>
+    </div>
+    <button *ngIf="canAdd" mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon> Add Expense
+    </button>
+  </div>
+
+  <div class="mdp-grid cols-3" style="margin-bottom: 16px">
+    <mdp-kpi-card [data]="totalKpi"></mdp-kpi-card>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <mdp-meta-filter-bar typeName="expense" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
+      <mdp-entity-table
+        typeName="expense"
+        apiPath="expenses"
+        [filters]="filters"
+        [actions]="tableActions">
+      </mdp-entity-table>
+    </mat-card-content>
+  </mat-card>
+</div>

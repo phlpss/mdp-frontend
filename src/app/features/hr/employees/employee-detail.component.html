@@ -1,0 +1,66 @@
+<div class="mdp-container" *ngIf="!loading; else loadingTpl">
+  <div class="page-header">
+    <div class="breadcrumb">
+      <a mat-button routerLink="/hr/employees"><mat-icon>arrow_back</mat-icon> Employees</a>
+      <span class="breadcrumb-sep">/</span>
+      <span>{{ fullName }}</span>
+    </div>
+    <div class="header-actions">
+      <button *ngIf="canEdit" mat-stroked-button (click)="openEditDialog()">
+        <mat-icon>edit</mat-icon> Edit
+      </button>
+      <button *ngIf="canDeactivate && employee?.['isActive']" mat-raised-button color="warn" (click)="deactivate()">
+        <mat-icon>person_off</mat-icon> Deactivate
+      </button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Profile card -->
+    <mat-card class="profile-card">
+      <mat-card-content>
+        <div class="avatar-section">
+          <div class="big-avatar">{{ fullName.charAt(0) }}{{ (employee?.['lastName'] || '')[0] }}</div>
+          <h3>{{ fullName }}</h3>
+          <span class="badge" [ngClass]="employee?.['isActive'] ? 'badge-active' : 'badge-inactive'">
+            {{ employee?.['isActive'] ? 'Active' : 'Inactive' }}
+          </span>
+          <div class="role-chip">{{ employee?.['role'] }}</div>
+        </div>
+
+        <mat-divider style="margin: 16px 0"></mat-divider>
+
+        <mdp-dynamic-form
+          *ngIf="employee"
+          typeName="employee"
+          [formData]="employee"
+          [readOnly]="true">
+        </mdp-dynamic-form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Upcoming shifts -->
+    <mat-card>
+      <mat-card-header>
+        <mat-icon mat-card-avatar>schedule</mat-icon>
+        <mat-card-title>Upcoming Shifts</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-progress-bar *ngIf="shiftsLoading" mode="indeterminate"></mat-progress-bar>
+        <div *ngIf="!shiftsLoading && shifts.length === 0" class="empty-state">
+          No upcoming shifts
+        </div>
+        <mat-list>
+          <mat-list-item *ngFor="let shift of shifts">
+            <mat-icon matListItemIcon>calendar_today</mat-icon>
+            <div matListItemTitle>{{ shift | json }}</div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-overlay"><mat-spinner></mat-spinner></div>
+</ng-template>

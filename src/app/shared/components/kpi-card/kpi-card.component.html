@@ -1,0 +1,20 @@
+<mat-card class="kpi-card">
+  <mat-card-content>
+    <div class="kpi-layout">
+      <div class="kpi-icon" [style.background-color]="data.color + '22'" [style.color]="data.color">
+        <mat-icon>{{ data.icon }}</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">{{ data.label }}</div>
+        <div class="kpi-value">
+          {{ data.value }}<span *ngIf="data.unit" class="kpi-unit">{{ data.unit }}</span>
+        </div>
+        <div *ngIf="data.change !== undefined" class="kpi-change" [ngClass]="changeClass">
+          <mat-icon class="change-icon">{{ changeIcon }}</mat-icon>
+          <span>{{ data.change | number:'1.1-1' }}%</span>
+          <span class="vs-text">vs last period</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
