@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ApiService } from '../../../core/services/api.service';
@@ -17,45 +18,61 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 export class LeaveListComponent implements OnInit {
   filters: FilterParams = {};
   isApprover = false;
-  canRequest = true;
   currentUser: User | null = null;
   reloadTrigger = 0;
-
   tableActions: TableAction[] = [];
+  cancellationActions: TableAction[] = [];
 
   constructor(
-    private store: Store,
-    private api: ApiService,
-    private dialog: MatDialog,
-    private notifications: NotificationService,
+      private store: Store,
+      private api: ApiService,
+      private dialog: MatDialog,
+      private notifications: NotificationService,
+      private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    const url = this.route.snapshot.url.map(s => s.path).join('/');
+    const isMy = url.includes('my');
+
     this.store.select(selectCurrentUser).subscribe(user => {
       this.currentUser = user;
-      this.isApprover  = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR', 'OWNER');
+      const hasApproverRole = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR', 'OWNER');
+      this.isApprover = hasApproverRole && !isMy;
 
       if (this.isApprover) {
         this.filters = { status: 'PENDING' };
         this.tableActions = [
           {
-            icon: 'check_circle',
-            label: 'Approve',
-            color: 'primary',
+            icon: 'check_circle', label: 'Approve', color: 'primary',
             hidden: (row) => (row as { status: string }).status !== 'PENDING',
-            handler: (row) => this.approve(row as { id: string; status: string }),
+            handler: (row) => this.approve(row as { id: string }),
           },
           {
-            icon: 'cancel',
-            label: 'Reject',
-            color: 'warn',
+            icon: 'cancel', label: 'Reject', color: 'warn',
             hidden: (row) => (row as { status: string }).status !== 'PENDING',
-            handler: (row) => this.reject(row as { id: string; status: string }),
+            handler: (row) => this.reject(row as { id: string }),
+          },
+        ];
+        this.cancellationActions = [
+          {
+            icon: 'check_circle', label: 'Confirm Cancellation', color: 'warn',
+            handler: (row) => this.patchLeave((row as { id: string }).id, 'CANCELLED'),
+          },
+          {
+            icon: 'undo', label: 'Deny Cancellation', color: 'primary',
+            handler: (row) => this.patchLeave((row as { id: string }).id, 'APPROVED'),
           },
         ];
       } else {
-        // Employee view: show only their own
         if (user?.id) this.filters = { employeeId: user.id };
+        this.tableActions = [
+          {
+            icon: 'undo', label: 'Retract', color: 'warn',
+            hidden: (row) => (row as { status: string }).status !== 'APPROVED',
+            handler: (row) => this.retract(row as { id: string }),
+          },
+        ];
       }
     });
   }
@@ -65,55 +82,58 @@ export class LeaveListComponent implements OnInit {
   }
 
   openRequestDialog(): void {
-    // Opens DynamicFormComponent dialog for leave_request type
-    import('../../../shared/components/dynamic-form/dynamic-form.component').then(() => {
-      const MatDialog = this.dialog;
-      // Use inline anonymous component for the dialog
-      const ref = MatDialog.open(LeaveRequestDialogComponent, {
-        width: '600px',
-        maxWidth: '95vw',
-      });
-      ref.afterClosed().subscribe(data => {
-        if (data) {
-          this.api.post('leave-requests', data).subscribe(() => {
-            this.notifications.success('Leave request submitted.');
-            this.reloadTrigger++;
-          });
-        }
-      });
+    const ref = this.dialog.open(LeaveRequestDialogComponent, { width: '600px', maxWidth: '95vw' });
+    ref.afterClosed().subscribe(data => {
+      if (data) {
+        this.api.post('leave-requests', data).subscribe(() => {
+          this.notifications.success('Leave request submitted.');
+          this.reloadTrigger++;
+        });
+      }
     });
   }
 
-  approve(row: { id: string; status: string }): void {
+  approve(row: { id: string }): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: { title: 'Approve Leave', message: 'Approve this leave request?', confirmText: 'Approve', confirmColor: 'primary' },
     });
     ref.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.api.patch('leave-requests', row.id, { status: 'APPROVED' }).subscribe(() => {
-          this.notifications.success('Leave approved.');
-          this.reloadTrigger++;
-        });
-      }
+      if (confirmed) this.patchLeave(row.id, 'APPROVED');
     });
   }
 
-  reject(row: { id: string; status: string }): void {
+  reject(row: { id: string }): void {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: { title: 'Reject Leave', message: 'Reject this leave request?', confirmText: 'Reject', confirmColor: 'warn' },
     });
     ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) this.patchLeave(row.id, 'REJECTED');
+    });
+  }
+
+  retract(row: { id: string }): void {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: { title: 'Retract Leave', message: 'Retract this approved leave?', confirmText: 'Retract', confirmColor: 'warn' },
+    });
+    ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('leave-requests', row.id, { status: 'REJECTED' }).subscribe(() => {
-          this.notifications.success('Leave rejected.');
+        this.api.post(`leave-requests/${row.id}/retract`, {}).subscribe(() => {
+          this.notifications.success('Leave retracted.');
           this.reloadTrigger++;
         });
       }
     });
   }
+
+  private patchLeave(id: string, status: string): void {
+    this.api.patch('leave-requests', id, { status }).subscribe(() => {
+      this.notifications.success(`Leave ${status.toLowerCase()}.`);
+      this.reloadTrigger++;
+    });
+  }
 }
 
-// Inline dialog component for leave request form
+// ── Inline dialog ──────────────────────────────────────────────────────────────
 import { Component as Comp, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -134,8 +154,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class LeaveRequestDialogComponent {
   constructor(
-    public ref: MatDialogRef<LeaveRequestDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: unknown,
+      public ref: MatDialogRef<LeaveRequestDialogComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: unknown,
   ) {}
   onSubmit(v: Record<string, unknown>): void { this.ref.close(v); }
 }
