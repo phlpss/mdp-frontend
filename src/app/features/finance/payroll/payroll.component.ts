@@ -7,6 +7,8 @@ import { ApiService } from '../../../core/services/api.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { KpiData } from '../../../core/models/api.model';
 import { selectCanViewSensitive } from '../../../store/auth/auth.selectors';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface PayrollRow {
   employeeId: string;
@@ -34,12 +36,14 @@ export class PayrollComponent implements OnInit {
   displayedColumns = ['employeeName','role','baseSalary','hoursWorked','bonus','deductions','netPay'];
   today = new Date();
 
-  constructor(
-    private api: ApiService,
-    private store: Store,
-    private fb: FormBuilder,
-    private notifications: NotificationService,
-  ) {}
+    constructor(
+        private api: ApiService,
+        private store: Store,
+        private fb: FormBuilder,
+        private notifications: NotificationService,
+        private dialog: MatDialog,
+    ) {
+    }
 
   ngOnInit(): void {
     this.canViewSensitive$ = this.store.select(selectCanViewSensitive);
@@ -80,16 +84,28 @@ export class PayrollComponent implements OnInit {
     ];
   }
 
-  processPayroll(): void {
-    this.processing = true;
-    const { month, year } = this.filterForm.value as { month: number; year: number };
-    this.api.post('payroll/process', { month, year }).pipe(
-      catchError(() => of(null))
-    ).subscribe(() => {
-      this.processing = false;
-      this.notifications.success(`Payroll for ${month}/${year} processed.`);
-    });
-  }
+    processPayroll(): void {
+        const {month, year} = this.filterForm.value as { month: number; year: number };
+        const monthLabel = this.months.find(m => m.value === month)?.label;
+        const ref = this.dialog.open(ConfirmDialogComponent, {
+            data: {
+                title: 'Process Payroll',
+                message: `Lock payroll for ${monthLabel} ${year}? This cannot be undone.`,
+                confirmText: 'Process',
+                confirmColor: 'primary',
+            },
+        });
+        ref.afterClosed().subscribe(confirmed => {
+            if (!confirmed) return;
+            this.processing = true;
+            this.api.post('payroll/process', {month, year}).pipe(
+                catchError(() => of(null))
+            ).subscribe(() => {
+                this.processing = false;
+                this.notifications.success(`Payroll for ${monthLabel} ${year} processed.`);
+            });
+        });
+    }
 
   months = [
     { value: 1, label: 'January' }, { value: 2, label: 'February' },
