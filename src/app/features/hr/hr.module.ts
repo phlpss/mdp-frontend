@@ -18,15 +18,18 @@ import { RoleGuard } from '../../core/guards/role.guard';
 import { EmployeeListComponent } from './employees/employee-list.component';
 import { EmployeeDetailComponent } from './employees/employee-detail.component';
 import { EmployeeFormDialogComponent } from './employees/employee-form-dialog.component';
-import { ShiftCalendarComponent } from './shifts/shift-calendar.component';
+import { ShiftCalendarComponent, ShiftFormDialogComponent } from './shifts/shift-calendar.component';
 import { LeaveListComponent, LeaveRequestDialogComponent } from './leaves/leave-list.component';
 
 const routes: Routes = [
   { path: '',              redirectTo: 'employees', pathMatch: 'full' },
   { path: 'employees',     component: EmployeeListComponent },
   { path: 'employees/:id', component: EmployeeDetailComponent },
-  { path: 'shifts',        component: ShiftCalendarComponent },
-  { path: 'leaves',        component: LeaveListComponent },
+  { path: 'shifts',        component: ShiftCalendarComponent,
+    canActivate: [RoleGuard], data: { roles: ['MANAGER', 'SUPERVISOR', 'HR', 'OWNER', 'IT_ADMIN'] } },
+  { path: 'leaves/my',     component: LeaveListComponent },
+  { path: 'leaves',        component: LeaveListComponent,
+    canActivate: [RoleGuard], data: { roles: ['MANAGER', 'SUPERVISOR', 'HR', 'OWNER'] } },
 ];
 
 @NgModule({
@@ -35,6 +38,7 @@ const routes: Routes = [
     EmployeeDetailComponent,
     EmployeeFormDialogComponent,
     ShiftCalendarComponent,
+    ShiftFormDialogComponent,
     LeaveListComponent,
     LeaveRequestDialogComponent,
   ],
