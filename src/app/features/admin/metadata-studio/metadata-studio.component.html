@@ -4,7 +4,7 @@
       <h2>Metadata Studio</h2>
       <p class="subtitle">View and extend the data schema</p>
     </div>
-    <button mat-raised-button color="primary" (click)="store.dispatch(metadataActions.loadTypes())">
+    <button mat-raised-button color="primary" (click)="reloadSchema()">
       <mat-icon>refresh</mat-icon> Refresh
     </button>
   </div>
@@ -109,7 +109,7 @@
         <!-- Attributes table -->
         <mat-card-content>
           <div class="mdp-table-container">
-            <table mat-table [dataSource]="type.attributes.slice().sort((a,b) => a.order - b.order)">
+            <table mat-table [dataSource]="sortedAttributes(type.attributes)">
               <ng-container matColumnDef="order">
                 <th mat-header-cell *matHeaderCellDef>#</th>
                 <td mat-cell *matCellDef="let attr">{{ attr.order }}</td>
@@ -188,6 +188,19 @@
           </div>
         </mat-card-content>
       </mat-card>
+        <mat-card *ngIf="generatedCypher" style="margin-top:16px;border-left:3px solid #D4820A">
+            <mat-card-header>
+                <mat-card-title>Generated Cypher</mat-card-title>
+                <mat-card-subtitle>Run in Neo4j AuraDB console, then click Reload Schema</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <pre style="font-family:'JetBrains Mono',monospace;background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:6px;overflow-x:auto;font-size:13px">{{ generatedCypher }}</pre>
+                <button mat-stroked-button (click)="copyCypher()" style="margin-top:8px">
+                    <mat-icon>{{ cypherCopied ? 'check' : 'content_copy' }}</mat-icon>
+                    {{ cypherCopied ? 'Copied!' : 'Copy Cypher' }}
+                </button>
+            </mat-card-content>
+        </mat-card>
     </div>
 
     <ng-template #selectPrompt>

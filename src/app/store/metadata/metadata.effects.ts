@@ -23,11 +23,11 @@ export class MetadataEffects {
   createType$ = createEffect(() =>
     this.actions$.pipe(
       ofType(MetadataActions.createType),
-      switchMap(({ type }) =>
-        this.metaService.createType(type).pipe(
+      switchMap(({ metaType }) =>
+        this.metaService.createType(metaType).pipe(
           map(created => {
             this.notifications.success(`Type '${created.label}' created.`);
-            return MetadataActions.createTypeSuccess({ type: created });
+            return MetadataActions.createTypeSuccess({ metaType: created });
           }),
           catchError(err => of(MetadataActions.createTypeFailure({ error: err?.message })))
         )

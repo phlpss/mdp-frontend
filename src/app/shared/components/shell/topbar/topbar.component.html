@@ -41,13 +41,17 @@
     <mat-menu #userMenu="matMenu">
       <div class="user-menu-header" mat-menu-item disabled>
         <strong>{{ user.firstName }} {{ user.lastName }}</strong>
-        <small>{{ user.roles | slice:0:1 | join:', ' }}</small>
+        <small>{{ user.roles[0] }}</small>
       </div>
       <mat-divider></mat-divider>
       <a mat-menu-item routerLink="/dashboard">
         <mat-icon>dashboard</mat-icon> Dashboard
       </a>
       <mat-divider></mat-divider>
+        <a mat-menu-item [routerLink]="'/hr/employees/' + ((currentUser$ | async)?.id)">
+            <mat-icon>person</mat-icon>
+            My Profile
+        </a>
       <button mat-menu-item (click)="logoutClick.emit()">
         <mat-icon>logout</mat-icon> Sign Out
       </button>

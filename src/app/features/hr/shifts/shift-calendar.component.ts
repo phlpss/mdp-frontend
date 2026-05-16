@@ -137,6 +137,11 @@ export class ShiftCalendarComponent implements OnInit {
       }
     });
   }
+
+  goToToday(): void {
+    this.setWeek(new Date());
+    this.loadData();
+  }
 }
 
 // ── Inline dialog ──────────────────────────────────────────────────────────────

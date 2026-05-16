@@ -32,10 +32,13 @@ export const metadataReducer = createReducer(
     error,
   })),
 
-  on(MetadataActions.createTypeSuccess, (state, { type }) => ({
-    ...state,
-    types: { ...state.types, [type.name]: type },
-  })),
+    on(MetadataActions.createTypeSuccess, (state, { metaType }) => ({
+      ...state,
+      types: {
+        ...state.types,
+        [metaType.name]: metaType
+      },
+    })),
 
   on(MetadataActions.addAttributeSuccess, (state, { typeName, attribute }) => {
     const existing = state.types[typeName];

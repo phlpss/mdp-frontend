@@ -51,7 +51,7 @@
 
   .today-col {
     background: #e3f2fd;
-    th& { background: #1976d2; color: white; }
+    th#{&} { background: #1976d2; color: white; }
   }
 }
 

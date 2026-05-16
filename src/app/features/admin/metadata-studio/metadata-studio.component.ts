@@ -8,6 +8,9 @@ import { selectAllTypes, selectMetaLoading, selectTypeByName } from '../../../st
 import { MetaAttribute, MetaType, FieldType } from '../../../core/models/meta.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '../../../core/services/api.service';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'mdp-metadata-studio',
@@ -21,6 +24,9 @@ export class MetadataStudioComponent implements OnInit {
   selectedType$!: Observable<MetaType | null>;
   showAddAttrForm = false;
   addAttrForm!: FormGroup;
+  generatedCypher: string | null = null;
+  cypherCopied = false;
+  metadataActions = MetadataActions;   // expose for template
 
   readonly fieldTypes: FieldType[] = [
     'string','number','boolean','date','datetime',
@@ -30,10 +36,11 @@ export class MetadataStudioComponent implements OnInit {
   readonly displayedColumns = ['order','label','fieldType','required','sensitive','sortable','filterable','showInList','showInForm','actions'];
 
   constructor(
-    private store: Store,
-    private fb: FormBuilder,
-    private dialog: MatDialog,
-    private notifications: NotificationService,
+      private store: Store,
+      private fb: FormBuilder,
+      private dialog: MatDialog,
+      private notifications: NotificationService,
+      private api: ApiService,
   ) {}
 
   ngOnInit(): void {
@@ -80,20 +87,34 @@ export class MetadataStudioComponent implements OnInit {
 
   submitAddAttr(): void {
     if (!this.selectedTypeName || this.addAttrForm.invalid) {
-      this.addAttrForm.markAllAsTouched();
-      return;
+      this.addAttrForm.markAllAsTouched(); return;
     }
-    const raw = this.addAttrForm.value;
-    const attribute: Partial<MetaAttribute> = {
-      ...raw,
-      min: raw.min !== null ? Number(raw.min) : undefined,
-      max: raw.max !== null ? Number(raw.max) : undefined,
-      minLength: raw.minLength !== null ? Number(raw.minLength) : undefined,
-      maxLength: raw.maxLength !== null ? Number(raw.maxLength) : undefined,
-    };
-    this.store.dispatch(MetadataActions.addAttribute({ typeName: this.selectedTypeName, attribute }));
+    const v = this.addAttrForm.value;
+    this.generatedCypher =
+        `MATCH (t:MetaType {name: "${this.selectedTypeName}"})\n` +
+        `CREATE (t)-[:HAS_ATTRIBUTE]->(:MetaAttribute {\n` +
+        `  name: "${v.name}", dataType: "${v.fieldType}", mandatory: ${v.required}` +
+        (v.sensitive ? `, sensitive: true` : '') +
+        (v.min !== null ? `, min: ${v.min}` : '') +
+        (v.max !== null ? `, max: ${v.max}` : '') +
+        `\n})`;
     this.showAddAttrForm = false;
     this.initAttrForm();
+  }
+
+  copyCypher(): void {
+    navigator.clipboard.writeText(this.generatedCypher ?? '');
+    this.cypherCopied = true;
+    setTimeout(() => this.cypherCopied = false, 2000);
+  }
+
+  reloadSchema(): void {
+    this.api.post<void>('admin/metadata/reload', {}).pipe(
+        catchError(() => of(null))
+    ).subscribe(() => {
+      this.store.dispatch(MetadataActions.loadTypes());
+      this.notifications.success('Schema reloaded.');
+    });
   }
 
   deleteAttribute(typeName: string, attr: MetaAttribute): void {
@@ -118,5 +139,9 @@ export class MetadataStudioComponent implements OnInit {
 
   getBoolColor(val: boolean): string {
     return val ? 'primary' : '';
+  }
+
+  sortedAttributes(attrs: MetaAttribute[]): MetaAttribute[] {
+    return [...attrs].sort((a, b) => a.order - b.order);
   }
 }

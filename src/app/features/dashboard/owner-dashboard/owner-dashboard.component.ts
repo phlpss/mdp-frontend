@@ -46,10 +46,10 @@ export class OwnerDashboardComponent implements OnInit {
   loadData(): void {
     this.kpis$ = this.api.get<KpiData[]>(`dashboard/owner/kpis?period=${this.selectedPeriod}`).pipe(
       catchError(() => of([
-        { label: 'Monthly Revenue',  value: '$42,500', change: 12.3, changeType: 'increase', icon: 'trending_up',  color: '#388e3c' },
-        { label: 'Monthly Expenses', value: '$28,200', change: 4.1,  changeType: 'increase', icon: 'trending_down', color: '#e53935' },
-        { label: 'Net Profit',       value: '$14,300', change: 22.4, changeType: 'increase', icon: 'savings',       color: '#1976d2' },
-        { label: 'Profit Margin',    value: '33.6%',   change: 2.8,  changeType: 'increase', icon: 'percent',       color: '#7b1fa2' },
+        { label: 'Monthly Revenue',  value: '$42,500', change: 12.3, changeType: 'increase' as const, icon: 'trending_up',  color: '#388e3c' },
+        { label: 'Monthly Expenses', value: '$28,200', change: 4.1,  changeType: 'increase' as const, icon: 'trending_down', color: '#e53935' },
+        { label: 'Net Profit',       value: '$14,300', change: 22.4, changeType: 'increase' as const, icon: 'savings',       color: '#1976d2' },
+        { label: 'Profit Margin',    value: '33.6%',   change: 2.8,  changeType: 'increase' as const, icon: 'percent',       color: '#7b1fa2' },
         { label: 'Total Employees',  value: 18,        icon: 'people',   color: '#f57c00' },
         { label: 'Avg Daily Revenue',value: '$1,417',  icon: 'bar_chart', color: '#0288d1' },
       ]))

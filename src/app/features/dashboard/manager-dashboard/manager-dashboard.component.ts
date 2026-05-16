@@ -41,8 +41,8 @@ export class ManagerDashboardComponent implements OnInit {
 
     this.kpis$ = this.api.get<KpiData[]>('dashboard/manager/kpis').pipe(
       catchError(() => of([
-        { label: "Today's Revenue",   value: '$1,240',  change: 8.5,  changeType: 'increase', icon: 'attach_money', color: '#388e3c' },
-        { label: 'Transactions',      value: 47,        change: 3,    changeType: 'increase', icon: 'receipt',      color: '#1976d2' },
+        { label: "Today's Revenue",   value: '$1,240',  change: 8.5,  changeType: 'increase' as const, icon: 'attach_money', color: '#388e3c' },
+        { label: 'Transactions',      value: 47,        change: 3,    changeType: 'increase' as const, icon: 'receipt',      color: '#1976d2' },
         { label: 'Staff On Shift',    value: 6,         icon: 'people',                       color: '#f57c00' },
         { label: 'Pending Approvals', value: 3,         icon: 'pending_actions',              color: '#7b1fa2' },
         { label: 'Low Stock Items',   value: 2,         icon: 'warning',                      color: '#e53935' },
@@ -52,9 +52,9 @@ export class ManagerDashboardComponent implements OnInit {
 
     this.alerts$ = this.api.get<Alert[]>('dashboard/manager/alerts').pipe(
       catchError(() => of([
-        { type: 'error',   icon: 'inventory_2', message: '2 inventory items are below reorder level.', action: 'View Inventory', actionRoute: '/finance/inventory' },
-        { type: 'warning', icon: 'pending',     message: '3 leave requests awaiting approval.',         action: 'Review',         actionRoute: '/hr/leaves' },
-        { type: 'info',    icon: 'schedule',    message: '1 open shift for tomorrow needs coverage.',   action: 'Assign',         actionRoute: '/hr/shifts' },
+        { type: 'error' as const,   icon: 'inventory_2', message: '2 inventory items are below reorder level.', action: 'View Inventory', actionRoute: '/finance/inventory' },
+        { type: 'warning' as const, icon: 'pending',     message: '3 leave requests awaiting approval.',         action: 'Review',         actionRoute: '/hr/leaves' },
+        { type: 'info' as const,    icon: 'schedule',    message: '1 open shift for tomorrow needs coverage.',   action: 'Assign',         actionRoute: '/hr/shifts' },
       ]))
     );
 

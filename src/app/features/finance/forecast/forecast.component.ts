@@ -84,10 +84,10 @@ export class ForecastComponent implements OnInit {
     this.loading = true;
     this.api.get<KpiData[]>('finance/forecast/kpis').pipe(
       catchError(() => of([
-        { label: 'Projected Revenue (Next Mo.)', value: '$46,000', change: 8.2,  changeType: 'increase', icon: 'trending_up',  color: '#388e3c' },
-        { label: 'Cost Ratio',                   value: '61.4%',   change: -1.2, changeType: 'decrease', icon: 'percent',      color: '#f57c00' },
-        { label: 'Projected Net Profit',         value: '$17,764', change: 12.6, changeType: 'increase', icon: 'savings',      color: '#1976d2' },
-        { label: 'Profit Margin Trend',          value: '38.6%',   change: 1.2,  changeType: 'increase', icon: 'bar_chart',    color: '#7b1fa2' },
+        { label: 'Projected Revenue (Next Mo.)', value: '$46,000', change: 8.2,  changeType: 'increase' as const, icon: 'trending_up',  color: '#388e3c' },
+        { label: 'Cost Ratio',                   value: '61.4%',   change: -1.2, changeType: 'decrease' as const, icon: 'percent',      color: '#f57c00' },
+        { label: 'Projected Net Profit',         value: '$17,764', change: 12.6, changeType: 'increase' as const, icon: 'savings',      color: '#1976d2' },
+        { label: 'Profit Margin Trend',          value: '38.6%',   change: 1.2,  changeType: 'increase' as const, icon: 'bar_chart',    color: '#7b1fa2' },
       ]))
     ).subscribe(kpis => {
       this.kpis    = kpis;

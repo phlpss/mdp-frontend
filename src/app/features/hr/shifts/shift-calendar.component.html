@@ -14,7 +14,7 @@
             <button mat-icon-button (click)="nextWeek()" matTooltip="Next week">
                 <mat-icon>chevron_right</mat-icon>
             </button>
-            <button mat-stroked-button (click)="setWeek(new Date()); loadData()">Today</button>
+            <button mat-stroked-button (click)="goToToday()">Today</button>
         </div>
         <button *ngIf="canEdit" mat-raised-button color="primary" (click)="openAddShiftDialog()">
             <mat-icon>add</mat-icon> Add Shift

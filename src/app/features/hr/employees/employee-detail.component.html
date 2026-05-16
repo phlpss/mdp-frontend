@@ -20,7 +20,7 @@
     <mat-card class="profile-card">
       <mat-card-content>
         <div class="avatar-section">
-          <div class="big-avatar">{{ fullName.charAt(0) }}{{ (employee?.['lastName'] || '')[0] }}</div>
+          <div class="big-avatar">{{ fullName.charAt(0) }}{{ employee?.['lastName'] ? $any(employee?.['lastName']).charAt(0) : '' }}</div>
           <h3>{{ fullName }}</h3>
           <span class="badge" [ngClass]="employee?.['isActive'] ? 'badge-active' : 'badge-inactive'">
             {{ employee?.['isActive'] ? 'Active' : 'Inactive' }}
@@ -53,7 +53,14 @@
         <mat-list>
           <mat-list-item *ngFor="let shift of shifts">
             <mat-icon matListItemIcon>calendar_today</mat-icon>
-            <div matListItemTitle>{{ shift | json }}</div>
+            <div matListItemTitle>
+                {{ $any(shift).date | date:'EEE, MMM d' }}&nbsp;
+                {{ $any(shift).startTime }}–{{ $any(shift).endTime }}
+            </div>
+              <div matListItemLine>
+                  <span class="badge"
+                        [ngClass]="'shift-' + $any(shift).status?.toLowerCase()"> {{ $any(shift).status }} </span>
+              </div>
           </mat-list-item>
         </mat-list>
       </mat-card-content>
