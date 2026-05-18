@@ -3,10 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { FilterParams, PageResponse } from '../../../core/models/api.model';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { FilterParams, PageResponse } from '@core/models/api.model';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { LocationFormDialogComponent } from './location-form-dialog.component';
 
 interface Location {
   id: string;
@@ -50,6 +51,22 @@ export class LocationListComponent implements OnInit {
     ).subscribe(locations => {
       this.locations = locations;
       this.loading = false;
+    });
+  }
+
+  openAddDialog(): void {
+    const ref = this.dialog.open(LocationFormDialogComponent, {
+      width: '720px',
+      maxWidth: '95vw',
+      data: { formData: null },
+    });
+    ref.afterClosed().subscribe(data => {
+      if (data) {
+        this.api.post('entities/StoreLocation', data).subscribe(() => {
+          this.notifications.success('Location created.');
+          this.loadLocations();
+        });
+      }
     });
   }
 

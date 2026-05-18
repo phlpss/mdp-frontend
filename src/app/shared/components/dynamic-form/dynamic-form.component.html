@@ -1,123 +1,122 @@
 <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()" class="dynamic-form">
-  <ng-container *ngIf="fieldGroups$ | async as groups">
-    <ng-container *ngFor="let group of groups">
-      <!-- Group header -->
-      <div *ngIf="group.groupName" class="field-group-header">
-        <mat-divider></mat-divider>
-        <span class="group-label">{{ group.groupName }}</span>
-        <mat-divider></mat-divider>
-      </div>
-
-      <div class="fields-grid">
-        <ng-container *ngFor="let attr of group.attributes">
-          <ng-container *ngIf="canViewSensitive$ | async as canView">
-
-            <!-- MASKED: sensitive field, read-only, no permission -->
-            <div *ngIf="attr.sensitive && !canView && readOnly" class="field-wrapper masked-field">
-              <label class="masked-label">{{ attr.label }}</label>
-              <span class="masked-value">••••••</span>
+    <ng-container *ngIf="fieldGroups$ | async as groups">
+        <ng-container *ngFor="let group of groups">
+            <!-- Group header -->
+            <div *ngIf="group.groupName" class="field-group-header">
+                <mat-divider></mat-divider>
+                <span class="group-label">{{ group.groupName }}</span>
+                <mat-divider></mat-divider>
             </div>
 
-            <!-- BOOLEAN -->
-            <div *ngIf="attr.fieldType === 'boolean' && !(attr.sensitive && !canView && readOnly)"
-              class="field-wrapper checkbox-field">
-              <mat-checkbox [formControlName]="attr.name" [disabled]="readOnly || attr.readOnly">
-                {{ attr.label }}
-                <mat-icon *ngIf="attr.sensitive" class="sensitive-icon" matTooltip="Sensitive field">visibility_off</mat-icon>
-              </mat-checkbox>
+            <div class="fields-grid">
+                <ng-container *ngFor="let attr of group.attributes">
+                    <ng-container *ngIf="canViewSensitive$ | async as canView">
+
+                        <!-- MASKED: sensitive field, read-only, no permission -->
+                        <div *ngIf="attr.sensitive && !canView && readOnly" class="field-wrapper masked-field">
+                            <label class="masked-label">{{ attr.label }}</label>
+                            <span class="masked-value">••••••</span>
+                        </div>
+
+                        <!-- BOOLEAN -->
+                        <div *ngIf="attr.fieldType === 'boolean' && !(attr.sensitive && !canView && readOnly)"
+                             class="field-wrapper checkbox-field">
+                            <mat-checkbox [formControlName]="attr.name" [disabled]="readOnly || attr.readOnly">
+                                {{ attr.label }}
+                                <mat-icon *ngIf="attr.sensitive" class="sensitive-icon" matTooltip="Sensitive field">visibility_off</mat-icon>
+                            </mat-checkbox>
+                        </div>
+
+                        <!-- ENUM -->
+                        <mat-form-field *ngIf="attr.fieldType === 'enum' && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <mat-select [formControlName]="attr.name">
+                                <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
+                                <mat-option *ngFor="let opt of attr.enumValues" [value]="opt.value">
+                                    {{ opt.label }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
+                            <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                        <!-- DATE -->
+                        <mat-form-field *ngIf="(attr.fieldType === 'date' || attr.fieldType === 'datetime') && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <input matInput [matDatepicker]="picker" [formControlName]="attr.name" [placeholder]="attr.placeholder ?? ''">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                        <!-- TEXT AREA -->
+                        <mat-form-field *ngIf="attr.fieldType === 'text' && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper full-width">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <textarea matInput [formControlName]="attr.name" rows="3"
+                                      [placeholder]="attr.placeholder ?? ''"
+                                      [class.masked-input]="attr.sensitive && !canView"></textarea>
+                            <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
+                            <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                        <!-- NUMBER / CURRENCY -->
+                        <mat-form-field *ngIf="isNumericType(attr) && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <span *ngIf="attr.fieldType === 'currency'" matPrefix>$&nbsp;</span>
+                            <input matInput type="number" [formControlName]="attr.name"
+                                   [placeholder]="attr.placeholder ?? ''"
+                                   [min]="attr.min ?? null" [max]="attr.max ?? null"
+                                   [class.masked-input]="attr.sensitive && !canView">
+                            <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
+                            <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                        <!-- REFERENCE — dropdown -->
+                        <mat-form-field *ngIf="attr.fieldType === 'reference' && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <mat-select [formControlName]="attr.name">
+                                <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
+                                <mat-option *ngFor="let opt of referenceOptions[attr.name]" [value]="opt.id">
+                                    {{ opt.label }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                        <!-- STRING / EMAIL / PHONE -->
+                        <mat-form-field *ngIf="isTextType(attr) && !(attr.sensitive && !canView && readOnly)"
+                                        appearance="outline" class="field-wrapper">
+                            <mat-label>{{ attr.label }}</mat-label>
+                            <input matInput [formControlName]="attr.name"
+                                   [type]="attr.fieldType === 'email' ? 'email' : attr.fieldType === 'phone' ? 'tel' : 'text'"
+                                   [placeholder]="attr.placeholder ?? (attr.fieldType === 'reference' ? 'Enter ' + (attr.referenceType ?? 'ID') : '')"
+                                   [class.masked-input]="attr.sensitive && !canView">
+                            <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive field">visibility_off</mat-icon>
+                            <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
+                            <mat-hint *ngIf="attr.fieldType === 'reference' && !attr.hint">{{ attr.referenceType }} ID</mat-hint>
+                            <mat-error>{{ getFieldError(attr) }}</mat-error>
+                        </mat-form-field>
+
+                    </ng-container>
+                </ng-container>
             </div>
-
-            <!-- ENUM -->
-            <mat-form-field *ngIf="attr.fieldType === 'enum' && !(attr.sensitive && !canView && readOnly)"
-              appearance="outline" class="field-wrapper">
-              <mat-label>{{ attr.label }}</mat-label>
-              <mat-select [formControlName]="attr.name">
-                <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
-                <mat-option *ngFor="let opt of attr.enumValues" [value]="opt.value">
-                  {{ opt.label }}
-                </mat-option>
-              </mat-select>
-              <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
-              <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
-              <mat-error>{{ getFieldError(attr) }}</mat-error>
-            </mat-form-field>
-
-            <!-- DATE -->
-            <mat-form-field *ngIf="(attr.fieldType === 'date' || attr.fieldType === 'datetime') && !(attr.sensitive && !canView && readOnly)"
-              appearance="outline" class="field-wrapper">
-              <mat-label>{{ attr.label }}</mat-label>
-              <input matInput [matDatepicker]="picker" [formControlName]="attr.name" [placeholder]="attr.placeholder ?? ''">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-              <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
-              <mat-error>{{ getFieldError(attr) }}</mat-error>
-            </mat-form-field>
-
-            <!-- TEXT AREA -->
-            <mat-form-field *ngIf="attr.fieldType === 'text' && !(attr.sensitive && !canView && readOnly)"
-              appearance="outline" class="field-wrapper full-width">
-              <mat-label>{{ attr.label }}</mat-label>
-              <textarea matInput [formControlName]="attr.name" rows="3"
-                [placeholder]="attr.placeholder ?? ''"
-                [class.masked-input]="attr.sensitive && !canView"></textarea>
-              <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
-              <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
-              <mat-error>{{ getFieldError(attr) }}</mat-error>
-            </mat-form-field>
-
-            <!-- NUMBER / CURRENCY -->
-            <mat-form-field *ngIf="isNumericType(attr) && !(attr.sensitive && !canView && readOnly)"
-              appearance="outline" class="field-wrapper">
-              <mat-label>{{ attr.label }}</mat-label>
-              <span *ngIf="attr.fieldType === 'currency'" matPrefix>$&nbsp;</span>
-              <input matInput type="number" [formControlName]="attr.name"
-                [placeholder]="attr.placeholder ?? ''"
-                [min]="attr.min ?? null" [max]="attr.max ?? null"
-                [class.masked-input]="attr.sensitive && !canView">
-              <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive">visibility_off</mat-icon>
-              <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
-              <mat-error>{{ getFieldError(attr) }}</mat-error>
-            </mat-form-field>
-
-            <!-- STRING / EMAIL / PHONE / REFERENCE (default text input) -->
-              <mat-form-field *ngIf="attr.fieldType === 'reference' && !(attr.sensitive && !canView && readOnly)"
-                              + appearance="outline" class="field-wrapper">
-                  <mat-label>{{ attr.label }}</mat-label>
-                  <mat-select [formControlName]="attr.name">
-                      <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
-                      <mat-option *ngFor="let opt of referenceOptions[attr.name]" [value]="opt.id">
-                          {{ opt.label }}
-                      </mat-option>
-                  </mat-select>
-                  <mat-error>{{ getFieldError(attr) }}</mat-error>
-              </mat-form-field>
-
-              <!-- STRING / EMAIL / PHONE (default text input) -->
-              <mat-form-field *ngIf="(isTextType(attr) || attr.fieldType === 'reference') && !(attr.sensitive && !canView && readOnly)"
-
-              appearance="outline" class="field-wrapper">
-              <mat-label>{{ attr.label }}</mat-label>
-              <input matInput [formControlName]="attr.name"
-                [type]="attr.fieldType === 'email' ? 'email' : attr.fieldType === 'phone' ? 'tel' : 'text'"
-                [placeholder]="attr.placeholder ?? (attr.fieldType === 'reference' ? 'Enter ' + (attr.referenceType ?? 'ID') : '')"
-                [class.masked-input]="attr.sensitive && !canView">
-              <mat-icon *ngIf="attr.sensitive" matSuffix class="sensitive-icon" matTooltip="Sensitive field">visibility_off</mat-icon>
-              <mat-hint *ngIf="attr.hint">{{ attr.hint }}</mat-hint>
-              <mat-hint *ngIf="attr.fieldType === 'reference' && !attr.hint">{{ attr.referenceType }} ID</mat-hint>
-              <mat-error>{{ getFieldError(attr) }}</mat-error>
-            </mat-form-field>
-
-          </ng-container>
         </ng-container>
-      </div>
     </ng-container>
-  </ng-container>
 
-  <!-- Form Actions -->
-  <div *ngIf="!readOnly" class="form-actions">
-    <button mat-raised-button color="primary" type="submit">
-      <mat-icon>save</mat-icon> {{ submitLabel }}
-    </button>
-    <button mat-button type="button" (click)="cancel()">Cancel</button>
-  </div>
+    <!-- Form Actions -->
+    <div *ngIf="!readOnly" class="form-actions">
+        <button mat-raised-button color="primary" type="submit">
+            <mat-icon>save</mat-icon> {{ submitLabel }}
+        </button>
+        <button mat-button type="button" (click)="cancel()">Cancel</button>
+    </div>
 </form>

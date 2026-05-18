@@ -49,6 +49,7 @@ export class EntityTableComponent implements OnInit, OnChanges {
   sortField         = '';
   sortDir: 'asc'|'desc' = 'asc';
   selectedRows      = new Set<unknown>();
+  referenceOptions: Record<string, Record<string, string>> = {}; // attrName -> { id: label }
 
   private reload$ = new Subject<void>();
 
@@ -60,22 +61,31 @@ export class EntityTableComponent implements OnInit, OnChanges {
     this.store.select(selectListAttributesForType(this.typeName)).subscribe(attrs => {
       this.attributes = attrs;
       this.buildColumns();
+      attrs.filter(a => a.fieldType === 'reference' && a.referenceType).forEach(attr => {
+        this.api.getPage<unknown>(`entities/${attr.referenceType}`, { page: 0, size: 100 }, {}).subscribe((page: any) => {
+          const map: Record<string, string> = {};
+          page.content.forEach((item: any) => {
+            map[item.id] = item.payload?.name ?? item.payload?.fullName ?? item.id;
+          });
+          this.referenceOptions[attr.name] = map;
+        });
+      });
     });
 
     this.reload$.pipe(
-      tap(() => this.loading = true),
-      switchMap(() => {
-        const req: PageRequest = {
-          page: this.pageIndex,
-          size: this.pageSize,
-          sort: this.sortField || undefined,
-          direction: this.sortDir,
-        };
-        return this.api.getPage<unknown>(this.apiPath, req, this.filters).pipe(
-          catchError(() => of({ content: [], totalElements: 0, totalPages: 0, size: this.pageSize, number: 0, first: true, last: true } as PageResponse<unknown>))
-        );
-      }),
-      tap(() => this.loading = false)
+        tap(() => this.loading = true),
+        switchMap(() => {
+          const req: PageRequest = {
+            page: this.pageIndex,
+            size: this.pageSize,
+            sort: this.sortField || undefined,
+            direction: this.sortDir,
+          };
+          return this.api.getPage<unknown>(this.apiPath, req, this.filters).pipe(
+              catchError(() => of({ content: [], totalElements: 0, totalPages: 0, size: this.pageSize, number: 0, first: true, last: true } as PageResponse<unknown>))
+          );
+        }),
+        tap(() => this.loading = false)
     ).subscribe(page => {
       this.data = page.content;
       this.totalElements = page.totalElements;
@@ -128,9 +138,7 @@ export class EntityTableComponent implements OnInit, OnChanges {
   }
 
   getCellValue(row: unknown, attr: MetaAttribute): string {
-    const record = row as Record<string, unknown>;
-    const payload = (record['payload'] ?? record) as Record<string, unknown>;
-    const val = payload[attr.name];
+    const val = (row as Record<string, unknown>)[attr.name];
     if (val === null || val === undefined) return '—';
     if (attr.sensitive && !this.canViewSensitive) return '••••••';
     if (attr.fieldType === 'currency') return '$' + Number(val).toFixed(2);
@@ -140,6 +148,9 @@ export class EntityTableComponent implements OnInit, OnChanges {
     }
     if (attr.fieldType === 'date' || attr.fieldType === 'datetime') {
       return val ? new Date(String(val)).toLocaleDateString() : '—';
+    }
+    if (attr.fieldType === 'reference') {
+      return this.referenceOptions[attr.name]?.[String(val)] ?? String(val);
     }
     return String(val);
   }

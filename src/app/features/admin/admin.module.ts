@@ -15,10 +15,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDialogModule } from '@angular/material/dialog';
-import { SharedModule } from '../../shared/shared.module';
-import { RoleGuard } from '../../core/guards/role.guard';
+import { SharedModule } from '@shared/shared.module';
+import { RoleGuard } from '@core/guards/role.guard';
 import { MetadataStudioComponent } from './metadata-studio/metadata-studio.component';
 import { LocationListComponent } from './locations/location-list.component';
+import { LocationFormDialogComponent } from './locations/location-form-dialog.component';
 
 const routes: Routes = [
   { path: '',          redirectTo: 'metadata', pathMatch: 'full' },
@@ -32,6 +33,7 @@ const routes: Routes = [
   declarations: [
     MetadataStudioComponent,
     LocationListComponent,
+    LocationFormDialogComponent,
   ],
   imports: [
     CommonModule,

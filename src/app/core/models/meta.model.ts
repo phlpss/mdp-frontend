@@ -235,11 +235,11 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'name',     name: 'name',     label: 'Name',     fieldType: 'string',  required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1 },
-      { id: 'address',  name: 'address',  label: 'Address',  fieldType: 'string',  required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 2 },
-      { id: 'phone',    name: 'phone',    label: 'Phone',    fieldType: 'phone',   required: false, sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
-      { id: 'isActive', name: 'isActive', label: 'Active',   fieldType: 'boolean', required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4, defaultValue: true },
-      { id: 'manager',  name: 'manager',  label: 'Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'employee' },
+      { id: 'storeName',  name: 'storeName',  label: 'Name',     fieldType: 'string',    required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1 },
+      { id: 'address',    name: 'address',    label: 'Address',  fieldType: 'string',    required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 2 },
+      { id: 'phone',      name: 'phone',      label: 'Phone',    fieldType: 'phone',     required: false, sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
+      { id: 'isActive',   name: 'isActive',   label: 'Active',   fieldType: 'boolean',   required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4, defaultValue: true },
+      { id: 'manager',    name: 'manager',    label: 'Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'employee' },
     ]
   },
 ];
