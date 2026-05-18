@@ -1,57 +1,109 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { AuthTokens, LoginRequest, LoginResponse, User } from '../models/user.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable, map, tap} from 'rxjs';
+import {environment} from '@env/environment';
+import {AuthTokens, LoginRequest, LoginResponse, User, UserRole} from '../models/user.model';
 
-@Injectable({ providedIn: 'root' })
+/** Shape returned by the backend /auth/login endpoint. */
+interface BackendLoginResponse {
+    token: string;
+    username: string;
+    userId: string;
+    roles: string[];
+    expiresIn: number;
+}
+
+@Injectable({providedIn: 'root'})
 export class AuthService {
-  private readonly base = environment.apiBaseUrl;
+    private readonly base = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+    }
 
-  login(req: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.base}/auth/login`, req).pipe(
-      tap(res => this.storeTokens(res.tokens))
-    );
-  }
+    login(req: LoginRequest): Observable<LoginResponse> {
+        return this.http.post<BackendLoginResponse>(`${this.base}/auth/login`, req).pipe(
+            map(res => this.mapLoginResponse(res)),
+            tap(res => this.storeTokens(res.tokens))
+        );
+    }
 
-  logout(): Observable<void> {
-    return this.http.post<void>(`${this.base}/auth/logout`, {}).pipe(
-      tap(() => this.clearTokens())
-    );
-  }
 
-  refreshToken(): Observable<AuthTokens> {
-    const refreshToken = this.getRefreshToken();
-    return this.http.post<AuthTokens>(`${this.base}/auth/refresh`, { refreshToken }).pipe(
-      tap(tokens => this.storeTokens(tokens))
-    );
-  }
+    /** Translates backend role strings to the frontend UserRole union. */
+    private static mapRole(backendRole: string): UserRole | null {
+        const map: Record<string, UserRole> = {
+            BARISTA: 'BARISTA',
+            WAITER: 'EMPLOYEE',
+            CASHIER: 'CASHIER',
+            CLEANER: 'EMPLOYEE',
+            SHIFT_SUPERVISOR: 'SUPERVISOR',
+            STORE_MANAGER: 'MANAGER',
+            HR_MANAGER: 'HR',
+            ACCOUNTANT: 'ACCOUNTANT',
+            MARKETING: 'EMPLOYEE',
+            BUSINESS_OWNER: 'OWNER',
+            IT_SPECIALIST: 'IT_ADMIN',
+        };
+        return map[backendRole] ?? null;
+    }
 
-  getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.base}/auth/me`);
-  }
+    /** Maps the backend flat response to the LoginResponse shape used by the store. */
+    private mapLoginResponse(res: BackendLoginResponse): LoginResponse {
+        const user: User = {
+            id: res.userId,
+            username: res.username,
+            email: '',          // not returned by backend yet
+            firstName: res.username,
+            lastName: '',
+            roles: res.roles.map(AuthService.mapRole).filter((r): r is UserRole => r !== null),
+            locationId: null,
+            isActive: true,
+        };
 
-  getAccessToken(): string | null {
-    return localStorage.getItem(environment.jwtTokenKey);
-  }
+        const tokens: AuthTokens = {
+            accessToken: res.token,
+            refreshToken: '',        // backend doesn't issue refresh tokens yet
+            expiresIn: res.expiresIn,
+        };
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem(environment.refreshTokenKey);
-  }
+        return {user, tokens};
+    }
 
-  isAuthenticated(): boolean {
-    return !!this.getAccessToken();
-  }
+    logout(): Observable<void> {
+        return this.http.post<void>(`${this.base}/auth/logout`, {}).pipe(
+            tap(() => this.clearTokens())
+        );
+    }
 
-  private storeTokens(tokens: AuthTokens): void {
-    localStorage.setItem(environment.jwtTokenKey, tokens.accessToken);
-    localStorage.setItem(environment.refreshTokenKey, tokens.refreshToken);
-  }
+    refreshToken(): Observable<AuthTokens> {
+        const refreshToken = this.getRefreshToken();
+        return this.http.post<AuthTokens>(`${this.base}/auth/refresh`, {refreshToken}).pipe(
+            tap(tokens => this.storeTokens(tokens))
+        );
+    }
 
-  clearTokens(): void {
-    localStorage.removeItem(environment.jwtTokenKey);
-    localStorage.removeItem(environment.refreshTokenKey);
-  }
+    getCurrentUser(): Observable<User> {
+        return this.http.get<User>(`${this.base}/auth/me`);
+    }
+
+    getAccessToken(): string | null {
+        return localStorage.getItem(environment.jwtTokenKey);
+    }
+
+    getRefreshToken(): string | null {
+        return localStorage.getItem(environment.refreshTokenKey);
+    }
+
+    isAuthenticated(): boolean {
+        return !!this.getAccessToken();
+    }
+
+    private storeTokens(tokens: AuthTokens): void {
+        localStorage.setItem(environment.jwtTokenKey, tokens.accessToken);
+        localStorage.setItem(environment.refreshTokenKey, tokens.refreshToken);
+    }
+
+    clearTokens(): void {
+        localStorage.removeItem(environment.jwtTokenKey);
+        localStorage.removeItem(environment.refreshTokenKey);
+    }
 }

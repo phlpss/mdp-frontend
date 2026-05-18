@@ -7,7 +7,8 @@
         </div>
         <div class="header-actions">
             <button *ngIf="!isApprover" mat-raised-button color="primary" (click)="openRequestDialog()">
-                <mat-icon>add</mat-icon> Request Leave
+                <mat-icon>add</mat-icon>
+                Request Leave
             </button>
             <mat-chip-set *ngIf="isApprover">
                 <mat-chip (click)="filters = { status: 'PENDING' }">Pending</mat-chip>
@@ -26,7 +27,7 @@
 
             <mdp-entity-table
                     typeName="leave_request"
-                    apiPath="leave-requests"
+                    apiPath="hr/leave"
                     [filters]="filters"
                     [actions]="tableActions">
             </mdp-entity-table>
@@ -43,7 +44,7 @@
         <mat-card-content>
             <mdp-entity-table
                     typeName="leave_request"
-                    apiPath="leave-requests"
+                    apiPath="hr/leave"
                     [filters]="{ status: 'PENDING_CANCELLATION' }"
                     [actions]="cancellationActions">
             </mdp-entity-table>
