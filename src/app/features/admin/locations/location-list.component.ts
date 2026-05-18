@@ -3,15 +3,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiService } from '@core/services/api.service';
-import { NotificationService } from '@core/services/notification.service';
-import { FilterParams, PageResponse } from '@core/models/api.model';
-import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
-import { LocationFormDialogComponent } from './location-form-dialog.component';
+import { ApiService } from '../../../core/services/api.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { FilterParams, PageResponse } from '../../../core/models/api.model';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {LocationFormDialogComponent} from "@features/admin/locations/location-form-dialog.component";
 
 interface Location {
   id: string;
-  name: string;
+  storeName: string;
   address: string;
   phone?: string;
   isActive: boolean;
@@ -43,13 +43,13 @@ export class LocationListComponent implements OnInit {
     this.loading = true;
     this.api.get<Location[]>('locations').pipe(
         catchError(() => of([
-          { id: '1', name: 'Downtown Branch',    address: '123 Main St, City Center',  phone: '+1 555-0100', isActive: true,  manager: 'Alice Johnson' },
-          { id: '2', name: 'Airport Terminal',   address: 'Terminal 2, City Airport',  phone: '+1 555-0200', isActive: true,  manager: 'Bob Smith' },
-          { id: '3', name: 'University Campus',  address: '45 College Ave, Campus',    phone: '+1 555-0300', isActive: true,  manager: 'Carol White' },
-          { id: '4', name: 'Shopping Mall',      address: 'Level 2, Metro Mall',       phone: '+1 555-0400', isActive: false, manager: null },
+          { id: '1', storeName: 'Downtown Branch',    address: '123 Main St, City Center',  phone: '+1 555-0100', isActive: true,  manager: 'Alice Johnson' },
+          { id: '2', storeName: 'Airport Terminal',   address: 'Terminal 2, City Airport',  phone: '+1 555-0200', isActive: true,  manager: 'Bob Smith' },
+          { id: '3', storeName: 'University Campus',  address: '45 College Ave, Campus',    phone: '+1 555-0300', isActive: true,  manager: 'Carol White' },
+          { id: '4', storeName: 'Shopping Mall',      address: 'Level 2, Metro Mall',       phone: '+1 555-0400', isActive: false, manager: null },
         ] as Location[]))
-    ).subscribe(locations => {
-      this.locations = locations;
+    ).subscribe((raw: any[]) => {
+      this.locations = raw.map(r => ({ id: r.id, ...r.payload }));
       this.loading = false;
     });
   }
@@ -75,14 +75,14 @@ export class LocationListComponent implements OnInit {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: `${location.isActive ? 'Deactivate' : 'Activate'} Location`,
-        message: `Are you sure you want to ${action} "${location.name}"?`,
+        message: `Are you sure you want to ${action} "${location.storeName}"?`,
         confirmText: location.isActive ? 'Deactivate' : 'Activate',
         confirmColor: location.isActive ? 'warn' : 'primary',
       },
     });
     ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('entities/StoreLocation', location.id, { isActive: !location.isActive }).pipe(
+        this.api.patch('locations', location.id, { isActive: !location.isActive }).pipe(
             catchError(() => of(null))
         ).subscribe(() => {
           this.notifications.success(`Location ${action}d.`);
