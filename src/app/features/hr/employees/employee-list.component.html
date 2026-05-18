@@ -1,24 +1,24 @@
 <div class="mdp-container">
-  <div class="page-header">
-    <div>
-      <h2>Employees</h2>
-      <p class="subtitle">Manage your team</p>
+    <div class="page-header">
+        <div>
+            <h2>Employees</h2>
+            <p class="subtitle">Manage your team</p>
+        </div>
+        <button *ngIf="canAdd" mat-raised-button color="primary" (click)="openAddDialog()">
+            <mat-icon>person_add</mat-icon> Add Employee
+        </button>
     </div>
-    <button *ngIf="canAdd" mat-raised-button color="primary" (click)="openAddDialog()">
-      <mat-icon>person_add</mat-icon> Add Employee
-    </button>
-  </div>
 
-  <mat-card>
-    <mat-card-content>
-      <mdp-meta-filter-bar typeName="employee" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
-      <mdp-entity-table
-        typeName="employee"
-        apiPath="employees"
-        [filters]="filters"
-        [actions]="tableActions"
-        (rowClick)="onRowClick($event)">
-      </mdp-entity-table>
-    </mat-card-content>
-  </mat-card>
+    <mat-card>
+        <mat-card-content>
+            <mdp-meta-filter-bar typeName="Employee" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
+            <mdp-entity-table
+                    typeName="Employee"
+                    apiPath="entities/Employee"
+                    [filters]="filters"
+                    [actions]="tableActions"
+                    (rowClick)="onRowClick($event)">
+            </mdp-entity-table>
+        </mat-card-content>
+    </mat-card>
 </div>

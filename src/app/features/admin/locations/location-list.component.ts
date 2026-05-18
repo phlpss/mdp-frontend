@@ -29,9 +29,9 @@ export class LocationListComponent implements OnInit {
   displayedColumns = ['name','address','phone','manager','isActive','actions'];
 
   constructor(
-    private api: ApiService,
-    private dialog: MatDialog,
-    private notifications: NotificationService,
+      private api: ApiService,
+      private dialog: MatDialog,
+      private notifications: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -41,12 +41,12 @@ export class LocationListComponent implements OnInit {
   loadLocations(): void {
     this.loading = true;
     this.api.get<Location[]>('locations').pipe(
-      catchError(() => of([
-        { id: '1', name: 'Downtown Branch',    address: '123 Main St, City Center',  phone: '+1 555-0100', isActive: true,  manager: 'Alice Johnson' },
-        { id: '2', name: 'Airport Terminal',   address: 'Terminal 2, City Airport',  phone: '+1 555-0200', isActive: true,  manager: 'Bob Smith' },
-        { id: '3', name: 'University Campus',  address: '45 College Ave, Campus',    phone: '+1 555-0300', isActive: true,  manager: 'Carol White' },
-        { id: '4', name: 'Shopping Mall',      address: 'Level 2, Metro Mall',       phone: '+1 555-0400', isActive: false, manager: null },
-      ] as Location[]))
+        catchError(() => of([
+          { id: '1', name: 'Downtown Branch',    address: '123 Main St, City Center',  phone: '+1 555-0100', isActive: true,  manager: 'Alice Johnson' },
+          { id: '2', name: 'Airport Terminal',   address: 'Terminal 2, City Airport',  phone: '+1 555-0200', isActive: true,  manager: 'Bob Smith' },
+          { id: '3', name: 'University Campus',  address: '45 College Ave, Campus',    phone: '+1 555-0300', isActive: true,  manager: 'Carol White' },
+          { id: '4', name: 'Shopping Mall',      address: 'Level 2, Metro Mall',       phone: '+1 555-0400', isActive: false, manager: null },
+        ] as Location[]))
     ).subscribe(locations => {
       this.locations = locations;
       this.loading = false;
@@ -65,8 +65,8 @@ export class LocationListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('locations', location.id, { isActive: !location.isActive }).pipe(
-          catchError(() => of(null))
+        this.api.patch('entities/StoreLocation', location.id, { isActive: !location.isActive }).pipe(
+            catchError(() => of(null))
         ).subscribe(() => {
           this.notifications.success(`Location ${action}d.`);
           this.loadLocations();

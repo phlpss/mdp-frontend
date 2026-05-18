@@ -1,86 +1,86 @@
 <div class="mdp-container">
-  <!-- KPI Row -->
-  <div class="mdp-grid cols-3" *ngIf="dailyKpis$ | async as kpis">
-    <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
-  </div>
+    <!-- KPI Row -->
+    <div class="mdp-grid cols-3" *ngIf="dailyKpis$ | async as kpis">
+        <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
+    </div>
 
-  <!-- CASHIER: POS Interface -->
-  <ng-container *ngIf="isCashier">
-    <!-- Receipt confirmation -->
-    <mat-card class="receipt-card" *ngIf="lastReceipt">
-      <mat-card-content>
-        <div class="receipt">
-          <mat-icon class="receipt-ok">check_circle</mat-icon>
-          <h3>Transaction Complete</h3>
-          <div class="receipt-number">{{ lastReceipt.receiptNumber }}</div>
-          <div class="receipt-amount">{{ lastReceipt.amount | mdpCurrency }}</div>
-          <div class="receipt-method">{{ lastReceipt.paymentMethod }}</div>
-          <div class="receipt-time">{{ lastReceipt.timestamp | date:'medium' }}</div>
-          <button mat-raised-button color="primary" (click)="clearReceipt()">
-            <mat-icon>add</mat-icon> New Transaction
-          </button>
-        </div>
-      </mat-card-content>
+    <!-- CASHIER: POS Interface -->
+    <ng-container *ngIf="isCashier">
+        <!-- Receipt confirmation -->
+        <mat-card class="receipt-card" *ngIf="lastReceipt">
+            <mat-card-content>
+                <div class="receipt">
+                    <mat-icon class="receipt-ok">check_circle</mat-icon>
+                    <h3>Transaction Complete</h3>
+                    <div class="receipt-number">{{ lastReceipt.receiptNumber }}</div>
+                    <div class="receipt-amount">{{ lastReceipt.amount | mdpCurrency }}</div>
+                    <div class="receipt-method">{{ lastReceipt.paymentMethod }}</div>
+                    <div class="receipt-time">{{ lastReceipt.timestamp | date:'medium' }}</div>
+                    <button mat-raised-button color="primary" (click)="clearReceipt()">
+                        <mat-icon>add</mat-icon> New Transaction
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- POS Form -->
+        <mat-card class="pos-card" *ngIf="!lastReceipt">
+            <mat-card-header>
+                <mat-icon mat-card-avatar color="primary">point_of_sale</mat-icon>
+                <mat-card-title>New Transaction</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <form [formGroup]="posForm" (ngSubmit)="submitPOS()">
+                    <mat-form-field appearance="outline" class="amount-field">
+                        <mat-label>Amount</mat-label>
+                        <span matPrefix>$&nbsp;</span>
+                        <input matInput type="number" formControlName="amount" placeholder="0.00" step="0.01" cdkFocusInitial>
+                        <mat-error *ngIf="posForm.get('amount')?.hasError('required')">Amount is required</mat-error>
+                        <mat-error *ngIf="posForm.get('amount')?.hasError('min')">Amount must be positive</mat-error>
+                    </mat-form-field>
+
+                    <div class="payment-methods">
+                        <button *ngFor="let pm of paymentMethods"
+                                type="button"
+                                mat-raised-button
+                                class="payment-btn"
+                                [style.border-color]="posForm.get('paymentMethod')?.value === pm.value ? pm.color : ''"
+                                [style.background-color]="posForm.get('paymentMethod')?.value === pm.value ? pm.color + '22' : ''"
+                                (click)="selectPayment(pm.value)">
+                            <mat-icon [style.color]="pm.color">{{ pm.icon }}</mat-icon>
+                            {{ pm.label }}
+                        </button>
+                    </div>
+
+                    <mat-form-field appearance="outline" class="mdp-full-width">
+                        <mat-label>Notes (optional)</mat-label>
+                        <textarea matInput formControlName="notes" rows="2"></textarea>
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" type="submit" class="submit-pos" [disabled]="posLoading">
+                        <mat-spinner *ngIf="posLoading" diameter="20"></mat-spinner>
+                        <mat-icon *ngIf="!posLoading">check</mat-icon>
+                        {{ posLoading ? 'Processing...' : 'Complete Transaction' }}
+                    </button>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </ng-container>
+
+    <!-- MANAGER/ACCOUNTANT: Transaction List -->
+    <mat-card *ngIf="isManager" class="mdp-card">
+        <mat-card-header>
+            <mat-icon mat-card-avatar>receipt</mat-icon>
+            <mat-card-title>Transactions</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <mdp-meta-filter-bar typeName="Transaction" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
+            <mdp-entity-table
+                    typeName="Transaction"
+                    apiPath="entities/Transaction"
+                    [filters]="filters"
+                    [actions]="tableActions">
+            </mdp-entity-table>
+        </mat-card-content>
     </mat-card>
-
-    <!-- POS Form -->
-    <mat-card class="pos-card" *ngIf="!lastReceipt">
-      <mat-card-header>
-        <mat-icon mat-card-avatar color="primary">point_of_sale</mat-icon>
-        <mat-card-title>New Transaction</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form [formGroup]="posForm" (ngSubmit)="submitPOS()">
-          <mat-form-field appearance="outline" class="amount-field">
-            <mat-label>Amount</mat-label>
-            <span matPrefix>$&nbsp;</span>
-            <input matInput type="number" formControlName="amount" placeholder="0.00" step="0.01" cdkFocusInitial>
-            <mat-error *ngIf="posForm.get('amount')?.hasError('required')">Amount is required</mat-error>
-            <mat-error *ngIf="posForm.get('amount')?.hasError('min')">Amount must be positive</mat-error>
-          </mat-form-field>
-
-          <div class="payment-methods">
-            <button *ngFor="let pm of paymentMethods"
-              type="button"
-              mat-raised-button
-              class="payment-btn"
-              [style.border-color]="posForm.get('paymentMethod')?.value === pm.value ? pm.color : ''"
-              [style.background-color]="posForm.get('paymentMethod')?.value === pm.value ? pm.color + '22' : ''"
-              (click)="selectPayment(pm.value)">
-              <mat-icon [style.color]="pm.color">{{ pm.icon }}</mat-icon>
-              {{ pm.label }}
-            </button>
-          </div>
-
-          <mat-form-field appearance="outline" class="mdp-full-width">
-            <mat-label>Notes (optional)</mat-label>
-            <textarea matInput formControlName="notes" rows="2"></textarea>
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" type="submit" class="submit-pos" [disabled]="posLoading">
-            <mat-spinner *ngIf="posLoading" diameter="20"></mat-spinner>
-            <mat-icon *ngIf="!posLoading">check</mat-icon>
-            {{ posLoading ? 'Processing...' : 'Complete Transaction' }}
-          </button>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </ng-container>
-
-  <!-- MANAGER/ACCOUNTANT: Transaction List -->
-  <mat-card *ngIf="isManager" class="mdp-card">
-    <mat-card-header>
-      <mat-icon mat-card-avatar>receipt</mat-icon>
-      <mat-card-title>Transactions</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mdp-meta-filter-bar typeName="transaction" (filtersChange)="onFiltersChange($event)"></mdp-meta-filter-bar>
-      <mdp-entity-table
-        typeName="transaction"
-        apiPath="transactions"
-        [filters]="filters"
-        [actions]="tableActions">
-      </mdp-entity-table>
-    </mat-card-content>
-  </mat-card>
 </div>

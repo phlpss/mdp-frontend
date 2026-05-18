@@ -11,9 +11,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {SharedModule} from '../../shared/shared.module';
-import {AuthGuard} from '../../core/guards/auth.guard';
-import {RoleGuard} from '../../core/guards/role.guard';
+import {SharedModule} from '@shared/shared.module';
+import {RoleGuard} from '@core/guards/role.guard';
 
 import {EmployeeListComponent} from './employees/employee-list.component';
 import {EmployeeDetailComponent} from './employees/employee-detail.component';

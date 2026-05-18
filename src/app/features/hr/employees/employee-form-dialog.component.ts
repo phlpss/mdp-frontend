@@ -7,7 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     <h2 mat-dialog-title>{{ data.formData ? 'Edit Employee' : 'Add Employee' }}</h2>
     <mat-dialog-content>
       <mdp-dynamic-form
-        typeName="employee"
+        typeName="Employee"
         [formData]="data.formData"
         submitLabel="{{ data.formData ? 'Update' : 'Create' }}"
         (formSubmit)="onSubmit($event)"

@@ -24,10 +24,10 @@ export class InventoryListComponent implements OnInit {
   tableActions: TableAction[] = [];
 
   constructor(
-    private store: Store,
-    private dialog: MatDialog,
-    private api: ApiService,
-    private notifications: NotificationService,
+      private store: Store,
+      private dialog: MatDialog,
+      private api: ApiService,
+      private notifications: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +40,7 @@ export class InventoryListComponent implements OnInit {
     });
 
     this.api.get<{ count: number }>('inventory/low-stock-count').pipe(
-      catchError(() => of({ count: 2 }))
+        catchError(() => of({ count: 2 }))
     ).subscribe(data => {
       this.lowStockKpi = { ...this.lowStockKpi, value: data.count };
     });
@@ -54,7 +54,7 @@ export class InventoryListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.post('inventory', data).subscribe(() => {
+        this.api.post('entities/InventoryItem', data).subscribe(() => {
           this.notifications.success('Item added.'); this.reloadTrigger++;
         });
       }
@@ -67,7 +67,7 @@ export class InventoryListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data && item['id']) {
-        this.api.put('inventory', String(item['id']), data).subscribe(() => {
+        this.api.put('entities/InventoryItem', String(item['id']), data).subscribe(() => {
           this.notifications.success('Item updated.'); this.reloadTrigger++;
         });
       }
@@ -80,7 +80,7 @@ export class InventoryListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(delta => {
       if (delta !== undefined && delta !== null) {
-        this.api.patch('inventory', String(item['id']), { quantityDelta: delta }).subscribe(() => {
+        this.api.patch('entities/InventoryItem', String(item['id']), { quantityDelta: delta }).subscribe(() => {
           this.notifications.success('Stock adjusted.'); this.reloadTrigger++;
         });
       }
@@ -106,8 +106,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class InventoryFormDialogComponent {
   constructor(
-    public ref: MatDialogRef<InventoryFormDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { formData: Record<string, unknown> | null },
+      public ref: MatDialogRef<InventoryFormDialogComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: { formData: Record<string, unknown> | null },
   ) {}
 }
 
@@ -134,9 +134,9 @@ export class InventoryFormDialogComponent {
 export class StockAdjustDialogComponent {
   form: FormGroup;
   constructor(
-    public ref: MatDialogRef<StockAdjustDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { item: Record<string, unknown> },
-    fb: FormBuilder,
+      public ref: MatDialogRef<StockAdjustDialogComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: { item: Record<string, unknown> },
+      fb: FormBuilder,
   ) {
     this.form = fb.group({ delta: [null, Validators.required] });
   }

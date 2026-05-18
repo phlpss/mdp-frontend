@@ -37,11 +37,11 @@ export class EmployeeListComponent implements OnInit {
   ];
 
   constructor(
-    private store: Store,
-    private dialog: MatDialog,
-    private router: Router,
-    private api: ApiService,
-    private notifications: NotificationService,
+      private store: Store,
+      private dialog: MatDialog,
+      private router: Router,
+      private api: ApiService,
+      private notifications: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +63,7 @@ export class EmployeeListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.post('employees', data).subscribe(() => {
+        this.api.post('entities/Employee', data).subscribe(() => {
           this.notifications.success('Employee created.');
           this.reloadTrigger++;
         });
@@ -79,7 +79,7 @@ export class EmployeeListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data && employee['id']) {
-        this.api.put('employees', String(employee['id']), data).subscribe(() => {
+        this.api.put('entities/Employee', String(employee['id']), data).subscribe(() => {
           this.notifications.success('Employee updated.');
           this.reloadTrigger++;
         });

@@ -34,13 +34,13 @@
   <ng-container *ngIf="currentUser$ | async as user">
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
       <div class="avatar">{{ getInitials(user) }}</div>
-      <span class="user-name">{{ user.firstName }}</span>
+      <span class="user-name">{{ user.fullName }}</span>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
     <mat-menu #userMenu="matMenu">
       <div class="user-menu-header" mat-menu-item disabled>
-        <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+        <strong>{{ user.fullName }}</strong>
         <small>{{ user.roles[0] }}</small>
       </div>
       <mat-divider></mat-divider>

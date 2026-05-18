@@ -22,5 +22,5 @@ export const selectHasRole = (...roles: UserRole[]) =>
 
 export const selectUserDisplayName = createSelector(
   selectCurrentUser,
-  user => user ? `${user.firstName} ${user.lastName}` : ''
+  user => user?.fullName ?? ''
 );

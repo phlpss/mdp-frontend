@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { selectCurrentUser, selectActiveLocationId } from '../../../../store/auth/auth.selectors';
-import { AuthActions } from '../../../../store/auth/auth.actions';
-import { User } from '../../../../core/models/user.model';
-import { ApiService } from '../../../../core/services/api.service';
+import { selectCurrentUser, selectActiveLocationId } from '@store/auth/auth.selectors';
+import { AuthActions } from '@store/auth/auth.actions';
+import { User } from '@core/models/user.model';
+import { ApiService } from '@core/services/api.service';
 
 interface Location {
   id: string;
@@ -43,6 +43,6 @@ export class TopbarComponent implements OnInit {
   }
 
   getInitials(user: User): string {
-    return `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
+    return (user.fullName ?? '').split(' ').map((p: string) => p[0] ?? '').slice(0,2).join('').toUpperCase();
   }
 }

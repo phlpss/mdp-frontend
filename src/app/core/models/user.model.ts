@@ -13,8 +13,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
   roles: UserRole[];
   locationId: string | null;
   avatarUrl?: string;
@@ -61,5 +60,5 @@ export function canViewSensitive(user: User | null): boolean {
 }
 
 export function getDisplayName(user: User): string {
-  return `${user.firstName} ${user.lastName}`;
+  return user.fullName;
 }

@@ -1,7 +1,7 @@
 <div class="mdp-container">
   <div class="dashboard-header" *ngIf="currentUser$ | async as user">
     <div>
-      <h2>Good day, {{ user.firstName }}!</h2>
+      <h2>Good day, {{ user.fullName }}!</h2>
       <p class="subtitle">Here's your schedule overview</p>
     </div>
     <div class="header-actions">

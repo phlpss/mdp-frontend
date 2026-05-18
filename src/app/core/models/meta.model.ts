@@ -75,8 +75,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'firstName',   name: 'firstName',   label: 'First Name',   fieldType: 'string',   required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1 },
-      { id: 'lastName',    name: 'lastName',    label: 'Last Name',    fieldType: 'string',   required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2 },
+      { id: 'fullName', name: 'fullName', label: 'Full Name', fieldType: 'string', required: true, sensitive: false, sortable: true, filterable: true, showInList: true, showInForm: true, readOnly: false, order: 1 },
       { id: 'email',       name: 'email',       label: 'Email',        fieldType: 'email',    required: true,  sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 3 },
       { id: 'phone',       name: 'phone',       label: 'Phone',        fieldType: 'phone',    required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 4 },
       { id: 'role',        name: 'role',        label: 'Role',         fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 5,

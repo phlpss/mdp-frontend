@@ -52,8 +52,7 @@ export class AuthService {
             id: res.userId,
             username: res.username,
             email: '',          // not returned by backend yet
-            firstName: res.username,
-            lastName: '',
+            fullName: res.username,
             roles: res.roles.map(AuthService.mapRole).filter((r): r is UserRole => r !== null),
             locationId: null,
             isActive: true,
@@ -82,7 +81,13 @@ export class AuthService {
     }
 
     getCurrentUser(): Observable<User> {
-        return this.http.get<User>(`${this.base}/auth/me`);
+        return this.http.get<any>(`${this.base}/auth/me`).pipe(
+            map(res => ({
+                ...res,
+                fullName: (res.fullName ?? `${res.firstName ?? ''} ${res.lastName ?? ''}`.trim() )|| res.username,
+                roles: (res.roles ?? []).map(AuthService.mapRole).filter((r: UserRole | null): r is UserRole => r !== null),
+            }))
+        );
     }
 
     getAccessToken(): string | null {

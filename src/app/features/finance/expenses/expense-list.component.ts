@@ -25,10 +25,10 @@ export class ExpenseListComponent implements OnInit {
   tableActions: TableAction[] = [];
 
   constructor(
-    private store: Store,
-    private dialog: MatDialog,
-    private api: ApiService,
-    private notifications: NotificationService,
+      private store: Store,
+      private dialog: MatDialog,
+      private api: ApiService,
+      private notifications: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -53,7 +53,7 @@ export class ExpenseListComponent implements OnInit {
     });
 
     this.api.get<{ total: number }>('finance/expenses/monthly-total').pipe(
-      catchError(() => of({ total: 4820.50 }))
+        catchError(() => of({ total: 4820.50 }))
     ).subscribe(data => {
       this.totalKpi = { ...this.totalKpi, value: '$' + data.total.toFixed(2) };
     });
@@ -67,7 +67,7 @@ export class ExpenseListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.post('expenses', data).subscribe(() => {
+        this.api.post('entities/Expense', data).subscribe(() => {
           this.notifications.success('Expense added.'); this.reloadTrigger++;
         });
       }
@@ -80,7 +80,7 @@ export class ExpenseListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data && expense['id']) {
-        this.api.put('expenses', String(expense['id']), data).subscribe(() => {
+        this.api.put('entities/Expense', String(expense['id']), data).subscribe(() => {
           this.notifications.success('Expense updated.'); this.reloadTrigger++;
         });
       }
@@ -93,7 +93,7 @@ export class ExpenseListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('expenses', row.id, { approved: true }).subscribe(() => {
+        this.api.patch('entities/Expense', row.id, { approved: true }).subscribe(() => {
           this.notifications.success('Expense approved.'); this.reloadTrigger++;
         });
       }
@@ -118,7 +118,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 })
 export class ExpenseFormDialogComponent {
   constructor(
-    public ref: MatDialogRef<ExpenseFormDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { formData: Record<string, unknown> | null },
+      public ref: MatDialogRef<ExpenseFormDialogComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: { formData: Record<string, unknown> | null },
   ) {}
 }
