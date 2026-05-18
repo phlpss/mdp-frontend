@@ -54,16 +54,16 @@ export class LocationListComponent implements OnInit {
     });
   }
 
-  openAddDialog(): void {
+  openEditDialog(location: Location): void {
     const ref = this.dialog.open(LocationFormDialogComponent, {
       width: '720px',
       maxWidth: '95vw',
-      data: { formData: null },
+      data: { formData: { ...location } },
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.post('entities/StoreLocation', data).subscribe(() => {
-          this.notifications.success('Location created.');
+        this.api.patch('entities/StoreLocation', location.id, data).subscribe(() => {
+          this.notifications.success('Location updated.');
           this.loadLocations();
         });
       }

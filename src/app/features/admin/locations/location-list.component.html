@@ -20,7 +20,7 @@
                         <td mat-cell *matCellDef="let loc">
                             <div class="loc-name">
                                 <mat-icon class="loc-icon">store</mat-icon>
-                                <strong>{{ loc.name }}</strong>
+                                <strong>{{ loc.storeName }}</strong>
                             </div>
                         </td>
                     </ng-container>
@@ -52,7 +52,7 @@
                     <ng-container matColumnDef="actions">
                         <th mat-header-cell *matHeaderCellDef>Actions</th>
                         <td mat-cell *matCellDef="let loc">
-                            <button mat-icon-button matTooltip="Edit">
+                            <button mat-icon-button matTooltip="Edit" (click)="openEditDialog(loc)">
                                 <mat-icon>edit</mat-icon>
                             </button>
                             <button mat-icon-button
