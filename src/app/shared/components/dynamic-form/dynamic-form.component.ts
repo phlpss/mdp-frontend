@@ -6,6 +6,7 @@ import { map, take } from 'rxjs/operators';
 import { MetaAttribute } from '../../../core/models/meta.model';
 import { selectFormAttributesForType } from '../../../store/metadata/metadata.selectors';
 import { selectCanViewSensitive } from '../../../store/auth/auth.selectors';
+import {ApiService} from "@core/services/api.service";
 
 interface FormGroup_ {
   groupName: string;
@@ -30,10 +31,25 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   canViewSensitive$!: Observable<boolean>;
   fieldGroups$!: Observable<FormGroup_[]>;
 
-  constructor(private store: Store, private fb: FormBuilder) {}
+  constructor(private store: Store, private fb: FormBuilder, private api: ApiService) {}
+
+  referenceOptions: Record<string, { id: string; label: string }[]> = {};
 
   ngOnInit(): void {
     this.attributes$       = this.store.select(selectFormAttributesForType(this.typeName));
+    this.attributes$.pipe(take(1)).subscribe(attrs => {
+      attrs.filter(a => a.fieldType === 'reference' && a.referenceType).forEach(attr => {
+        this.api.getPage<unknown>(
+            `entities/${attr.referenceType}`,
+            {page: 0, size: 100}, {}
+        ).subscribe((page: any) => {
+          this.referenceOptions[attr.name] = page.content.map((item: any) => ({
+            id: item.id,
+            label: item.payload?.name ?? item.payload?.fullName ?? item.id
+          }));
+        });
+      });
+    });
     this.canViewSensitive$ = this.store.select(selectCanViewSensitive);
     this.fieldGroups$      = this.attributes$.pipe(map(attrs => this.groupAttributes(attrs)));
     this.buildForm();

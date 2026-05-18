@@ -80,7 +80,21 @@
             </mat-form-field>
 
             <!-- STRING / EMAIL / PHONE / REFERENCE (default text input) -->
-            <mat-form-field *ngIf="(isTextType(attr) || attr.fieldType === 'reference') && !(attr.sensitive && !canView && readOnly)"
+              <mat-form-field *ngIf="attr.fieldType === 'reference' && !(attr.sensitive && !canView && readOnly)"
+                              + appearance="outline" class="field-wrapper">
+                  <mat-label>{{ attr.label }}</mat-label>
+                  <mat-select [formControlName]="attr.name">
+                      <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
+                      <mat-option *ngFor="let opt of referenceOptions[attr.name]" [value]="opt.id">
+                          {{ opt.label }}
+                      </mat-option>
+                  </mat-select>
+                  <mat-error>{{ getFieldError(attr) }}</mat-error>
+              </mat-form-field>
+
+              <!-- STRING / EMAIL / PHONE (default text input) -->
+              <mat-form-field *ngIf="(isTextType(attr) || attr.fieldType === 'reference') && !(attr.sensitive && !canView && readOnly)"
+
               appearance="outline" class="field-wrapper">
               <mat-label>{{ attr.label }}</mat-label>
               <input matInput [formControlName]="attr.name"

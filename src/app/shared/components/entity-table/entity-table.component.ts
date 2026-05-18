@@ -128,7 +128,9 @@ export class EntityTableComponent implements OnInit, OnChanges {
   }
 
   getCellValue(row: unknown, attr: MetaAttribute): string {
-    const val = (row as Record<string, unknown>)[attr.name];
+    const record = row as Record<string, unknown>;
+    const payload = (record['payload'] ?? record) as Record<string, unknown>;
+    const val = payload[attr.name];
     if (val === null || val === undefined) return '—';
     if (attr.sensitive && !this.canViewSensitive) return '••••••';
     if (attr.fieldType === 'currency') return '$' + Number(val).toFixed(2);
