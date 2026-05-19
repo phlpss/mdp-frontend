@@ -75,6 +75,16 @@ export class ShiftCalendarComponent implements OnInit {
 
     loadData(): void {
         this.loading = true;
+        // Load all employees independently of shift data
+        this.api.get<{ content: Array<{ id: string; payload: { fullName: string } }> }>(
+            'entities/Employee?size=200'
+        ).subscribe(res => {
+            this.employees = (res.content ?? []).map(e => ({
+                id: e.id,
+                name: e.payload?.fullName ?? e.id,
+            }));
+        });
+
         const from = this.weekStart.toISOString().split('T')[0];
         const to = this.weekDays[6].toISOString().split('T')[0];
 
@@ -84,14 +94,10 @@ export class ShiftCalendarComponent implements OnInit {
                 shiftId: string; employeeId: string; employeeFullName: string;
                 shiftDate: string; startTime: string; endTime: string; shiftStatus: string;
             }>
-        }>(`hr/schedule/${locationId}?startDate=${from}&endDate=${to}&size=200`).pipe(
+        }>(`shifts/schedule/${locationId}?startDate=${from}&endDate=${to}&size=200`).pipe(
             catchError(() => of({content: []}))
         ).subscribe(page => {
             const entries = page.content ?? [];
-            // Build employee list (deduplicated)
-            const empMap = new Map<string, string>();
-            entries.forEach(e => empMap.set(e.employeeId, e.employeeFullName ?? e.employeeId));
-            this.employees = Array.from(empMap.entries()).map(([id, name]) => ({id, name}));
             // Map to ShiftCell shape
             this.shifts = entries.map(e => ({
                 id: e.shiftId,

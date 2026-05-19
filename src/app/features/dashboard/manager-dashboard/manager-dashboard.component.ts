@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
 import { selectActiveLocationId } from '../../../store/auth/auth.selectors';
@@ -58,7 +58,16 @@ export class ManagerDashboardComponent implements OnInit {
       ]))
     );
 
-    this.pendingApprovals$ = this.api.get<PendingApproval[]>('leave-requests?status=PENDING&size=5').pipe(
+    this.pendingApprovals$ = this.api.get<{content: Array<{id: string; payload: Record<string, unknown>}>}>(
+      'hr/leave?status=PENDING&size=5'
+    ).pipe(
+      map(page => page.content.map(e => ({
+        id: e.id,
+        employeeName: String(e.payload['employeeId'] ?? ''),
+        type: String(e.payload['leaveType'] ?? ''),
+        date: String(e.payload['startDate'] ?? ''),
+        status: String(e.payload['leaveStatus'] ?? 'PENDING'),
+      }))),
       catchError(() => of([]))
     );
   }

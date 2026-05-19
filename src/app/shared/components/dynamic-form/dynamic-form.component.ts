@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import { MetaAttribute } from '../../../core/models/meta.model';
-import { selectFormAttributesForType } from '../../../store/metadata/metadata.selectors';
-import { selectCanViewSensitive } from '../../../store/auth/auth.selectors';
+import { first, map, take } from 'rxjs/operators';
+import { MetaAttribute } from '@core/models/meta.model';
+import { selectFormAttributesForType } from '@store/metadata/metadata.selectors';
+import { selectCanViewSensitive } from '@store/auth/auth.selectors';
 import {ApiService} from "@core/services/api.service";
 
 interface FormGroup_ {
@@ -65,7 +65,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   }
 
   private buildForm(): void {
-    this.attributes$.pipe(take(1)).subscribe(attrs => {
+    this.attributes$.pipe(first(attrs => attrs.length > 0)).subscribe(attrs => {
       const controls: Record<string, AbstractControl> = {};
       attrs.forEach(attr => {
         const validators: ValidatorFn[] = [];

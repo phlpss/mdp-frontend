@@ -33,7 +33,7 @@ export class TopbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.locations$ = this.api.get<Location[]>('locations').pipe(
+    this.locations$ = this.api.get<Location[]>('entities/StoreLocation').pipe(
       catchError(() => of([{ id: '1', name: 'Downtown Branch' }]))
     );
   }

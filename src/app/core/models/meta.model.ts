@@ -91,7 +91,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
       { id: 'salary',      name: 'salary',      label: 'Salary',       fieldType: 'currency', required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 6, min: 0 },
       { id: 'hireDate',    name: 'hireDate',    label: 'Hire Date',    fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 7 },
       { id: 'isActive',    name: 'isActive',    label: 'Active',       fieldType: 'boolean',  required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8, defaultValue: true },
-      { id: 'locationId',  name: 'locationId',  label: 'Location',     fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 9, referenceType: 'location' },
+      { id: 'locationId',  name: 'locationId',  label: 'Location',     fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 9, referenceType: 'StoreLocation' },
     ]
   },
   {
@@ -199,8 +199,8 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     ]
   },
   {
-    id: 'inventory_item',
-    name: 'inventory_item',
+    id: 'InventoryItem',
+    name: 'InventoryItem',
     label: 'Inventory Item',
     pluralLabel: 'Inventory',
     icon: 'inventory_2',
@@ -227,8 +227,8 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     ]
   },
   {
-    id: 'location',
-    name: 'location',
+    id: 'StoreLocation',
+    name: 'StoreLocation',
     label: 'Location',
     pluralLabel: 'Locations',
     icon: 'store',

@@ -66,7 +66,7 @@ export class EmployeeDetailComponent implements OnInit {
 
   loadShifts(): void {
     this.shiftsLoading = true;
-    this.api.get<unknown[]>(`employees/${this.employeeId}/shifts?upcoming=true`).pipe(
+    this.api.get<unknown[]>(`shifts/Employee/${this.employeeId}`).pipe(
         catchError(() => of([]))
     ).subscribe(shifts => {
       this.shifts = shifts;
@@ -82,7 +82,7 @@ export class EmployeeDetailComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.patch('employees', this.employeeId, data).subscribe(() => {
+        this.api.put('entities/Employee', this.employeeId, data).subscribe(() => {
           this.notifications.success('Employee updated.');
           this.loadEmployee();
         });
@@ -101,7 +101,7 @@ export class EmployeeDetailComponent implements OnInit {
     });
     ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('employees', this.employeeId, { isActive: false }).subscribe(() => {
+        this.api.patch('entities/Employee', this.employeeId, { isActive: false }).subscribe(() => {
           this.notifications.success('Employee deactivated.');
           this.loadEmployee();
         });

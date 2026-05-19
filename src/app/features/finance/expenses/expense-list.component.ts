@@ -3,13 +3,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { FilterParams, KpiData } from '../../../core/models/api.model';
-import { selectCurrentUser } from '../../../store/auth/auth.selectors';
-import { hasRole } from '../../../core/models/user.model';
-import { TableAction } from '../../../shared/components/entity-table/entity-table.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { FilterParams, KpiData } from '@core/models/api.model';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole } from '@core/models/user.model';
+import { TableAction } from '@shared/components/entity-table/entity-table.component';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'mdp-expense-list',

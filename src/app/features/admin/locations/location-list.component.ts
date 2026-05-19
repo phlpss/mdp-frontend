@@ -41,7 +41,7 @@ export class LocationListComponent implements OnInit {
 
   loadLocations(): void {
     this.loading = true;
-    this.api.get<Location[]>('locations').pipe(
+    this.api.get<Location[]>('entities/StoreLocation').pipe(
         catchError(() => of([
           { id: '1', storeName: 'Downtown Branch',    address: '123 Main St, City Center',  phone: '+1 555-0100', isActive: true,  manager: 'Alice Johnson' },
           { id: '2', storeName: 'Airport Terminal',   address: 'Terminal 2, City Airport',  phone: '+1 555-0200', isActive: true,  manager: 'Bob Smith' },
@@ -82,7 +82,7 @@ export class LocationListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.api.patch('locations', location.id, { isActive: !location.isActive }).pipe(
+        this.api.patch('entities/StoreLocation', location.id, { isActive: !location.isActive }).pipe(
             catchError(() => of(null))
         ).subscribe(() => {
           this.notifications.success(`Location ${action}d.`);

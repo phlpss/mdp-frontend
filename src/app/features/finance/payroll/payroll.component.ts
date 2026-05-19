@@ -57,7 +57,10 @@ export class PayrollComponent implements OnInit {
     loadPayroll(): void {
         this.loading = true;
         const { month, year } = this.filterForm.value as { month: number; year: number };
-        this.api.get<PayrollRow[]>(`payroll?month=${month}&year=${year}`).pipe(
+        const periodStart = `${year}-${String(month).padStart(2, '0')}-01`;
+        const lastDay = new Date(year, month, 0).getDate();
+        const periodEnd = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+        this.api.get<PayrollRow[]>(`finance/payroll/calculate?periodStart=${periodStart}&periodEnd=${periodEnd}`).pipe(
             catchError(() => of([
                 { employeeId: '1', employeeName: 'Alice Johnson', role: 'Barista',   baseSalary: 2800, hoursWorked: 160, bonus: 200,  deductions: 350, netPay: 2650 },
                 { employeeId: '2', employeeName: 'Bob Smith',     role: 'Cashier',   baseSalary: 2600, hoursWorked: 152, bonus: 0,    deductions: 325, netPay: 2275 },
@@ -98,7 +101,9 @@ export class PayrollComponent implements OnInit {
         ref.afterClosed().subscribe(confirmed => {
             if (!confirmed) return;
             this.processing = true;
-            this.api.post('finance/payroll/process', {month, year}).pipe(
+            const pStart = `${year}-${String(month).padStart(2, '0')}-01`;
+            const pEnd = `${year}-${String(month).padStart(2, '0')}-${new Date(year, month, 0).getDate()}`;
+            this.api.post('finance/payroll/process', {periodStart: pStart, periodEnd: pEnd}).pipe(
                 catchError(() => of(null))
             ).subscribe(() => {
                 this.processing = false;
