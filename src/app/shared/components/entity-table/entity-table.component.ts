@@ -5,13 +5,13 @@ import {
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { FilterParams, PageRequest, PageResponse } from '../../../core/models/api.model';
-import { MetaAttribute } from '../../../core/models/meta.model';
-import { selectListAttributesForType } from '../../../store/metadata/metadata.selectors';
-import { selectCanViewSensitive } from '../../../store/auth/auth.selectors';
+import { ApiService } from '@core/services/api.service';
+import { FilterParams, PageRequest, PageResponse } from '@core/models/api.model';
+import { MetaAttribute } from '@core/models/meta.model';
+import { selectListAttributesForType } from '@store/metadata/metadata.selectors';
+import { selectCanViewSensitive } from '@store/auth/auth.selectors';
 
 export interface TableAction {
   icon: string;
