@@ -32,7 +32,7 @@ export class InventoryListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.select(selectCurrentUser).subscribe(user => {
-      this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'OWNER', 'IT_ADMIN');
+      this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR');
       this.tableActions = [
         { icon: 'edit', label: 'Edit', handler: (row) => this.openEditDialog(row as Record<string, unknown>) },
         { icon: 'tune', label: 'Adjust Stock', handler: (row) => this.openAdjustDialog(row as Record<string, unknown>) },
