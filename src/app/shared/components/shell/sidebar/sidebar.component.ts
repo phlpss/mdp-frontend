@@ -33,7 +33,7 @@ const ALL_NAV: NavItem[] = [
   { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER','ACCOUNTANT','OWNER'] },
   // Admin section
   { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['OWNER','IT_ADMIN','MANAGER'], divider: true },
-  { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['OWNER','IT_ADMIN'] },
+  { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['IT_ADMIN'] },
 ];
 
 @Component({
