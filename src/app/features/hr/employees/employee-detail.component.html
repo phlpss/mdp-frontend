@@ -29,42 +29,119 @@
         </div>
 
         <mat-divider style="margin: 16px 0"></mat-divider>
-
-        <mdp-dynamic-form
-          *ngIf="employee"
-          typeName="Employee"
-          [formData]="employee"
-          [readOnly]="true">
-        </mdp-dynamic-form>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Upcoming shifts -->
-    <mat-card>
-      <mat-card-header>
-        <mat-icon mat-card-avatar>schedule</mat-icon>
-        <mat-card-title>Upcoming Shifts</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-progress-bar *ngIf="shiftsLoading" mode="indeterminate"></mat-progress-bar>
-        <div *ngIf="!shiftsLoading && shifts.length === 0" class="empty-state">
-          No upcoming shifts
-        </div>
-        <mat-list>
-          <mat-list-item *ngFor="let shift of shifts">
-            <mat-icon matListItemIcon>calendar_today</mat-icon>
-            <div matListItemTitle>
-                {{ $any(shift).date | date:'EEE, MMM d' }}&nbsp;
-                {{ $any(shift).startTime }}–{{ $any(shift).endTime }}
-            </div>
-              <div matListItemLine>
-                  <span class="badge"
-                        [ngClass]="'shift-' + $any(shift).status?.toLowerCase()"> {{ $any(shift).status }} </span>
+          <div class="profile-fields" *ngIf="employee">
+              <div class="field-row">
+                  <span class="field-label">Full Name</span>
+                  <span class="field-value">{{ employee['fullName'] }}</span>
               </div>
-          </mat-list-item>
-        </mat-list>
+              <div class="field-row">
+                  <span class="field-label">Email</span>
+                  <span class="field-value">{{ employee['email'] || '–' }}</span>
+              </div>
+              <div class="field-row">
+                  <span class="field-label">Phone</span>
+                  <span class="field-value">{{ employee['phone'] || '–' }}</span>
+              </div>
+              <div class="field-row">
+                  <span class="field-label">Position</span>
+                  <span class="field-value">{{ employee['role'] || '–' }}</span>
+              </div>
+<!--              <div class="field-row">-->
+<!--                  <span class="field-label">Job Status</span>-->
+<!--                  <span class="field-value">{{ employee['jobStatus'] || '–' }}</span>-->
+<!--              </div>-->
+<!--              <div class="field-row">-->
+<!--                  <span class="field-label">Pay Type</span>-->
+<!--                  <span class="field-value">{{ employee['payType'] || '–' }}</span>-->
+<!--              </div>-->
+              <div class="field-row">
+                  <span class="field-label">Salary / Rate</span>
+                  <span class="field-value">{{ employee['salary'] ? ('$' + employee['salary']) : '–' }}</span>
+              </div>
+              <div class="field-row">
+                  <span class="field-label">Hire Date</span>
+                  <span class="field-value">{{ employee['hireDate'] ? ($any(employee['hireDate']) | date:'yyyy-MM-dd') : '–' }}</span>
+              </div>
+              <div class="field-row">
+                  <span class="field-label">Location</span>
+                  <span class="field-value">{{ locationName }}</span>
+              </div>
+          </div>
       </mat-card-content>
     </mat-card>
+
+      <!-- Upcoming shifts -->
+      <div class="right-panel">
+          <!-- Quick Stats -->
+          <mat-card class="stats-card">
+              <mat-card-header>
+                  <mat-card-title>Quick Stats</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <div class="stats-grid">
+                      <div class="stat-item"><span class="stat-label">Shifts this month</span><span
+                              class="stat-value">{{ quickStats.shiftsThisMonth }}</span></div>
+                      <div class="stat-item"><span class="stat-label">Hours worked</span><span
+                              class="stat-value">{{ quickStats.hoursWorked | number:'1.0-0' }}</span></div>
+                      <div class="stat-item"><span class="stat-label">Leave used (PTO)</span><span
+                              class="stat-value">{{ quickStats.leaveUsed }} days</span></div>
+                      <div class="stat-item"><span class="stat-label">Leave remaining</span><span
+                              class="stat-value">{{ quickStats.leaveRemaining }} days</span></div>
+                  </div>
+              </mat-card-content>
+          </mat-card>
+
+          <!-- Leave Balances -->
+          <mat-card class="leave-card">
+              <mat-card-header>
+                  <mat-card-title>Leave Balances</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <div *ngFor="let b of leaveBalances" class="leave-row">
+                      <span class="leave-type">{{ b.type }}</span>
+                      <mat-progress-bar mode="determinate" [value]="(b.used / b.total) * 100"></mat-progress-bar>
+                      <span class="leave-count">{{ b.used }}/{{ b.total }} d</span>
+                  </div>
+                  <a mat-button color="primary" routerLink="/hr/leaves/my" class="leave-history-link">
+                      View Leave History
+                      <mat-icon>arrow_forward</mat-icon>
+                  </a>
+              </mat-card-content>
+          </mat-card>
+
+          <!-- Shift History -->
+          <mat-card class="shift-history-card">
+              <mat-card-header>
+                  <mat-card-title>Shift History (last 30 days)</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                  <mat-progress-bar *ngIf="shiftsLoading" mode="indeterminate"></mat-progress-bar>
+                  <div *ngIf="!shiftsLoading && shifts.length === 0" class="empty-state">No shifts found</div>
+                  <table *ngIf="shifts.length > 0" class="shift-table">
+                      <thead>
+                      <tr>
+                          <th>Date</th>
+                          <th>Clock In</th>
+                          <th>Clock Out</th>
+                          <th>Paid Min</th>
+                          <th>Status</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr *ngFor="let s of shifts">
+                          <td>{{ $any(s).date | date:'MMM d' }}</td>
+                          <td>{{ $any(s).startTime }}</td>
+                          <td>{{ $any(s).endTime }}</td>
+                          <td>{{ $any(s).paidMinutes }}</td>
+                          <td><span class="badge"
+                                    [ngClass]="'shift-' + $any(s).status?.toLowerCase()">{{ $any(s).status }}</span>
+                          </td>
+                      </tr>
+                      </tbody>
+                  </table>
+              </mat-card-content>
+          </mat-card>
+      </div>
   </div>
 </div>
 

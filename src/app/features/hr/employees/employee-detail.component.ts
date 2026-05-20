@@ -23,6 +23,9 @@ export class EmployeeDetailComponent implements OnInit {
   canDeactivate = false;
   employeeId!: string;
 
+  leaveBalances: Array<{ type: string; used: number; total: number }> = [];
+  quickStats = { shiftsThisMonth: 0, hoursWorked: 0, leaveUsed: 0, leaveRemaining: 0 };
+  locationName = '–';
   shifts: unknown[] = [];
   shiftsLoading = false;
 
@@ -44,6 +47,8 @@ export class EmployeeDetailComponent implements OnInit {
 
     this.loadEmployee();
     this.loadShifts();
+    this.loadLeaveBalances();
+    this.loadLocationName();
   }
 
   loadEmployee(): void {
@@ -61,6 +66,7 @@ export class EmployeeDetailComponent implements OnInit {
               emp = {id: emp.id, ...emp.payload} as any;
               this.employee = emp;
               this.loading = false;
+              this.loadLocationName();
           });
   }
 
@@ -68,17 +74,48 @@ export class EmployeeDetailComponent implements OnInit {
     this.shiftsLoading = true;
     this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(`shifts/employee/${this.employeeId}`).pipe(
         catchError(() => of([]))
-    ).subscribe(shifts => {
-      this.shifts = shifts.map(s => ({
-        id: s.id,
-        date: s.payload['shiftDate'],
+    ).subscribe(raw => {
+      this.shifts = raw.map(s => ({
+        id:        s.id,
+        date:      s.payload['shiftDate'],
         startTime: (s.payload['startTime'] as string)?.substring(11, 16),
         endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
+        paidMinutes: s.payload['paidMinutes'] ?? '–',
         status:    s.payload['shiftStatus'],
       }));
+      const now = new Date();
+      const monthShifts = this.shifts.filter(s => {
+        const d = new Date((s as any).date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+      this.quickStats.shiftsThisMonth = monthShifts.length;
+      this.quickStats.hoursWorked = monthShifts.reduce((acc: number, s) => acc + (Number((s as any).paidMinutes) || 0), 0) / 60;
       this.shiftsLoading = false;
     });
   }
+
+  loadLeaveBalances(): void {
+      this.api.get<Array<{ type: string; used: number; total: number }>>('leaves/my/balance').pipe(
+          catchError(() => of([]))
+      ).subscribe(balances => {
+          this.leaveBalances = balances;
+          const pto = balances.find(b => b.type === 'Annual');
+          if (pto) {
+              this.quickStats.leaveUsed      = pto.used;
+              this.quickStats.leaveRemaining = pto.total - pto.used;
+          }
+      });
+  }
+
+    loadLocationName(): void {
+        this.api.get<Array<{ id: string; payload: { storeName: string } }>>('locations').pipe(
+            catchError(() => of([]))
+        ).subscribe(locations => {
+            const locId = this.employee?.['storeLocationId'] as string;
+            const match = locations.find(l => l.id === locId);
+            this.locationName = match?.payload?.storeName ?? '–';
+        });
+    }
 
   openEditDialog(): void {
     const ref = this.dialog.open(EmployeeFormDialogComponent, {
