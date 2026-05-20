@@ -47,7 +47,7 @@ export class EmployeeListComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser$ = this.store.select(selectCurrentUser);
     this.store.select(selectCurrentUser).subscribe(user => {
-      this.canAdd = hasRole(user, 'MANAGER', 'HR', 'OWNER', 'IT_ADMIN');
+      this.canAdd = hasRole(user, 'HR', 'IT_ADMIN');
     });
   }
 
