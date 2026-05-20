@@ -45,7 +45,7 @@ export class ShiftCalendarComponent implements OnInit {
     ngOnInit(): void {
         this.setWeek(new Date());
         this.store.select(selectCurrentUser).subscribe(user => {
-            this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR', 'OWNER', 'IT_ADMIN');
+            this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
             this.locationId = user?.locationId ?? null;
         });
         this.loadData();
