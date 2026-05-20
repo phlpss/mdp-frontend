@@ -33,8 +33,8 @@ export class ExpenseListComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.select(selectCurrentUser).subscribe(user => {
-      this.canAdd    = hasRole(user, 'MANAGER', 'SUPERVISOR', 'OWNER');
-      this.canApprove = hasRole(user, 'ACCOUNTANT', 'OWNER');
+      this.canAdd = hasRole(user, 'MANAGER', 'SUPERVISOR');
+      this.canApprove = hasRole(user, 'ACCOUNTANT');
 
       if (this.canApprove) {
         this.tableActions = [
