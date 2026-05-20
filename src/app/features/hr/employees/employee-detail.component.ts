@@ -66,10 +66,16 @@ export class EmployeeDetailComponent implements OnInit {
 
   loadShifts(): void {
     this.shiftsLoading = true;
-    this.api.get<unknown[]>(`shifts/employee/${this.employeeId}`).pipe(
+    this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(`shifts/employee/${this.employeeId}`).pipe(
         catchError(() => of([]))
     ).subscribe(shifts => {
-      this.shifts = shifts;
+      this.shifts = shifts.map(s => ({
+        id: s.id,
+        date: s.payload['shiftDate'],
+        startTime: (s.payload['startTime'] as string)?.substring(11, 16),
+        endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
+        status:    s.payload['shiftStatus'],
+      }));
       this.shiftsLoading = false;
     });
   }
