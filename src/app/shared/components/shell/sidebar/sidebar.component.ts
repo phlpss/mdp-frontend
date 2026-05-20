@@ -15,14 +15,14 @@ interface NavItem {
 }
 
 const ALL_NAV: NavItem[] = [
-  { label: 'Dashboard',      icon: 'dashboard',       route: '/dashboard' },
-  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts',    roles: ['BARISTA','CASHIER','EMPLOYEE'] },
-  { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves',    roles: ['BARISTA','CASHIER','EMPLOYEE'] },
-  { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions', roles: ['CASHIER'] },
+  { label: 'Dashboard',      icon: 'dashboard',        route: '/dashboard' },
+  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
+  { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
+  { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions',    roles: ['CASHIER'] },
   // HR / Manager section
-  { label: 'Employees',      icon: 'people',           route: '/hr/employees', roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'], divider: true },
-  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',    roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
-  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',    roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
+  { label: 'Employees',      icon: 'people',           route: '/hr/employees',            roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'], divider: true },
+  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
+  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',               roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
   // Finance section
   { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'], divider: true },
   { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
