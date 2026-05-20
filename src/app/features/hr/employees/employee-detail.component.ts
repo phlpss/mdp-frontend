@@ -66,7 +66,7 @@ export class EmployeeDetailComponent implements OnInit {
 
   loadShifts(): void {
     this.shiftsLoading = true;
-    this.api.get<unknown[]>(`shifts/Employee/${this.employeeId}`).pipe(
+    this.api.get<unknown[]>(`shifts/employee/${this.employeeId}`).pipe(
         catchError(() => of([]))
     ).subscribe(shifts => {
       this.shifts = shifts;
