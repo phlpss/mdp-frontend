@@ -75,7 +75,6 @@ export class ShiftCalendarComponent implements OnInit {
 
     loadData(): void {
         this.loading = true;
-        // Load all employees independently of shift data
         this.api.get<{ content: Array<{ id: string; payload: { fullName: string } }> }>(
             'entities/Employee?size=200'
         ).subscribe(res => {
@@ -98,7 +97,6 @@ export class ShiftCalendarComponent implements OnInit {
             catchError(() => of({content: []}))
         ).subscribe(page => {
             const entries = page.content ?? [];
-            // Map to ShiftCell shape
             this.shifts = entries.map(e => ({
                 id: e.shiftId,
                 employeeId: e.employeeId,
@@ -140,9 +138,23 @@ export class ShiftCalendarComponent implements OnInit {
             width: '480px',
             data: {employeeId: employeeId ?? null, date: date ?? new Date(), employees: this.employees},
         });
-        ref.afterClosed().subscribe(data => {
-            if (data) {
-                this.api.post('hr/shifts', data).pipe(catchError(() => of(null))).subscribe(() => {
+        ref.afterClosed().subscribe(formData => {
+            if (formData) {
+                // --- Transformation Logic ---
+                const dateObj = new Date(formData.date);
+                const shiftDate = dateObj.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+                const payload = {
+                    employeeId: formData.employeeId,
+                    storeLocationId: this.locationId ?? '00000000-0000-0000-0000-100000000001',
+                    shiftDate: shiftDate,
+                    startTime: `${shiftDate}T${formData.startTime}:00`,
+                    endTime: `${shiftDate}T${formData.endTime}:00`
+                };
+
+                this.api.post('hr/shifts', payload).pipe(
+                    catchError(() => of(null))
+                ).subscribe(() => {
                     this.notifications.success('Shift scheduled.');
                     this.loadData();
                 });
@@ -174,8 +186,6 @@ export class ShiftCalendarComponent implements OnInit {
         this.loadData();
     }
 }
-
-// ── Inline dialog ──────────────────────────────────────────────────────────────
 
 @Component({
     selector: 'mdp-shift-form-dialog',
