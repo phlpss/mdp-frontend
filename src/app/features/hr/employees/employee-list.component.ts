@@ -3,13 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { FilterParams } from '../../../core/models/api.model';
-import { selectCurrentUser } from '../../../store/auth/auth.selectors';
-import { hasRole, User } from '../../../core/models/user.model';
-import { TableAction } from '../../../shared/components/entity-table/entity-table.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { FilterParams } from '@core/models/api.model';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole, User } from '@core/models/user.model';
+import { TableAction } from '@shared/components/entity-table/entity-table.component';
 import { EmployeeFormDialogComponent } from './employee-form-dialog.component';
 
 @Component({
@@ -63,7 +62,7 @@ export class EmployeeListComponent implements OnInit {
     });
     ref.afterClosed().subscribe(data => {
       if (data) {
-        this.api.post('entities/Employee', data).subscribe(() => {
+          this.api.post('hr/employees', data).subscribe(() => {
           this.notifications.success('Employee created.');
           this.reloadTrigger++;
         });
