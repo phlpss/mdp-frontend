@@ -23,7 +23,7 @@ const routes: Routes = [
     { path: 'forecast',          component: ForecastComponent,
         canActivate: [RoleGuard], data: { roles: ['ACCOUNTANT', 'OWNER', 'MANAGER'] } },
     { path: 'closing-report',    component: ClosingReportComponent,
-        canActivate: [RoleGuard], data: { roles: ['MANAGER', 'SUPERVISOR', 'OWNER'] } },
+        canActivate: [RoleGuard], data: { roles: ['MANAGER', 'SUPERVISOR'] } },
 ];
 
 @NgModule({

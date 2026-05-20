@@ -26,11 +26,11 @@ const ALL_NAV: NavItem[] = [
   // Finance section
   { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'], divider: true },
   { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
-  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER', 'SUPERVISOR', 'OWNER'] },
+  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER', 'SUPERVISOR'] },
   { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
   { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['HR','ACCOUNTANT','OWNER'] },
   { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','OWNER','MANAGER'] },
-  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER','ACCOUNTANT','OWNER'] },
+  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER','SUPERVISOR'] },
   // Admin section
   { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['OWNER','IT_ADMIN','MANAGER'], divider: true },
   { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['IT_ADMIN'] },
