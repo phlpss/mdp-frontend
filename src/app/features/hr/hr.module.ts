@@ -18,13 +18,15 @@ import {EmployeeListComponent} from './employees/employee-list.component';
 import {EmployeeDetailComponent} from './employees/employee-detail.component';
 import {EmployeeFormDialogComponent} from './employees/employee-form-dialog.component';
 import {ShiftCalendarComponent, ShiftFormDialogComponent} from './shifts/shift-calendar.component';
-import {LeaveListComponent, LeaveRequestDialogComponent} from './leaves/leave-list.component';
+import {LeaveListComponent} from './leaves/leave-list.component';
+import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.component';
 
-const routes: Routes = [
+ const routes: Routes = [
     {path: '', redirectTo: 'employees', pathMatch: 'full'},
     {path: 'employees', component: EmployeeListComponent},
     {path: 'employees/:id', component: EmployeeDetailComponent},
     {path: 'shifts/my', component: ShiftCalendarComponent},
+    {path: 'shifts/my/upcoming', component: ShiftCalendarComponent},
     {
         path: 'shifts', component: ShiftCalendarComponent,
         canActivate: [RoleGuard], data: {roles: ['MANAGER', 'SUPERVISOR', 'HR', 'OWNER', 'IT_ADMIN']}

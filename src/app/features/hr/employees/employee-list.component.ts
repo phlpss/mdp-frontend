@@ -27,12 +27,7 @@ export class EmployeeListComponent implements OnInit {
       icon: 'visibility',
       label: 'View',
       handler: (row) => this.router.navigate(['/hr/employees', (row as { id: string }).id]),
-    },
-    {
-      icon: 'edit',
-      label: 'Edit',
-      handler: (row) => this.openEditDialog(row as Record<string, unknown>),
-    },
+    }
   ];
 
   constructor(

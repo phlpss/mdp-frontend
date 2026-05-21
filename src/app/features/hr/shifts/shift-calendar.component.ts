@@ -9,6 +9,7 @@ import {NotificationService} from '@core/services/notification.service';
 import {ConfirmDialogComponent} from '@shared/components/confirm-dialog/confirm-dialog.component';
 import {selectCurrentUser} from '@store/auth/auth.selectors';
 import {hasRole} from '@core/models/user.model';
+import {ActivatedRoute} from '@angular/router';
 
 interface ShiftCell {
     employeeId: string;
@@ -33,20 +34,25 @@ export class ShiftCalendarComponent implements OnInit {
     loading = false;
     canEdit = false;
     locationId: string | null = null;
+    myShiftsOnly = false;
+    private currentUserId: string | null = null;
 
     constructor(
         private api: ApiService,
         private dialog: MatDialog,
         private store: Store,
         private notifications: NotificationService,
+        private route: ActivatedRoute,
     ) {
     }
 
     ngOnInit(): void {
         this.setWeek(new Date());
+        this.myShiftsOnly = this.route.snapshot.url.some(s => s.path === 'upcoming');
         this.store.select(selectCurrentUser).subscribe(user => {
             this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
             this.locationId = user?.locationId ?? null;
+            this.currentUserId = user?.id ?? null;
         });
         this.loadData();
     }
@@ -75,6 +81,23 @@ export class ShiftCalendarComponent implements OnInit {
 
     loadData(): void {
         this.loading = true;
+        if (this.myShiftsOnly && this.currentUserId) {
+            this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(
+                `shifts/employee/${this.currentUserId}`
+            ).pipe(catchError(() => of([]))).subscribe(raw => {
+                this.shifts = raw.map(s => ({
+                    id: s.id,
+                    employeeId: this.currentUserId!,
+                    employeeName: '',
+                    date: s.payload['shiftDate'] as string,
+                    startTime: (s.payload['startTime'] as string)?.substring(11, 16),
+                    endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
+                    status:    s.payload['shiftStatus'] as string,
+                }));
+                this.loading = false;
+            });
+            return;
+        }
         this.api.get<{ content: Array<{ id: string; payload: { fullName: string } }> }>(
             'entities/Employee?size=200'
         ).subscribe(res => {

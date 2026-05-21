@@ -27,7 +27,7 @@
 
             <mdp-entity-table
                     typeName="leave_request"
-                    apiPath="hr/leave"
+                    [apiPath]="apiPath"
                     [filters]="filters"
                     [actions]="tableActions">
             </mdp-entity-table>
@@ -44,7 +44,7 @@
         <mat-card-content>
             <mdp-entity-table
                     typeName="leave_request"
-                    apiPath="hr/leave"
+                    [apiPath]="apiPath"
                     [filters]="{ status: 'PENDING_CANCELLATION' }"
                     [actions]="cancellationActions">
             </mdp-entity-table>

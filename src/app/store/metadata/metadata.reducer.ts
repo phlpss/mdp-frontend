@@ -36,7 +36,8 @@ export const metadataReducer = createReducer(
       const merged = { ...state.types };
       types.forEach(t => {
         const hasRichAttrs = t.attributes?.some((a: any) => a.showInForm !== undefined);
-        if (hasRichAttrs) merged[t.name] = t;
+        const key = PASCAL[t.name] ?? t.name;
+        if (hasRichAttrs) merged[key] = { ...t, name: key };
       });
       return { ...state, loading: false, loaded: true, types: merged };
     }),

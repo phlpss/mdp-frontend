@@ -2,13 +2,14 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Store} from '@ngrx/store';
-import {ApiService} from '../../../core/services/api.service';
-import {NotificationService} from '../../../core/services/notification.service';
-import {FilterParams} from '../../../core/models/api.model';
-import {selectCurrentUser} from '../../../store/auth/auth.selectors';
-import {hasRole, User} from '../../../core/models/user.model';
-import {TableAction} from '../../../shared/components/entity-table/entity-table.component';
-import {ConfirmDialogComponent} from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {ApiService} from '@core/services/api.service';
+import {NotificationService} from '@core/services/notification.service';
+import {FilterParams} from '@core/models/api.model';
+import {selectCurrentUser} from '@store/auth/auth.selectors';
+import {hasRole, User} from '@core/models/user.model';
+import {TableAction} from '@shared/components/entity-table/entity-table.component';
+import {ConfirmDialogComponent} from '@shared/components/confirm-dialog/confirm-dialog.component';
+import {LeaveRequestDialogComponent} from "@features/hr/leaves/leave-request-dialog.component";
 
 @Component({
     selector: 'mdp-leave-list',
@@ -22,6 +23,8 @@ export class LeaveListComponent implements OnInit {
     reloadTrigger = 0;
     tableActions: TableAction[] = [];
     cancellationActions: TableAction[] = [];
+    apiPath = 'hr/leave';
+    private isMy = false;
 
     constructor(
         private store: Store,
@@ -33,13 +36,13 @@ export class LeaveListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const url = this.route.snapshot.url.map(s => s.path).join('/');
-        const isMy = url.includes('my');
+        this.isMy = this.route.snapshot.url.some(s => s.path === 'my');
+        this.apiPath = this.isMy ? 'leaves/my' : 'hr/leave';
 
         this.store.select(selectCurrentUser).subscribe(user => {
             this.currentUser = user;
             const hasApproverRole = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
-            this.isApprover = hasApproverRole && !isMy;
+            this.isApprover = hasApproverRole && !this.isMy;
 
             if (this.isApprover) {
                 this.filters = {status: 'PENDING'};
@@ -66,7 +69,7 @@ export class LeaveListComponent implements OnInit {
                     },
                 ];
             } else {
-                if (user?.id) this.filters = {employeeId: user.id};
+                if (!this.isMy && user?.id) this.filters = {employeeId: user.id};
                 this.tableActions = [
                     {
                         icon: 'undo', label: 'Retract', color: 'warn',
@@ -150,30 +153,3 @@ export class LeaveListComponent implements OnInit {
 }
 
 // ── Inline dialog ──────────────────────────────────────────────────────────────
-
-@Component({
-    selector: 'mdp-leave-request-dialog',
-    template: `
-        <h2 mat-dialog-title>Request Leave</h2>
-        <mat-dialog-content>
-            <mdp-dynamic-form
-                    typeName="leave_request"
-                    [formData]="null"
-                    submitLabel="Submit Request"
-                    (formSubmit)="onSubmit($event)"
-                    (formCancel)="ref.close(null)">
-            </mdp-dynamic-form>
-        </mat-dialog-content>
-    `,
-})
-export class LeaveRequestDialogComponent {
-    constructor(
-        public ref: MatDialogRef<LeaveRequestDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: unknown,
-    ) {
-    }
-
-    onSubmit(v: Record<string, unknown>): void {
-        this.ref.close(v);
-    }
-}

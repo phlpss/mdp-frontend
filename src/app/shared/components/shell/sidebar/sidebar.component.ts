@@ -16,7 +16,7 @@ interface NavItem {
 
 const ALL_NAV: NavItem[] = [
   { label: 'Dashboard',      icon: 'dashboard',        route: '/dashboard' },
-  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
+  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my/upcoming',      roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions',    roles: ['CASHIER'] },
   // HR / Manager section

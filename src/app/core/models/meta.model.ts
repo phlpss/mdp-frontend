@@ -103,7 +103,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'employeeId',  name: 'employeeId',  label: 'Employee',     fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1, referenceType: 'employee' },
+      { id: 'employeeId',  name: 'employeeId',  label: 'Employee',     fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1, referenceType: 'Employee' },
       { id: 'date',        name: 'date',        label: 'Date',         fieldType: 'date',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2 },
       { id: 'startTime',   name: 'startTime',   label: 'Start Time',   fieldType: 'string',    required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3, placeholder: 'HH:mm' },
       { id: 'endTime',     name: 'endTime',     label: 'End Time',     fieldType: 'string',    required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 4, placeholder: 'HH:mm' },
@@ -127,7 +127,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'employeeId', name: 'employeeId', label: 'Employee',   fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1, referenceType: 'employee' },
+      { id: 'employeeId', name: 'employeeId', label: 'Employee',   fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1, referenceType: 'Employee' },
       { id: 'type',       name: 'type',       label: 'Leave Type', fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2,
         enumValues: [
           { value: 'ANNUAL',   label: 'Annual Leave' },
@@ -168,7 +168,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
           { value: 'MOBILE', label: 'Mobile', color: '#7b1fa2' },
         ]
       },
-      { id: 'cashierId',     name: 'cashierId',     label: 'Cashier',      fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 4, referenceType: 'employee' },
+      { id: 'cashierId',     name: 'cashierId',     label: 'Cashier',      fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 4, referenceType: 'Employee' },
       { id: 'createdAt',     name: 'createdAt',     label: 'Date/Time',    fieldType: 'datetime', required: false, sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: false, readOnly: true,  order: 5 },
       { id: 'notes',         name: 'notes',         label: 'Notes',        fieldType: 'text',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 6 },
     ]
@@ -195,7 +195,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
       },
       { id: 'amount',      name: 'amount',      label: 'Amount',       fieldType: 'currency', required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3, min: 0 },
       { id: 'date',        name: 'date',        label: 'Date',         fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 4 },
-      { id: 'approvedBy',  name: 'approvedBy',  label: 'Approved By',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: false, readOnly: true, order: 5, referenceType: 'employee' },
+      { id: 'approvedBy',  name: 'approvedBy',  label: 'Approved By',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: false, readOnly: true, order: 5, referenceType: 'Employee' },
     ]
   },
   {
@@ -239,7 +239,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
       { id: 'address',    name: 'address',    label: 'Address',  fieldType: 'string',    required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 2 },
       { id: 'phone',      name: 'phone',      label: 'Phone',    fieldType: 'phone',     required: false, sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
       { id: 'isActive',   name: 'isActive',   label: 'Active',   fieldType: 'boolean',   required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4, defaultValue: true },
-      { id: 'manager',    name: 'manager',    label: 'Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'employee' },
+      { id: 'manager',    name: 'manager',    label: 'Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'Employee' },
     ]
   },
 ];

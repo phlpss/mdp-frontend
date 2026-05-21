@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest } from 'rxjs';
@@ -31,13 +31,25 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   canViewSensitive$!: Observable<boolean>;
   fieldGroups$!: Observable<FormGroup_[]>;
 
-  constructor(private store: Store, private fb: FormBuilder, private api: ApiService) {}
+  constructor(
+   private store: Store,
+   private fb: FormBuilder,
+   private api: ApiService,
+   private cdr: ChangeDetectorRef
+ ) {}
 
   referenceOptions: Record<string, { id: string; label: string }[]> = {};
 
   ngOnInit(): void {
+    this.store.select(state => state).pipe(take(1)).subscribe(s => {
+      console.log('[DEBUG] full store state:', s);
+    });
+    this.store.select(selectFormAttributesForType(this.typeName)).pipe(take(1)).subscribe(attrs => {
+      console.log('[DEBUG] typeName:', this.typeName);
+      console.log('[DEBUG] attrs from store:', attrs);
+    });
     this.attributes$       = this.store.select(selectFormAttributesForType(this.typeName));
-    this.attributes$.pipe(take(1)).subscribe(attrs => {
+    this.attributes$.pipe(first(attrs => attrs.length > 0)).subscribe(attrs => {
       attrs.filter(a => a.fieldType === 'reference' && a.referenceType).forEach(attr => {
         this.api.getPage<unknown>(
             `entities/${attr.referenceType}`,
@@ -87,6 +99,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       });
       this.form = this.fb.group(controls);
       this.patchFormValues();
+      this.cdr.detectChanges();
     });
   }
 
