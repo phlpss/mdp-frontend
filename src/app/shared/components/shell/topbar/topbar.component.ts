@@ -43,6 +43,6 @@ export class TopbarComponent implements OnInit {
   }
 
   getInitials(user: User): string {
-    return (user.fullName ?? '').split(' ').map((p: string) => p[0] ?? '').slice(0,2).join('').toUpperCase();
+    return (user.fullName || user.email || user.username || '').split(' ').map((p: string) => p[0] ?? '').slice(0,2).join('').toUpperCase();
   }
 }

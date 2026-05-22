@@ -27,9 +27,9 @@ export class AuthEffects {
       tap(() => {
         this.notifications.success('Welcome back!');
         this.router.navigate(['/dashboard']);
-      })
-    ),
-    { dispatch: false }
+      }),
+      map(() => AuthActions.loadCurrentUser())
+    )
   );
 
   logout$ = createEffect(() =>

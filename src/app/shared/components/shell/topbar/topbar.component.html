@@ -1,8 +1,4 @@
 <mat-toolbar class="topbar" color="primary">
-  <button mat-icon-button (click)="toggleSidebar.emit()" aria-label="Toggle sidebar">
-    <mat-icon>{{ sidebarOpen ? 'menu_open' : 'menu' }}</mat-icon>
-  </button>
-
   <span class="app-title">
     <mat-icon class="brand-icon">local_cafe</mat-icon>
     <span class="brand-text">MDP Coffee</span>
@@ -34,13 +30,13 @@
   <ng-container *ngIf="currentUser$ | async as user">
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
       <div class="avatar">{{ getInitials(user) }}</div>
-      <span class="user-name">{{ user.fullName }}</span>
+      <span class="user-name">{{ user.fullName || user.email || user.username }}</span>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
 
     <mat-menu #userMenu="matMenu">
       <div class="user-menu-header" mat-menu-item disabled>
-        <strong>{{ user.fullName }}</strong>
+        <strong>{{ user.fullName || user.email || user.username }}</strong>
         <small>{{ user.roles[0] }}</small>
       </div>
       <mat-divider></mat-divider>

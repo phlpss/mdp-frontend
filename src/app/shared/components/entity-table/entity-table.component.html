@@ -23,7 +23,7 @@
         <td mat-cell *matCellDef="let row" (click)="onRowClick(row)">
           <!-- Enum with badge -->
           <ng-container *ngIf="attr.fieldType === 'enum'; else plainCell">
-            <span *ngIf="getCellValue(row, attr) !== '——'"
+            <span *ngIf="getCellValue(row, attr) !== '—'"
               class="badge"
               [style.background-color]="getEnumColor(row, attr) ? getEnumColor(row, attr) + '22' : ''"
               [style.color]="getEnumColor(row, attr) || ''">

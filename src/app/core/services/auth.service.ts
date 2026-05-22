@@ -51,8 +51,8 @@ export class AuthService {
         const user: User = {
             id: res.userId,
             username: res.username,
-            email: '',          // not returned by backend yet
-            fullName: res.username,
+            email: res.username,
+            fullName: '',
             roles: res.roles.map(AuthService.mapRole).filter((r): r is UserRole => r !== null),
             locationId: null,
             isActive: true,
