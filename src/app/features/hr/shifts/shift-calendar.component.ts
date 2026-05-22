@@ -35,7 +35,7 @@ export class ShiftCalendarComponent implements OnInit {
     canEdit = false;
     locationId: string | null = null;
     myShiftsOnly = false;
-    private currentUserId: string | null = null;
+    currentUserId: string | null = null;
 
     constructor(
         private api: ApiService,
@@ -53,8 +53,14 @@ export class ShiftCalendarComponent implements OnInit {
             this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
             this.locationId = user?.locationId ?? null;
             this.currentUserId = user?.id ?? null;
+            if (this.myShiftsOnly) {
+                this.employees = this.currentUserId ? [{ id: this.currentUserId, name: 'Me' }] : [];
+                this.loadData();
+            }
         });
-        this.loadData();
+        if (!this.myShiftsOnly) {
+            this.loadData();
+        }
     }
 
     setWeek(date: Date): void {

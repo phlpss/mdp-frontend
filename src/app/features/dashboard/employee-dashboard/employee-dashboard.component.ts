@@ -41,14 +41,21 @@ export class EmployeeDashboardComponent implements OnInit {
     this.upcomingShifts$ = this.currentUser$.pipe(
       switchMap(user =>
         user
-          ? this.api.get<{ id: string; type: string; payload: { shiftDate: string; startTime: string; endTime: string; shiftStatus: string } }[]>('shifts/my/upcoming').pipe(
-              map(items => items.map(item => ({
-                id: item.id,
-                date: item.payload.shiftDate,
-                startTime: item.payload.startTime.substring(11, 16),
-                endTime: item.payload.endTime.substring(11, 16),
-                status: item.payload.shiftStatus,
-              }))),
+          ? this.api.get<{ id: string; type: string; payload: { shiftDate: string; startTime: string; endTime: string; shiftStatus: string } }[]>(`shifts/employee/${user.id}`).pipe(
+              map(items => items
+                .map(item => ({
+                  id: item.id,
+                  date: item.payload.shiftDate,
+                  startTime: item.payload.startTime.substring(11, 16),
+                  endTime: item.payload.endTime.substring(11, 16),
+                  status: item.payload.shiftStatus,
+                }))
+                .filter(shift =>
+                  new Date(shift.date) >= new Date(new Date().toDateString()) &&
+                  shift.status !== 'COMPLETED' &&
+                  shift.status !== 'CANCELLED'
+                )
+              ),
               catchError(() => of([]))
             )
           : of([])

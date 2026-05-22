@@ -29,7 +29,7 @@
                 <table class="calendar-grid">
                     <thead>
                     <tr>
-                        <th class="employee-col">Employee</th>
+                        <th *ngIf="!myShiftsOnly" class="employee-col">Employee</th>
                         <th *ngFor="let day of weekDays" [class.today-col]="isToday(day)">
                             {{ formatDate(day) }}
                         </th>
@@ -37,7 +37,7 @@
                     </thead>
                     <tbody>
                     <tr *ngFor="let emp of employees">
-                        <td class="employee-cell">
+                        <td *ngIf="!myShiftsOnly" class="employee-cell">
                             <div class="emp-name">{{ emp.name }}</div>
                         </td>
                         <td *ngFor="let day of weekDays" class="shift-cell" [class.today-col]="isToday(day)">
