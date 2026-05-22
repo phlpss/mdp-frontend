@@ -4,8 +4,10 @@
   left: 0;
   right: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  background: #4a2c2a !important;
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E5E5E3;
+  box-shadow: none;
+  color: #37352F !important;
 }
 
 .app-title {
@@ -17,27 +19,27 @@
   margin-left: 4px;
 }
 
-.brand-icon { color: #d4a76a; }
-.brand-text { color: white; }
+.brand-icon { color: #337EA9; }
+.brand-text { color: #37352F; }
 
 .location-select {
-  background: rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.04);
   border-radius: 4px;
   padding: 4px 8px;
-  color: white;
+  color: #37352F;
   font-size: 14px;
   min-width: 160px;
   margin-right: 8px;
 
-  ::ng-deep .mat-mdc-select-value { color: white; }
-  ::ng-deep .mat-mdc-select-arrow { color: rgba(255,255,255,0.7); }
+  ::ng-deep .mat-mdc-select-value { color: #37352F; }
+  ::ng-deep .mat-mdc-select-arrow { color: #787774; }
 }
 
 .location-label {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: rgba(255,255,255,0.85);
+  color: #787774;
   font-size: 14px;
   margin-right: 8px;
 
@@ -45,7 +47,7 @@
 }
 
 .user-btn {
-  color: white !important;
+  color: #37352F !important;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -54,8 +56,8 @@
 .avatar {
   width: 32px;
   height: 32px;
-  background: #d4a76a;
-  color: #4a2c2a;
+  background: #337EA9;
+  color: #FFFFFF;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -74,5 +76,5 @@
   display: flex;
   flex-direction: column;
 
-  small { color: #888; margin-top: 2px; }
+  small { color: #787774; margin-top: 2px; }
 }

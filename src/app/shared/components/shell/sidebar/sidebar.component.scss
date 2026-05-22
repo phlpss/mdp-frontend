@@ -1,8 +1,8 @@
 .sidebar {
   width: 240px;
   height: 100%;
-  background: #fff;
-  border-right: 1px solid #e0e0e0;
+  background: #F1F1EF;
+  border-right: 1px solid #E5E5E3;
   overflow: hidden;
   transition: width 0.25s ease;
   overflow-y: auto;
@@ -23,10 +23,10 @@ a[mat-list-item] {
   transition: background 0.15s;
 
   &.active-link {
-    background: rgba(74,44,42,0.1);
-    color: #4a2c2a;
+    background: #E7E7E5;
+    color: #37352F;
 
-    mat-icon { color: #4a2c2a; }
+    mat-icon { color: #337EA9; }
     .nav-label { font-weight: 600; }
   }
 
