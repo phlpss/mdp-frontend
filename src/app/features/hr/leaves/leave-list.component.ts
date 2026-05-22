@@ -49,12 +49,12 @@ export class LeaveListComponent implements OnInit {
                 this.tableActions = [
                     {
                         icon: 'check_circle', label: 'Approve', color: 'primary',
-                        hidden: (row) => (row as { status: string }).status !== 'PENDING',
+                        hidden: (row) => (row as any).payload?.leaveStatus !== 'PENDING',
                         handler: (row) => this.approve(row as { id: string }),
                     },
                     {
                         icon: 'cancel', label: 'Reject', color: 'warn',
-                        hidden: (row) => (row as { status: string }).status !== 'PENDING',
+                        hidden: (row) => (row as any).payload?.leaveStatus !== 'PENDING',
                         handler: (row) => this.reject(row as { id: string }),
                     },
                 ];
@@ -73,7 +73,7 @@ export class LeaveListComponent implements OnInit {
                 this.tableActions = [
                     {
                         icon: 'undo', label: 'Retract', color: 'warn',
-                        hidden: (row) => (row as { status: string }).status !== 'APPROVED',
+                        hidden: (row) => (row as any).payload?.leaveStatus !== 'APPROVED',
                         handler: (row) => this.retract(row as { id: string }),
                     },
                 ];
@@ -89,7 +89,9 @@ export class LeaveListComponent implements OnInit {
         const ref = this.dialog.open(LeaveRequestDialogComponent, {width: '600px', maxWidth: '95vw'});
         ref.afterClosed().subscribe(data => {
             if (data) {
-                this.api.post('hr/leave', data).subscribe(() => {
+                if (data['startDate']) data['startDate'] = new Date(data['startDate'] as string).toISOString().substring(0, 10);
+                if (data['endDate'])   data['endDate']   = new Date(data['endDate'] as string).toISOString().substring(0, 10);
+                this.api.post('hr/leave', { ...data, employeeId: this.currentUser?.id }).subscribe(() => {
                     this.notifications.success('Leave request submitted.');
                     this.reloadTrigger++;
                 });

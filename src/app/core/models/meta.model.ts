@@ -88,10 +88,13 @@ export const BUILTIN_META_TYPES: MetaType[] = [
           { value: 'ACCOUNTANT',  label: 'Accountant',  color: '#f57c00' },
         ]
       },
-      { id: 'salary',      name: 'salary',      label: 'Salary',       fieldType: 'currency', required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 6, min: 0 },
-      { id: 'hireDate',    name: 'hireDate',    label: 'Hire Date',    fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 7 },
-      { id: 'isActive',    name: 'isActive',    label: 'Active',       fieldType: 'boolean',  required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8, defaultValue: true },
-      { id: 'locationId',  name: 'locationId',  label: 'Location',     fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 9, referenceType: 'StoreLocation' },
+      { id: 'salary',         name: 'salary',          label: 'Salary',                  fieldType: 'currency', required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 6, min: 0 },
+      { id: 'hireDate',       name: 'hireDate',        label: 'Hire Date',               fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 7 },
+      { id: 'isActive',       name: 'isActive',        label: 'Active',                  fieldType: 'boolean',  required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8, defaultValue: true },
+      { id: 'locationId',     name: 'locationId',      label: 'Location',                fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 9, referenceType: 'StoreLocation' },
+      { id: 'ptoBalance',     name: 'ptoBalance',      label: 'PTO Balance (days)',      fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 10, min: 0, defaultValue: 20 },
+      { id: 'sickBalance',    name: 'sickBalance',     label: 'Sick Balance (days)',     fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 11, min: 0, defaultValue: 10 },
+      { id: 'holidayBalance', name: 'holidayBalance',  label: 'Holiday Balance (days)',  fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 12, min: 0, defaultValue: 10 },
     ]
   },
   {
@@ -127,21 +130,24 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'employeeId', name: 'employeeId', label: 'Employee',   fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1, referenceType: 'Employee' },
-      { id: 'type',       name: 'type',       label: 'Leave Type', fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2,
+      { id: 'leaveType',       name: 'leaveType',       label: 'Leave Type', fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2,
         enumValues: [
-          { value: 'ANNUAL',   label: 'Annual Leave' },
+          { value: 'PTO',      label: 'PTO' },
           { value: 'SICK',     label: 'Sick Leave' },
+          { value: 'HOLIDAY',  label: 'Holiday' },
+          { value: 'ANNUAL',   label: 'Annual Leave' },
           { value: 'UNPAID',   label: 'Unpaid Leave' },
           { value: 'MATERNITY', label: 'Maternity Leave' },
           { value: 'PATERNITY', label: 'Paternity Leave' },
           { value: 'OTHER',    label: 'Other' },
+
+
         ]
       },
       { id: 'startDate',  name: 'startDate',  label: 'Start Date', fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
       { id: 'endDate',    name: 'endDate',    label: 'End Date',   fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 4 },
       { id: 'reason',     name: 'reason',     label: 'Reason',     fieldType: 'text',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 5 },
-      { id: 'status',     name: 'status',     label: 'Status',     fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 6,
+      { id: 'leaveStatus',     name: 'leaveStatus',     label: 'Status',     fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 6,
         enumValues: [
           { value: 'PENDING',   label: 'Pending',  color: '#f57c00' },
           { value: 'APPROVED',  label: 'Approved', color: '#388e3c' },
