@@ -84,7 +84,7 @@ export class AuthService {
         return this.http.get<any>(`${this.base}/auth/me`).pipe(
             map(res => ({
                 ...res,
-                fullName: res.fullName.trim() || res.username,
+                fullName: (res.fullName ?? '').trim() || res.username,
                 roles: (res.roles ?? []).map(AuthService.mapRole).filter((r: UserRole | null): r is UserRole => r !== null),
             }))
         );
