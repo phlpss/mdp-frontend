@@ -110,7 +110,7 @@ export class ShiftCalendarComponent implements OnInit {
         const from = this.weekStart.toISOString().split('T')[0];
         const to = this.weekDays[6].toISOString().split('T')[0];
 
-        const locationId = this.locationId ?? '00000000-0000-0000-0000-100000000001';
+        const locationId = this.locationId ?? '10000000-0000-0000-0000-000000000001';
         this.api.get<{
             content: Array<{
                 shiftId: string; employeeId: string; employeeFullName: string;
@@ -169,7 +169,7 @@ export class ShiftCalendarComponent implements OnInit {
 
                 const payload = {
                     employeeId: formData.employeeId,
-                    storeLocationId: this.locationId ?? '00000000-0000-0000-0000-100000000001',
+                    storeLocationId: this.locationId ?? '10000000-0000-0000-0000-000000000001',
                     shiftDate: shiftDate,
                     startTime: `${shiftDate}T${formData.startTime}:00`,
                     endTime: `${shiftDate}T${formData.endTime}:00`

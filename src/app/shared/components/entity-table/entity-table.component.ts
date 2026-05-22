@@ -52,6 +52,8 @@ export class EntityTableComponent implements OnInit, OnChanges {
   referenceOptions: Record<string, Record<string, string>> = {}; // attrName -> { id: label }
 
   private reload$ = new Subject<void>();
+  private refCache: Record<string, string> = {};  // 'RefType:uuid' -> label
+  private pendingRefs = new Set<string>();
 
   constructor(private store: Store, private api: ApiService) {}
 
@@ -65,7 +67,9 @@ export class EntityTableComponent implements OnInit, OnChanges {
         this.api.getPage<unknown>(`entities/${attr.referenceType}`, { page: 0, size: 100 }, {}).subscribe((page: any) => {
           const map: Record<string, string> = {};
           page.content.forEach((item: any) => {
-            map[item.id] = item.payload?.name ?? item.payload?.fullName ?? item.id;
+            const label = item.payload?.storeName ?? item.payload?.fullName ?? item.payload?.name ?? item.id;
+            map[item.id] = label;
+            this.refCache[`${attr.referenceType}:${item.id}`] = label;
           });
           this.referenceOptions[attr.name] = map;
         });
@@ -152,9 +156,29 @@ export class EntityTableComponent implements OnInit, OnChanges {
       return val ? new Date(String(val)).toLocaleDateString() : '—';
     }
     if (attr.fieldType === 'reference') {
-      return this.referenceOptions[attr.name]?.[String(val)] ?? String(val);
+      const id = String(val);
+      return this.referenceOptions[attr.name]?.[id] ?? this.resolveRef(attr.referenceType!, id);
     }
     return String(val);
+  }
+
+  private resolveRef(referenceType: string, id: string): string {
+    const key = `${referenceType}:${id}`;
+    if (this.refCache[key] !== undefined) return this.refCache[key];
+    if (!this.pendingRefs.has(key)) {
+      this.pendingRefs.add(key);
+      this.api.getById<any>(`entities/${referenceType}`, id).subscribe({
+        next: (entity: any) => {
+          this.refCache[key] = entity.payload?.storeName ?? entity.payload?.fullName ?? entity.payload?.name ?? id;
+          this.pendingRefs.delete(key);
+        },
+        error: () => {
+          this.refCache[key] = id;
+          this.pendingRefs.delete(key);
+        },
+      });
+    }
+    return id;
   }
 
   getEnumColor(row: unknown, attr: MetaAttribute): string {

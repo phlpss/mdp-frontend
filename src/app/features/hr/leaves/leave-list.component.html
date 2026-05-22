@@ -21,12 +21,12 @@
         <mat-card-content>
             <mdp-meta-filter-bar
                     *ngIf="isApprover"
-                    typeName="leave_request"
+                    typeName="LeaveRequest"
                     (filtersChange)="onFiltersChange($event)">
             </mdp-meta-filter-bar>
 
             <mdp-entity-table
-                    typeName="leave_request"
+                    typeName="LeaveRequest"
                     [apiPath]="apiPath"
                     [filters]="filters"
                     [actions]="tableActions">
@@ -43,7 +43,7 @@
         </mat-card-header>
         <mat-card-content>
             <mdp-entity-table
-                    typeName="leave_request"
+                    typeName="LeaveRequest"
                     [apiPath]="apiPath"
                     [filters]="{ status: 'PENDING_CANCELLATION' }"
                     [actions]="cancellationActions">
