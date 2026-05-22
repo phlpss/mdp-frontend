@@ -30,7 +30,6 @@ const ALL_NAV: NavItem[] = [
   { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
   { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['HR','ACCOUNTANT','OWNER'] },
   { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','OWNER','MANAGER'] },
-  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER','SUPERVISOR'] },
   // Admin section
   { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['OWNER','IT_ADMIN','MANAGER'], divider: true },
   { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['IT_ADMIN'] },

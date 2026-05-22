@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
@@ -58,16 +58,22 @@ export class ManagerDashboardComponent implements OnInit {
       ]))
     );
 
-    this.pendingApprovals$ = this.api.get<{content: Array<{id: string; payload: Record<string, unknown>}>}>(
-      'hr/leave?status=PENDING&size=5'
-    ).pipe(
-      map(page => page.content.map(e => ({
-        id: e.id,
-        employeeName: String(e.payload['employeeId'] ?? ''),
-        type: String(e.payload['leaveType'] ?? ''),
-        date: String(e.payload['startDate'] ?? ''),
-        status: String(e.payload['leaveStatus'] ?? 'PENDING'),
-      }))),
+    this.pendingApprovals$ = forkJoin({
+      leaves:    this.api.get<{content: Array<{id: string; payload: Record<string, unknown>}>}>('hr/leave?status=PENDING&size=5').pipe(catchError(() => of({content: []}))),
+      employees: this.api.get<{content: Array<{id: string; payload: {fullName: string}}>}>('entities/Employee?size=200').pipe(catchError(() => of({content: []}))),
+    }).pipe(
+      map(({ leaves, employees }) => {
+        const nameMap = new Map<string, string>(
+          employees.content.map(e => [e.id, e.payload?.fullName ?? e.id])
+        );
+        return leaves.content.map(e => ({
+          id: e.id,
+          employeeName: nameMap.get(String(e.payload['employeeId'] ?? '')) ?? String(e.payload['employeeId'] ?? ''),
+          type: String(e.payload['leaveType'] ?? ''),
+          date: String(e.payload['startDate'] ?? ''),
+          status: String(e.payload['leaveStatus'] ?? 'PENDING'),
+        }));
+      }),
       catchError(() => of([]))
     );
   }

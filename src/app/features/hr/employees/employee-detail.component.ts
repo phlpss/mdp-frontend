@@ -48,7 +48,6 @@ export class EmployeeDetailComponent implements OnInit {
     this.loadEmployee();
     this.loadShifts();
     this.loadLeaveBalances();
-    this.loadLocationName();
   }
 
   loadEmployee(): void {
@@ -83,6 +82,11 @@ export class EmployeeDetailComponent implements OnInit {
         paidMinutes: s.payload['paidMinutes'] ?? '–',
         status:    s.payload['shiftStatus'],
       }));
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      this.shifts = this.shifts.filter(s =>
+              new Date((s as any).date) >= cutoff
+      );
       const now = new Date();
       const monthShifts = this.shifts.filter(s => {
         const d = new Date((s as any).date);
@@ -111,7 +115,7 @@ export class EmployeeDetailComponent implements OnInit {
         this.api.get<Array<{ id: string; payload: { storeName: string } }>>('locations').pipe(
             catchError(() => of([]))
         ).subscribe(locations => {
-            const locId = this.employee?.['storeLocationId'] as string;
+            const locId = (this.employee?.['storeLocationId'] ?? this.employee?.['locationId']) as string;
             const match = locations.find(l => l.id === locId);
             this.locationName = match?.payload?.storeName ?? '–';
         });

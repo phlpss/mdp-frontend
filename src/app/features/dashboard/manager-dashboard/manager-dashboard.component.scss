@@ -7,10 +7,20 @@
   .subtitle { margin: 4px 0 0; color: #666; }
 }
 
+// KPI grid: ensure second row is never clipped
+.mdp-grid.cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  overflow: visible;
+  height: auto;
+  margin-bottom: 16px;
+}
+
 .dashboard-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   gap: 16px;
+  margin-top: 16px;
   @media (max-width: 960px) { grid-template-columns: 1fr; }
 }
 

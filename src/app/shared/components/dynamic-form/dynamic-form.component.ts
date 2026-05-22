@@ -58,7 +58,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
         ).subscribe((page: any) => {
           this.referenceOptions[attr.name] = page.content.map((item: any) => ({
             id: item.id,
-            label: item.payload?.name ?? item.payload?.fullName ?? item.id
+            label: item.payload?.storeName ?? item.payload?.name ?? item.payload?.fullName ?? item.id
           }));
         });
       });
