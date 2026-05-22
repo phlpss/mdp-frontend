@@ -10,7 +10,7 @@
 
             <div class="fields-grid">
                 <ng-container *ngFor="let attr of group.attributes">
-                    <ng-container *ngIf="canViewSensitive$ | async as canView">
+                    <ng-container>
 
                         <!-- MASKED: sensitive field, read-only, no permission -->
                         <div *ngIf="attr.sensitive && !canView && readOnly" class="field-wrapper masked-field">

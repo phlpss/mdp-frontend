@@ -39,6 +39,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
  ) {}
 
   referenceOptions: Record<string, { id: string; label: string }[]> = {};
+  canView = false;
 
   ngOnInit(): void {
     this.store.select(state => state).pipe(take(1)).subscribe(s => {
@@ -63,6 +64,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       });
     });
     this.canViewSensitive$ = this.store.select(selectCanViewSensitive);
+    this.canViewSensitive$.subscribe(v => { this.canView = !!v; });
     this.fieldGroups$      = this.attributes$.pipe(map(attrs => this.groupAttributes(attrs)));
     this.buildForm();
   }
