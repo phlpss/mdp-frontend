@@ -64,9 +64,9 @@ export class PayrollComponent implements OnInit {
             catchError(() => of([
                 { employeeId: '1', employeeName: 'Alice Johnson', role: 'Barista',   baseSalary: 2800, hoursWorked: 160, bonus: 200,  deductions: 350, netPay: 2650 },
                 { employeeId: '2', employeeName: 'Bob Smith',     role: 'Cashier',   baseSalary: 2600, hoursWorked: 152, bonus: 0,    deductions: 325, netPay: 2275 },
-                { employeeId: '3', employeeName: 'Carol White',   role: 'Manager',   baseSalary: 4200, hoursWorked: 176, bonus: 500,  deductions: 590, netPay: 4110 },
+                { employeeId: '3', employeeName: 'Carol White',   role: 'Store Manager',   baseSalary: 4200, hoursWorked: 176, bonus: 500,  deductions: 590, netPay: 4110 },
                 { employeeId: '4', employeeName: 'David Lee',     role: 'Barista',   baseSalary: 2800, hoursWorked: 168, bonus: 100,  deductions: 350, netPay: 2550 },
-                { employeeId: '5', employeeName: 'Emma Davis',    role: 'Supervisor',baseSalary: 3400, hoursWorked: 176, bonus: 300,  deductions: 450, netPay: 3250 },
+                { employeeId: '5', employeeName: 'Emma Davis',    role: 'Shift Supervisor',baseSalary: 3400, hoursWorked: 176, bonus: 300,  deductions: 450, netPay: 3250 },
             ] as PayrollRow[]))
         ).subscribe(data => {
             this.payrollData = data;

@@ -41,7 +41,7 @@ export class LeaveListComponent implements OnInit {
 
         this.store.select(selectCurrentUser).subscribe(user => {
             this.currentUser = user;
-            const hasApproverRole = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
+            const hasApproverRole = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER');
             this.isApprover = hasApproverRole && !this.isMy;
 
             if (this.isApprover) {

@@ -24,9 +24,9 @@ import { LocationFormDialogComponent } from './locations/location-form-dialog.co
 const routes: Routes = [
   { path: '',          redirectTo: 'metadata', pathMatch: 'full' },
   { path: 'metadata',  component: MetadataStudioComponent,
-      canActivate: [RoleGuard], data: { roles: ['IT_ADMIN'] } },
+      canActivate: [RoleGuard], data: { roles: ['IT_SPECIALIST'] } },
   { path: 'locations', component: LocationListComponent,
-    canActivate: [RoleGuard], data: { roles: ['OWNER', 'IT_ADMIN', 'MANAGER'] } },
+    canActivate: [RoleGuard], data: { roles: ['BUSINESS_OWNER', 'IT_SPECIALIST', 'STORE_MANAGER'] } },
 ];
 
 @NgModule({

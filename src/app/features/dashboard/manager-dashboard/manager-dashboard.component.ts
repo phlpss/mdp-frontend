@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
-import { selectActiveLocationId } from '../../../store/auth/auth.selectors';
+import { selectActiveLocationId, selectCurrentUser } from '../../../store/auth/auth.selectors';
+import { hasRole } from '../../../core/models/user.model';
 
 interface Alert {
   type: 'warning' | 'info' | 'error';
@@ -30,14 +31,41 @@ interface PendingApproval {
 export class ManagerDashboardComponent implements OnInit {
   kpis$!: Observable<KpiData[]>;
   alerts$!: Observable<Alert[]>;
-  pendingApprovals$!: Observable<PendingApproval[]>;
+  pendingApprovals$: Observable<PendingApproval[]> = of([]);
   activeLocationId$!: Observable<string | null>;
+  showLeavePanel = false;
+  canViewEmployees = false;
   todayDate = new Date();
 
   constructor(private store: Store, private api: ApiService) {}
 
   ngOnInit(): void {
     this.activeLocationId$ = this.store.select(selectActiveLocationId);
+
+    this.store.select(selectCurrentUser).pipe(take(1)).subscribe(user => {
+      this.showLeavePanel   = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER');
+      this.canViewEmployees = hasRole(user, 'STORE_MANAGER', 'HR_MANAGER');
+      if (this.showLeavePanel) {
+        this.pendingApprovals$ = forkJoin({
+          leaves:    this.api.get<{content: Array<{id: string; payload: Record<string, unknown>}>}>('hr/leave?status=PENDING&size=5').pipe(catchError(() => of({content: []}))),
+          employees: this.api.get<{content: Array<{id: string; payload: {fullName: string}}>}>('entities/Employee?size=200').pipe(catchError(() => of({content: []}))),
+        }).pipe(
+          map(({ leaves, employees }) => {
+            const nameMap = new Map<string, string>(
+              employees.content.map(e => [e.id, e.payload?.fullName ?? e.id])
+            );
+            return leaves.content.map(e => ({
+              id: e.id,
+              employeeName: nameMap.get(String(e.payload['employeeId'] ?? '')) ?? String(e.payload['employeeId'] ?? ''),
+              type: String(e.payload['leaveType'] ?? ''),
+              date: String(e.payload['startDate'] ?? ''),
+              status: String(e.payload['leaveStatus'] ?? 'PENDING'),
+            }));
+          }),
+          catchError(() => of([]))
+        );
+      }
+    });
 
     this.kpis$ = this.api.get<KpiData[]>('dashboard/manager/kpis').pipe(
       catchError(() => of([
@@ -58,24 +86,6 @@ export class ManagerDashboardComponent implements OnInit {
       ]))
     );
 
-    this.pendingApprovals$ = forkJoin({
-      leaves:    this.api.get<{content: Array<{id: string; payload: Record<string, unknown>}>}>('hr/leave?status=PENDING&size=5').pipe(catchError(() => of({content: []}))),
-      employees: this.api.get<{content: Array<{id: string; payload: {fullName: string}}>}>('entities/Employee?size=200').pipe(catchError(() => of({content: []}))),
-    }).pipe(
-      map(({ leaves, employees }) => {
-        const nameMap = new Map<string, string>(
-          employees.content.map(e => [e.id, e.payload?.fullName ?? e.id])
-        );
-        return leaves.content.map(e => ({
-          id: e.id,
-          employeeName: nameMap.get(String(e.payload['employeeId'] ?? '')) ?? String(e.payload['employeeId'] ?? ''),
-          type: String(e.payload['leaveType'] ?? ''),
-          date: String(e.payload['startDate'] ?? ''),
-          status: String(e.payload['leaveStatus'] ?? 'PENDING'),
-        }));
-      }),
-      catchError(() => of([]))
-    );
   }
 
   getAlertClass(type: string): string {

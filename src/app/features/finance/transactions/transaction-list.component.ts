@@ -54,7 +54,7 @@ export class TransactionListComponent implements OnInit {
     this.store.select(selectCurrentUser).subscribe(user => {
       this.currentUser = user;
       this.isCashier   = hasRole(user, 'CASHIER');
-      this.isManager   = hasRole(user, 'MANAGER', 'SUPERVISOR', 'ACCOUNTANT', 'OWNER', 'IT_ADMIN');
+      this.isManager   = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'ACCOUNTANT', 'BUSINESS_OWNER', 'IT_SPECIALIST');
     });
 
     this.posForm = this.fb.group({

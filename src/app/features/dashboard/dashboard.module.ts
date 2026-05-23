@@ -20,9 +20,9 @@ const routes: Routes = [
   { path: '',         component: DashboardRoutingComponent },
   { path: 'employee', component: EmployeeDashboardComponent },
   { path: 'manager',  component: ManagerDashboardComponent,
-    canActivate: [RoleGuard], data: { roles: ['MANAGER','SUPERVISOR','ACCOUNTANT','HR'] } },
+    canActivate: [RoleGuard], data: { roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','ACCOUNTANT','HR_MANAGER'] } },
   { path: 'owner',    component: OwnerDashboardComponent,
-    canActivate: [RoleGuard], data: { roles: ['OWNER','IT_ADMIN'] } },
+    canActivate: [RoleGuard], data: { roles: ['BUSINESS_OWNER','IT_SPECIALIST'] } },
 ];
 
 @NgModule({

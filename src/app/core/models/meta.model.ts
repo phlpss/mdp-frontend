@@ -82,14 +82,14 @@ export const BUILTIN_META_TYPES: MetaType[] = [
         enumValues: [
           { value: 'BARISTA',          label: 'Barista',          color: '#9F6B53' },
           { value: 'CASHIER',          label: 'Cashier',          color: '#787774' },
-          { value: 'MANAGER',          label: 'Manager',          color: '#337EA9' },
+          { value: 'STORE_MANAGER',          label: 'Store Manager',          color: '#337EA9' },
           { value: 'STORE_MANAGER',    label: 'Store Manager',    color: '#337EA9' },
-          { value: 'SUPERVISOR',       label: 'Supervisor',       color: '#448361' },
+          { value: 'SHIFT_SUPERVISOR',       label: 'Shift Supervisor',       color: '#448361' },
           { value: 'SHIFT_SUPERVISOR', label: 'Shift Supervisor', color: '#448361' },
-          { value: 'HR',               label: 'HR',               color: '#9065B0' },
+          { value: 'HR_MANAGER',               label: 'HR_MANAGER',               color: '#9065B0' },
           { value: 'HR_MANAGER',       label: 'HR Manager',       color: '#9065B0' },
           { value: 'ACCOUNTANT',       label: 'Accountant',       color: '#D9730D' },
-          { value: 'OWNER',            label: 'Owner',            color: '#337EA9' },
+          { value: 'BUSINESS_OWNER',            label: 'Owner',            color: '#337EA9' },
           { value: 'BUSINESS_OWNER',   label: 'Business Owner',   color: '#337EA9' },
           { value: 'IT_SPECIALIST',    label: 'IT Specialist',    color: '#C14C8A' },
         ]
@@ -251,7 +251,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
       { id: 'address',    name: 'address',    label: 'Address',  fieldType: 'string',    required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 2 },
       { id: 'phone',      name: 'phone',      label: 'Phone',    fieldType: 'phone',     required: false, sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
       { id: 'isActive',   name: 'isActive',   label: 'Active',   fieldType: 'boolean',   required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4, defaultValue: true },
-      { id: 'manager',    name: 'manager',    label: 'Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'Employee' },
+      { id: 'manager',    name: 'manager',    label: 'Store Manager',  fieldType: 'reference', required: false, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 5, referenceType: 'Employee' },
     ]
   },
 ];

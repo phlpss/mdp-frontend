@@ -15,9 +15,9 @@ export class DashboardRoutingComponent implements OnInit {
   ngOnInit(): void {
     this.store.select(selectCurrentUser).pipe(take(1)).subscribe(user => {
       if (!user) { this.router.navigate(['/login']); return; }
-      if (hasRole(user, 'OWNER', 'IT_ADMIN')) {
+      if (hasRole(user, 'BUSINESS_OWNER', 'IT_SPECIALIST')) {
         this.router.navigate(['/dashboard/owner']);
-      } else if (hasRole(user, 'MANAGER', 'SUPERVISOR', 'ACCOUNTANT')) {
+      } else if (hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'ACCOUNTANT')) {
         this.router.navigate(['/dashboard/manager']);
       } else {
         this.router.navigate(['/dashboard/employee']);

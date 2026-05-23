@@ -29,12 +29,12 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
     {path: 'shifts/my/upcoming', component: ShiftCalendarComponent},
     {
         path: 'shifts', component: ShiftCalendarComponent,
-        canActivate: [RoleGuard], data: {roles: ['MANAGER', 'SUPERVISOR', 'HR', 'OWNER', 'IT_ADMIN']}
+        canActivate: [RoleGuard], data: {roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER', 'BUSINESS_OWNER', 'IT_SPECIALIST']}
     },
     {path: 'leaves/my', component: LeaveListComponent},
     {
         path: 'leaves', component: LeaveListComponent,
-        canActivate: [RoleGuard], data: {roles: ['MANAGER', 'SUPERVISOR', 'HR', 'OWNER']}
+        canActivate: [RoleGuard], data: {roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER', 'BUSINESS_OWNER']}
     },
 ];
 

@@ -35,13 +35,13 @@ export class AuthService {
             WAITER: 'EMPLOYEE',
             CASHIER: 'CASHIER',
             CLEANER: 'EMPLOYEE',
-            SHIFT_SUPERVISOR: 'SUPERVISOR',
-            STORE_MANAGER: 'MANAGER',
-            HR_MANAGER: 'HR',
+            SHIFT_SUPERVISOR: 'SHIFT_SUPERVISOR',
+            STORE_MANAGER: 'STORE_MANAGER',
+            HR_MANAGER: 'HR_MANAGER',
             ACCOUNTANT: 'ACCOUNTANT',
             MARKETING: 'EMPLOYEE',
-            BUSINESS_OWNER: 'OWNER',
-            IT_SPECIALIST: 'IT_ADMIN',
+            BUSINESS_OWNER: 'BUSINESS_OWNER',
+            IT_SPECIALIST: 'IT_SPECIALIST',
         };
         return map[backendRole] ?? null;
     }

@@ -2,12 +2,12 @@ export type UserRole =
   | 'EMPLOYEE'
   | 'BARISTA'
   | 'CASHIER'
-  | 'MANAGER'
-  | 'SUPERVISOR'
-  | 'HR'
+  | 'STORE_MANAGER'
+  | 'HR_MANAGER'
   | 'ACCOUNTANT'
-  | 'OWNER'
-  | 'IT_ADMIN';
+  | 'BUSINESS_OWNER'
+  | 'SHIFT_SUPERVISOR'
+  | 'IT_SPECIALIST';
 
 export interface User {
   id: string;
@@ -37,18 +37,18 @@ export interface LoginResponse {
 }
 
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
-  EMPLOYEE:   1,
-  BARISTA:    1,
-  CASHIER:    1,
-  SUPERVISOR: 2,
-  MANAGER:    3,
-  HR:         3,
+  EMPLOYEE: 1,
+  BARISTA: 1,
+  CASHIER: 1,
+  SHIFT_SUPERVISOR: 2,
+  STORE_MANAGER: 3,
+  HR_MANAGER: 3,
   ACCOUNTANT: 3,
-  OWNER:      5,
-  IT_ADMIN:   5,
+  BUSINESS_OWNER: 5,
+  IT_SPECIALIST: 5,
 };
 
-export const SENSITIVE_ROLES: UserRole[] = ['HR', 'ACCOUNTANT', 'OWNER', 'IT_ADMIN'];
+export const SENSITIVE_ROLES: UserRole[] = ['HR_MANAGER', 'ACCOUNTANT', 'BUSINESS_OWNER', 'IT_SPECIALIST'];
 
 export function hasRole(user: User | null, ...roles: UserRole[]): boolean {
   if (!user) return false;

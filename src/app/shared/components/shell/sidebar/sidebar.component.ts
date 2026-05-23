@@ -20,19 +20,19 @@ const ALL_NAV: NavItem[] = [
   { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions',    roles: ['CASHIER'] },
   // HR / Manager section
-  { label: 'Employees',      icon: 'people',           route: '/hr/employees',            roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'], divider: true },
-  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
-  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',               roles: ['MANAGER','SUPERVISOR','HR','OWNER','IT_ADMIN'] },
+  { label: 'Employees',      icon: 'people',           route: '/hr/employees',            roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'], divider: true },
+  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'] },
   // Finance section
-  { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'], divider: true },
-  { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
-  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['MANAGER', 'SUPERVISOR'] },
-  { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['MANAGER','ACCOUNTANT','OWNER','IT_ADMIN'] },
-  { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['HR','ACCOUNTANT','OWNER'] },
-  { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','OWNER','MANAGER'] },
+  { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'], divider: true },
+  { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR'] },
+  { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['HR_MANAGER','ACCOUNTANT','BUSINESS_OWNER'] },
+  { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','BUSINESS_OWNER','STORE_MANAGER'] },
   // Admin section
-  { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['OWNER','IT_ADMIN','MANAGER'], divider: true },
-  { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['IT_ADMIN'] },
+  { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['BUSINESS_OWNER','IT_SPECIALIST','STORE_MANAGER'], divider: true },
+  { label: 'Metadata Studio',icon: 'schema',           route: '/admin/metadata',  roles: ['IT_SPECIALIST'] },
 ];
 
 @Component({

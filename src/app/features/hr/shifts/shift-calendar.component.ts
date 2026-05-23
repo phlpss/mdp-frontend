@@ -50,7 +50,7 @@ export class ShiftCalendarComponent implements OnInit {
         this.setWeek(new Date());
         this.myShiftsOnly = this.route.snapshot.url.some(s => s.path === 'upcoming');
         this.store.select(selectCurrentUser).subscribe(user => {
-            this.canEdit = hasRole(user, 'MANAGER', 'SUPERVISOR', 'HR');
+            this.canEdit = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER', 'HR_MANAGER');
             this.locationId = user?.locationId ?? null;
             this.currentUserId = user?.id ?? null;
             if (this.myShiftsOnly) {
@@ -89,7 +89,7 @@ export class ShiftCalendarComponent implements OnInit {
         this.loading = true;
         if (this.myShiftsOnly && this.currentUserId) {
             this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(
-                `shifts/employee/${this.currentUserId}`
+                `shifts/my/upcoming`
             ).pipe(catchError(() => of([]))).subscribe(raw => {
                 this.shifts = raw.map(s => ({
                     id: s.id,

@@ -1,3 +1,8 @@
+:host {
+  display: block;
+  padding-top: 16px;
+}
+
 .dashboard-header {
   display: flex;
   align-items: center;
@@ -59,6 +64,10 @@
   color: #aaa;
   mat-icon { font-size: 36px; width: 36px; height: 36px; }
   p { margin-top: 8px; font-size: 14px; }
+}
+
+.full-width {
+  max-width: 660px;
 }
 
 .quick-actions {

@@ -41,8 +41,8 @@ export class EmployeeDetailComponent implements OnInit {
     this.employeeId = this.route.snapshot.paramMap.get('id') ?? '';
 
     this.store.select(selectCurrentUser).subscribe(user => {
-      this.canEdit       = hasRole(user, 'MANAGER', 'HR', 'OWNER', 'IT_ADMIN');
-      this.canDeactivate = hasRole(user, 'MANAGER', 'HR', 'OWNER', 'IT_ADMIN');
+      this.canEdit       = hasRole(user, 'STORE_MANAGER', 'HR_MANAGER', 'BUSINESS_OWNER', 'IT_SPECIALIST');
+      this.canDeactivate = hasRole(user, 'STORE_MANAGER', 'HR_MANAGER', 'BUSINESS_OWNER', 'IT_SPECIALIST');
     });
 
     this.loadEmployee();
