@@ -11,6 +11,11 @@ import {selectCurrentUser} from '@store/auth/auth.selectors';
 import {hasRole} from '@core/models/user.model';
 import {ActivatedRoute} from '@angular/router';
 
+function parseTime(value: string | null | undefined): string {
+    if (!value) return '';
+    return value.includes('T') ? value.substring(11, 16) : value.substring(0, 5);
+}
+
 interface ShiftCell {
     employeeId: string;
     employeeName: string;
@@ -55,12 +60,9 @@ export class ShiftCalendarComponent implements OnInit {
             this.currentUserId = user?.id ?? null;
             if (this.myShiftsOnly) {
                 this.employees = this.currentUserId ? [{ id: this.currentUserId, name: 'Me' }] : [];
-                this.loadData();
             }
-        });
-        if (!this.myShiftsOnly) {
             this.loadData();
-        }
+        });
     }
 
     setWeek(date: Date): void {
@@ -95,7 +97,7 @@ export class ShiftCalendarComponent implements OnInit {
                     id: s.id,
                     employeeId: this.currentUserId!,
                     employeeName: '',
-                    date: s.payload['shiftDate'] as string,
+                    date: (s.payload['shiftDate'] as string)?.substring(0, 10),
                     startTime: (s.payload['startTime'] as string)?.substring(11, 16),
                     endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
                     status:    s.payload['shiftStatus'] as string,
@@ -130,9 +132,9 @@ export class ShiftCalendarComponent implements OnInit {
                 id: e.shiftId,
                 employeeId: e.employeeId,
                 employeeName: e.employeeFullName,
-                date: e.shiftDate,
-                startTime: (e.startTime ?? '').substring(11, 16),
-                endTime: (e.endTime ?? '').substring(11, 16),
+                date: e.shiftDate?.substring(0, 10),
+                startTime: parseTime(e.startTime),
+                endTime: parseTime(e.endTime),
                 status: e.shiftStatus,
             }));
             this.loading = false;
