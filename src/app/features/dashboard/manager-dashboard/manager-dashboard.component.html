@@ -18,7 +18,7 @@
 
   <div class="dashboard-row">
     <!-- Alerts -->
-    <mat-card class="mdp-card alerts-card">
+    <mat-card class="mdp-card alerts-card" [class.full-width]="!showLeavePanel">
       <mat-card-header>
         <mat-icon mat-card-avatar color="warn">notifications_active</mat-icon>
         <mat-card-title>Active Alerts</mat-card-title>
@@ -41,7 +41,7 @@
     </mat-card>
 
     <!-- Pending Approvals -->
-    <mat-card class="mdp-card approvals-card">
+    <mat-card *ngIf="showLeavePanel" class="mdp-card approvals-card">
       <mat-card-header>
         <mat-icon mat-card-avatar>pending_actions</mat-icon>
         <mat-card-title>Pending Leave Requests</mat-card-title>
@@ -77,7 +77,7 @@
     </mat-card-header>
     <mat-card-content>
       <div class="quick-actions">
-        <a mat-raised-button routerLink="/hr/shifts">
+        <a *ngIf="showLeavePanel" mat-raised-button routerLink="/hr/shifts">
           <mat-icon>schedule</mat-icon> Manage Shifts
         </a>
         <a mat-raised-button routerLink="/finance/expenses">
@@ -86,7 +86,7 @@
         <a mat-raised-button routerLink="/finance/inventory">
           <mat-icon>inventory_2</mat-icon> Check Stock
         </a>
-        <a mat-raised-button routerLink="/hr/employees">
+        <a *ngIf="canViewEmployees" mat-raised-button routerLink="/hr/employees">
           <mat-icon>people</mat-icon> Employees
         </a>
       </div>
