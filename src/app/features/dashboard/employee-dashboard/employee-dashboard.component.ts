@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { selectCurrentUser } from '../../../store/auth/auth.selectors';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
@@ -38,28 +38,23 @@ export class EmployeeDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser$ = this.store.select(selectCurrentUser);
 
-    this.upcomingShifts$ = this.currentUser$.pipe(
-      switchMap(user =>
-        user
-          ? this.api.get<{ id: string; type: string; payload: { shiftDate: string; startTime: string; endTime: string; shiftStatus: string } }[]>(`shifts/employee/${user.id}`).pipe(
-              map(items => items
-                .map(item => ({
-                  id: item.id,
-                  date: item.payload.shiftDate,
-                  startTime: item.payload.startTime.substring(11, 16),
-                  endTime: item.payload.endTime.substring(11, 16),
-                  status: item.payload.shiftStatus,
-                }))
-                .filter(shift =>
-                  new Date(shift.date) >= new Date(new Date().toDateString()) &&
-                  shift.status !== 'COMPLETED' &&
-                  shift.status !== 'CANCELLED'
-                )
-              ),
-              catchError(() => of([]))
-            )
-          : of([])
-      )
+    this.upcomingShifts$ = this.api.get<{ id: string; payload: { shiftDate: string; startTime: string; endTime: string; shiftStatus: string } }[]>('shifts/my/upcoming').pipe(
+      map(items => items
+        .map(item => ({
+          id: item.id,
+          date: (item.payload.shiftDate ?? '').substring(0, 10),
+          startTime: (item.payload.startTime ?? '').substring(11, 16),
+          endTime: (item.payload.endTime ?? '').substring(11, 16),
+          status: item.payload.shiftStatus,
+        }))
+        .filter(shift =>
+          !!shift.date &&
+          new Date(shift.date) >= new Date(new Date().toDateString()) &&
+          shift.status !== 'COMPLETED' &&
+          shift.status !== 'CANCELLED'
+        )
+      ),
+      catchError(() => of([]))
     );
 
     this.leaveBalances$ = this.api.get<LeaveBalance[]>('leaves/my/balance').pipe(

@@ -136,9 +136,10 @@ export class EmployeeDetailComponent implements OnInit {
             this.shiftsLoading = false;
         });
     }
-
-  loadLeaveBalances(): void {
-      this.api.get<Array<{ type: string; used: number; total: number }>>('leaves/my/balance').pipe(
+    loadLeaveBalances(): void {
+      this.api.get<Array<{ type: string; used: number; total: number }>>(
+          `leaves/balance?employeeId=${this.employeeId}`
+      ).pipe(
           catchError(() => of([]))
       ).subscribe(balances => {
           this.leaveBalances = balances;

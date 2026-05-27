@@ -61,8 +61,12 @@ export class EntityTableComponent implements OnInit, OnChanges {
     this.store.select(selectCanViewSensitive).subscribe(v => this.canViewSensitive = v);
 
     this.store.select(selectListAttributesForType(this.typeName)).subscribe(attrs => {
+      const hadColumns = this.attributes.length > 0;
       this.attributes = attrs;
       this.buildColumns();
+      if (!hadColumns && attrs.length > 0) {
+        this.reload$.next();
+      }
       attrs.filter(a => a.fieldType === 'reference' && a.referenceType).forEach(attr => {
         this.api.getPage<unknown>(`entities/${attr.referenceType}`, { page: 0, size: 100 }, {}).subscribe((page: any) => {
           const map: Record<string, string> = {};
@@ -106,7 +110,9 @@ export class EntityTableComponent implements OnInit, OnChanges {
   }
 
   load(): void {
-    this.reload$.next();
+    if (this.attributes.length > 0) {
+      this.reload$.next();
+    }
   }
 
   private buildColumns(): void {

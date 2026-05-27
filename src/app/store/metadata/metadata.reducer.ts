@@ -82,15 +82,19 @@ export const metadataReducer = createReducer(
         const sensitiveSet = new Set<string>(t.sensitiveFields ?? []);
 
         if (existing) {
-          // Sync attribute list from Neo4j; keep builtin's rich display config for known attrs
-          const builtinMap = new Map<string, MetaAttribute>(existing.attributes.map(a => [a.name, a]));
-          const attrs = backendAttrs.map((ba: any, i: number) => {
-            const builtin = builtinMap.get(ba.name);
-            return builtin
-              ? { ...builtin, sensitive: sensitiveSet.has(ba.name) }
-              : backendAttrToMeta(ba, i + 1, sensitiveSet.has(ba.name));
-          });
-          merged[key] = { ...existing, attributes: attrs };
+          // Keep ALL builtin attrs (preserving showInList/showInForm/etc.), only update sensitive.
+          // Append any backend-only attrs that have no builtin counterpart.
+          const builtinNames = new Set<string>(existing.attributes.map(a => a.name));
+          const updatedBuiltins = existing.attributes.map(a => ({
+            ...a,
+            sensitive: sensitiveSet.has(a.name),
+          }));
+          const newFromBackend = backendAttrs
+            .filter((ba: any) => !builtinNames.has(ba.name))
+            .map((ba: any, i: number) =>
+              backendAttrToMeta(ba, existing.attributes.length + i + 1, sensitiveSet.has(ba.name))
+            );
+          merged[key] = { ...existing, attributes: [...updatedBuiltins, ...newFromBackend] };
         } else {
           // New type from Neo4j not in builtins — create minimal entry
           merged[key] = {
