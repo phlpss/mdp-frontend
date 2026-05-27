@@ -1,4 +1,21 @@
 import { Component, OnInit } from '@angular/core';
+
+function parseShiftTime(value: string | null | undefined): string {
+    if (!value) return '–';
+    return value.includes('T') ? value.substring(11, 16) : value.substring(0, 5);
+}
+
+function calcShiftMinutes(start: string, end: string): number | null {
+    if (start.includes('T') && end.includes('T')) {
+        const mins = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 60000);
+        return mins > 0 ? mins : null;
+    }
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    if ([sh, sm, eh, em].some(isNaN)) return null;
+    const diff = (eh * 60 + em) - (sh * 60 + sm);
+    return diff > 0 ? diff : null;
+}
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
@@ -69,34 +86,56 @@ export class EmployeeDetailComponent implements OnInit {
           });
   }
 
-  loadShifts(): void {
-    this.shiftsLoading = true;
-    this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(`shifts/employee/${this.employeeId}`).pipe(
-        catchError(() => of([]))
-    ).subscribe(raw => {
-      this.shifts = raw.map(s => ({
-        id:        s.id,
-        date:      s.payload['shiftDate'],
-        startTime: (s.payload['startTime'] as string)?.substring(11, 16),
-        endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
-        paidMinutes: s.payload['paidMinutes'] ?? '–',
-        status:    s.payload['shiftStatus'],
-      }));
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - 30);
-      this.shifts = this.shifts.filter(s =>
-              new Date((s as any).date) >= cutoff
-      );
-      const now = new Date();
-      const monthShifts = this.shifts.filter(s => {
-        const d = new Date((s as any).date);
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      });
-      this.quickStats.shiftsThisMonth = monthShifts.length;
-      this.quickStats.hoursWorked = monthShifts.reduce((acc: number, s) => acc + (Number((s as any).paidMinutes) || 0), 0) / 60;
-      this.shiftsLoading = false;
-    });
-  }
+    loadShifts(): void {
+        this.shiftsLoading = true;
+        this.api.get<Array<{ id: string; payload: Record<string, unknown> }>>(`shifts/employee/${this.employeeId}`).pipe(
+            catchError(() => of([]))
+        ).subscribe(raw => {
+            this.shifts = raw.map(s => {
+                const startRaw = s.payload['startTime'] as string | null | undefined;
+                const endRaw   = s.payload['endTime']   as string | null | undefined;
+
+                const startTime = parseShiftTime(startRaw);
+                const endTime   = parseShiftTime(endRaw);
+
+                // Use stored paidMinutes (set by backend at clock-out) when available;
+                // otherwise calculate from scheduled startTime/endTime so planned shifts
+                // show their expected duration instead of '–'.
+                let paidMinutes: number | string = s.payload['paidMinutes'] != null
+                    ? (s.payload['paidMinutes'] as number)
+                    : '–';
+
+                if (paidMinutes === '–' && startRaw && endRaw) {
+                    const mins = calcShiftMinutes(startRaw, endRaw);
+                    if (mins != null) paidMinutes = mins;
+                }
+
+                return {
+                    id: s.id,
+                    date: s.payload['shiftDate'],
+                    startTime,
+                    endTime,
+                    paidMinutes,
+                    status: s.payload['shiftStatus'],
+                };
+            });
+
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - 30);
+            this.shifts = this.shifts.filter(s => new Date((s as any).date) >= cutoff);
+
+            const now = new Date();
+            const monthShifts = this.shifts.filter(s => {
+                const d = new Date((s as any).date);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            });
+            this.quickStats.shiftsThisMonth = monthShifts.length;
+            this.quickStats.hoursWorked = monthShifts.reduce(
+                (acc: number, s) => acc + (typeof (s as any).paidMinutes === 'number' ? (s as any).paidMinutes : 0), 0
+            ) / 60;
+            this.shiftsLoading = false;
+        });
+    }
 
   loadLeaveBalances(): void {
       this.api.get<Array<{ type: string; used: number; total: number }>>('leaves/my/balance').pipe(
