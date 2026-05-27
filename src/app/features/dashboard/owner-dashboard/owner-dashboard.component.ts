@@ -31,6 +31,7 @@ export class OwnerDashboardComponent implements OnInit {
     data: { labels: [], datasets: [] },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { position: 'top' } },
       scales: { y: { beginAtZero: true } },
     },

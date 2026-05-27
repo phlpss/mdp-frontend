@@ -11,6 +11,7 @@ import {ApiService} from "@core/services/api.service";
 interface FormGroup_ {
   groupName: string;
   attributes: MetaAttribute[];
+  columns?: number;
 }
 
 @Component({
@@ -118,7 +119,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(attr);
     });
-    return Array.from(map.entries()).map(([groupName, attributes]) => ({ groupName, attributes }));
+    return Array.from(map.entries()).map(([groupName, attributes]) => {
+      const columns = attributes.reduce((max, a) => Math.max(max, a.groupColumns ?? 0), 0) || undefined;
+      return { groupName, attributes, columns };
+    });
   }
 
   submit(): void {

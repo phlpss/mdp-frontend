@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { MetadataActions } from './metadata.actions';
-import { MetaType, BUILTIN_META_TYPES } from '../../core/models/meta.model';
+import { MetaType, MetaAttribute, FieldType, BUILTIN_META_TYPES } from '../../core/models/meta.model';
 
 export interface MetadataState {
   types: Record<string, MetaType>;
@@ -15,6 +15,40 @@ const PASCAL: Record<string, string> = {
   transaction: 'Transaction', expense: 'Expense',
   inventory_item: 'InventoryItem', location: 'StoreLocation',
 };
+
+const DATA_TYPE_MAP: Record<string, FieldType> = {
+  STRING: 'string', INTEGER: 'number', DECIMAL: 'currency', NUMBER: 'number',
+  BOOLEAN: 'boolean', DATE: 'date', DATETIME: 'datetime', ENUM: 'enum',
+};
+
+function toDisplayLabel(name: string): string {
+  return name
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function backendAttrToMeta(ba: any, order: number, sensitive: boolean): MetaAttribute {
+  return {
+    id: ba.name,
+    name: ba.name,
+    label: toDisplayLabel(ba.name),
+    fieldType: DATA_TYPE_MAP[(ba.dataType ?? '').toUpperCase()] ?? 'string',
+    required: !!ba.mandatory,
+    sensitive,
+    sortable: true,
+    filterable: false,
+    showInList: false,
+    showInForm: true,
+    readOnly: false,
+    order,
+    min: ba.min ?? undefined,
+    max: ba.max ?? undefined,
+    enumValues: ba.allowedValues?.length
+      ? ba.allowedValues.map((v: string) => ({ value: v, label: toDisplayLabel(v) }))
+      : undefined,
+  };
+}
 const builtinTypes: Record<string, MetaType> = BUILTIN_META_TYPES.reduce(
     (acc, t) => ({ ...acc, [PASCAL[t.name] ?? t.name]: { ...t, name: PASCAL[t.name] ?? t.name } }),
     {} as Record<string, MetaType>
@@ -31,13 +65,47 @@ export const metadataReducer = createReducer(
 
     on(MetadataActions.loadTypes, state => ({ ...state, loading: true, error: null })),
     on(MetadataActions.loadTypesSuccess, (state, { types }) => {
-      // Backend MetaAttribute is a minimal record (name/dataType/mandatory only).
-      // Only replace a builtin if the backend type has rich attrs (showInForm defined).
       const merged = { ...state.types };
-      types.forEach(t => {
-        const hasRichAttrs = t.attributes?.some((a: any) => a.showInForm !== undefined);
+      types.forEach((t: any) => {
         const key = PASCAL[t.name] ?? t.name;
-        if (hasRichAttrs) merged[key] = { ...t, name: key };
+        const existing = merged[key];
+
+        // Fallback stubs (from catchError) already have rich attrs — use as-is
+        if (t.attributes?.some((a: any) => a.showInForm !== undefined)) {
+          merged[key] = { ...t, name: key };
+          return;
+        }
+
+        const backendAttrs: any[] = t.attributes ?? [];
+        if (backendAttrs.length === 0) return; // No attrs from Neo4j yet — keep whatever we have
+
+        const sensitiveSet = new Set<string>(t.sensitiveFields ?? []);
+
+        if (existing) {
+          // Sync attribute list from Neo4j; keep builtin's rich display config for known attrs
+          const builtinMap = new Map<string, MetaAttribute>(existing.attributes.map(a => [a.name, a]));
+          const attrs = backendAttrs.map((ba: any, i: number) => {
+            const builtin = builtinMap.get(ba.name);
+            return builtin
+              ? { ...builtin, sensitive: sensitiveSet.has(ba.name) }
+              : backendAttrToMeta(ba, i + 1, sensitiveSet.has(ba.name));
+          });
+          merged[key] = { ...existing, attributes: attrs };
+        } else {
+          // New type from Neo4j not in builtins — create minimal entry
+          merged[key] = {
+            id: t.name,
+            name: key,
+            label: toDisplayLabel(t.name),
+            pluralLabel: toDisplayLabel(t.name) + 's',
+            icon: 'table_chart',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            attributes: backendAttrs.map((ba: any, i: number) =>
+              backendAttrToMeta(ba, i + 1, sensitiveSet.has(ba.name))
+            ),
+          };
+        }
       });
       return { ...state, loading: false, loaded: true, types: merged };
     }),

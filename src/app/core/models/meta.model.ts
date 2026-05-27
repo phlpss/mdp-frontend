@@ -36,6 +36,8 @@ export interface MetaAttribute {
   hint?: string;
   order: number;
   group?: string;
+  fullWidth?: boolean;
+  groupColumns?: number;
 }
 
 export interface EnumValue {
@@ -75,32 +77,28 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'fullName', name: 'fullName', label: 'Full Name', fieldType: 'string', required: true, sensitive: false, sortable: true, filterable: true, showInList: true, showInForm: true, readOnly: false, order: 1 },
-      { id: 'email',       name: 'email',       label: 'Email',        fieldType: 'email',    required: true,  sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 3 },
-      { id: 'phone',       name: 'phone',       label: 'Phone',        fieldType: 'phone',    required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 4 },
-      { id: 'role',        name: 'role',        label: 'Role',         fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 5,
+      { id: 'fullName',       name: 'fullName',       label: 'Full Name',              fieldType: 'string',    required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1,  group: 'Personal Information' },
+      { id: 'email',          name: 'email',          label: 'Email',                  fieldType: 'email',     required: true,  sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 2,  group: 'Personal Information' },
+      { id: 'phone',          name: 'phone',          label: 'Phone',                  fieldType: 'phone',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 3,  group: 'Personal Information', fullWidth: true },
+      { id: 'role',           name: 'role',           label: 'Role',                   fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4,  group: 'Employment Details',
         enumValues: [
-          { value: 'BARISTA',          label: 'Barista',          color: '#9F6B53' },
-          { value: 'CASHIER',          label: 'Cashier',          color: '#787774' },
-          { value: 'STORE_MANAGER',          label: 'Store Manager',          color: '#337EA9' },
-          { value: 'STORE_MANAGER',    label: 'Store Manager',    color: '#337EA9' },
-          { value: 'SHIFT_SUPERVISOR',       label: 'Shift Supervisor',       color: '#448361' },
+          { value: 'BARISTA',          label: 'Barista',        color: '#9F6B53' },
+          { value: 'CASHIER',          label: 'Cashier',        color: '#787774' },
+          { value: 'STORE_MANAGER',    label: 'Store Manager',  color: '#337EA9' },
           { value: 'SHIFT_SUPERVISOR', label: 'Shift Supervisor', color: '#448361' },
-          { value: 'HR_MANAGER',               label: 'HR_MANAGER',               color: '#9065B0' },
-          { value: 'HR_MANAGER',       label: 'HR Manager',       color: '#9065B0' },
-          { value: 'ACCOUNTANT',       label: 'Accountant',       color: '#D9730D' },
-          { value: 'BUSINESS_OWNER',            label: 'Owner',            color: '#337EA9' },
-          { value: 'BUSINESS_OWNER',   label: 'Business Owner',   color: '#337EA9' },
-          { value: 'IT_SPECIALIST',    label: 'IT Specialist',    color: '#C14C8A' },
+          { value: 'HR_MANAGER',       label: 'HR Manager',     color: '#9065B0' },
+          { value: 'ACCOUNTANT',       label: 'Accountant',     color: '#D9730D' },
+          { value: 'BUSINESS_OWNER',   label: 'Business Owner', color: '#337EA9' },
+          { value: 'IT_SPECIALIST',    label: 'IT Specialist',  color: '#C14C8A' },
         ]
       },
-      { id: 'salary',         name: 'salary',          label: 'Salary',                  fieldType: 'currency', required: false, sensitive: true,  sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 6, min: 0 },
-      { id: 'hireDate',       name: 'hireDate',        label: 'Hire Date',               fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 7 },
-      { id: 'isActive',       name: 'isActive',        label: 'Active',                  fieldType: 'boolean',  required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8, defaultValue: true },
-      { id: 'locationId',     name: 'locationId',      label: 'Location',                fieldType: 'reference', required: true, sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 9, referenceType: 'StoreLocation' },
-      { id: 'ptoBalance',     name: 'ptoBalance',      label: 'PTO Balance (days)',      fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 10, min: 0, defaultValue: 20 },
-      { id: 'sickBalance',    name: 'sickBalance',     label: 'Sick Balance (days)',     fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 11, min: 0, defaultValue: 10 },
-      { id: 'holidayBalance', name: 'holidayBalance',  label: 'Holiday Balance (days)',  fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 12, min: 0, defaultValue: 10 },
+      { id: 'hireDate',       name: 'hireDate',       label: 'Hire Date',              fieldType: 'date',      required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 5,  group: 'Employment Details' },
+      { id: 'locationId',     name: 'locationId',     label: 'Location',               fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 6,  group: 'Employment Details', referenceType: 'StoreLocation' },
+      { id: 'salary',         name: 'salary',         label: 'Salary',                 fieldType: 'currency',  required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 7,  group: 'Employment Details', min: 0 },
+      { id: 'isActive',       name: 'isActive',       label: 'Active',                 fieldType: 'boolean',   required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8,  group: 'Employment Details', defaultValue: true },
+      { id: 'ptoBalance',     name: 'ptoBalance',     label: 'PTO Balance (days)',     fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 9,  group: 'Leave Balances', min: 0, defaultValue: 20, groupColumns: 3 },
+      { id: 'sickBalance',    name: 'sickBalance',    label: 'Sick Balance (days)',    fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 10, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
+      { id: 'holidayBalance', name: 'holidayBalance', label: 'Holiday Balance (days)', fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 11, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
     ]
   },
   {
@@ -235,7 +233,7 @@ export const BUILTIN_META_TYPES: MetaType[] = [
       { id: 'quantity',    name: 'quantity',    label: 'Quantity',   fieldType: 'number', required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 4, min: 0 },
       { id: 'unit',        name: 'unit',        label: 'Unit',       fieldType: 'string', required: true,  sensitive: false, sortable: false, filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 5 },
       { id: 'reorderLevel', name: 'reorderLevel', label: 'Reorder At', fieldType: 'number', required: true, sensitive: false, sortable: false, filterable: false, showInList: true, showInForm: true, readOnly: false, order: 6, min: 0 },
-      { id: 'unitCost',    name: 'unitCost',    label: 'Unit Cost',  fieldType: 'currency', required: false, sensitive: true, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 7, min: 0 },
+      { id: 'unitCost',    name: 'unitCost',    label: 'Unit Cost',  fieldType: 'currency', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 7, min: 0 },
     ]
   },
   {

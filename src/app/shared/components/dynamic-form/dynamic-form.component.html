@@ -3,33 +3,35 @@
         <ng-container *ngFor="let group of groups">
             <!-- Group header -->
             <div *ngIf="group.groupName" class="field-group-header">
-                <mat-divider></mat-divider>
                 <span class="group-label">{{ group.groupName }}</span>
-                <mat-divider></mat-divider>
             </div>
 
-            <div class="fields-grid">
+            <div class="fields-grid" [class.three-col]="group.columns === 3">
                 <ng-container *ngFor="let attr of group.attributes">
                     <ng-container>
 
                         <!-- MASKED: sensitive field, read-only, no permission -->
-                        <div *ngIf="attr.sensitive && !canView && readOnly" class="field-wrapper masked-field">
+                        <div *ngIf="attr.sensitive && !canView && readOnly"
+                             class="field-wrapper masked-field" [class.full-width]="attr.fullWidth">
                             <label class="masked-label">{{ attr.label }}</label>
                             <span class="masked-value">••••••</span>
                         </div>
 
                         <!-- BOOLEAN -->
                         <div *ngIf="attr.fieldType === 'boolean' && !(attr.sensitive && !canView && readOnly)"
-                             class="field-wrapper checkbox-field">
+                             class="field-wrapper checkbox-field" [class.full-width]="attr.fullWidth">
                             <mat-checkbox [formControlName]="attr.name" [disabled]="readOnly || attr.readOnly">
                                 {{ attr.label }}
                                 <mat-icon *ngIf="attr.sensitive" class="sensitive-icon" matTooltip="Sensitive field">visibility_off</mat-icon>
                             </mat-checkbox>
                         </div>
+                        <!-- Spacer to pair the checkbox in a 2-column grid -->
+                        <div *ngIf="attr.fieldType === 'boolean' && !(attr.sensitive && !canView && readOnly) && !attr.fullWidth"
+                             class="grid-spacer"></div>
 
                         <!-- ENUM -->
                         <mat-form-field *ngIf="attr.fieldType === 'enum' && !(attr.sensitive && !canView && readOnly)"
-                                        appearance="outline" class="field-wrapper">
+                                        appearance="outline" class="field-wrapper" [class.full-width]="attr.fullWidth">
                             <mat-label>{{ attr.label }}</mat-label>
                             <mat-select [formControlName]="attr.name">
                                 <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
@@ -67,7 +69,7 @@
 
                         <!-- NUMBER / CURRENCY -->
                         <mat-form-field *ngIf="isNumericType(attr) && !(attr.sensitive && !canView && readOnly)"
-                                        appearance="outline" class="field-wrapper">
+                                        appearance="outline" class="field-wrapper" [class.full-width]="attr.fullWidth">
                             <mat-label>{{ attr.label }}</mat-label>
                             <span *ngIf="attr.fieldType === 'currency'" matPrefix>$&nbsp;</span>
                             <input matInput type="number" [formControlName]="attr.name"
@@ -81,7 +83,7 @@
 
                         <!-- REFERENCE — dropdown -->
                         <mat-form-field *ngIf="attr.fieldType === 'reference' && !(attr.sensitive && !canView && readOnly)"
-                                        appearance="outline" class="field-wrapper">
+                                        appearance="outline" class="field-wrapper" [class.full-width]="attr.fullWidth">
                             <mat-label>{{ attr.label }}</mat-label>
                             <mat-select [formControlName]="attr.name">
                                 <mat-option *ngIf="!attr.required" [value]="null">— None —</mat-option>
@@ -94,7 +96,7 @@
 
                         <!-- STRING / EMAIL / PHONE -->
                         <mat-form-field *ngIf="isTextType(attr) && !(attr.sensitive && !canView && readOnly)"
-                                        appearance="outline" class="field-wrapper">
+                                        appearance="outline" class="field-wrapper" [class.full-width]="attr.fullWidth">
                             <mat-label>{{ attr.label }}</mat-label>
                             <input matInput [formControlName]="attr.name"
                                    [type]="attr.fieldType === 'email' ? 'email' : attr.fieldType === 'phone' ? 'tel' : 'text'"

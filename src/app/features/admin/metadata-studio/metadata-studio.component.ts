@@ -94,7 +94,7 @@ export class MetadataStudioComponent implements OnInit {
         `MATCH (t:MetaType {name: "${this.selectedTypeName}"})\n` +
         `CREATE (t)-[:HAS_ATTRIBUTE]->(:MetaAttribute {\n` +
         `  name: "${v.name}", dataType: "${v.fieldType}", mandatory: ${v.required}` +
-        (v.sensitive ? `, sensitive: true` : '') +
+        (v.sensitive ? `, sensitive: false` : '') +
         (v.min !== null ? `, min: ${v.min}` : '') +
         (v.max !== null ? `, max: ${v.max}` : '') +
         `\n})`;
