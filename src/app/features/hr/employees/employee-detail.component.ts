@@ -137,8 +137,12 @@ export class EmployeeDetailComponent implements OnInit {
         });
     }
     loadLeaveBalances(): void {
+      if (!this.employeeId) {
+          console.warn('loadLeaveBalances: employeeId is not set, skipping');
+          return;
+      }
       this.api.get<Array<{ type: string; used: number; total: number }>>(
-          `leaves/balance?employeeId=${this.employeeId}`
+          'leaves/balance', { employeeId: this.employeeId }
       ).pipe(
           catchError(() => of([]))
       ).subscribe(balances => {

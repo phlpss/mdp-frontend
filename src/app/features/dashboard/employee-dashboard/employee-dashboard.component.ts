@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { selectCurrentUser } from '../../../store/auth/auth.selectors';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
@@ -57,7 +57,11 @@ export class EmployeeDashboardComponent implements OnInit {
       catchError(() => of([]))
     );
 
-    this.leaveBalances$ = this.api.get<LeaveBalance[]>('leaves/my/balance').pipe(
+    this.leaveBalances$ = this.currentUser$.pipe(
+      switchMap(user => {
+        if (!user?.id) return of<LeaveBalance[]>([]);
+        return this.api.get<LeaveBalance[]>('leaves/balance', { employeeId: user.id });
+      }),
       catchError(() => of([
         { type: 'Annual', used: 5, total: 20 },
         { type: 'Sick',   used: 2, total: 10 },

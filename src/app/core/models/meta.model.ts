@@ -136,26 +136,25 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     attributes: [
       { id: 'leaveType',       name: 'leaveType',       label: 'Leave Type', fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 2,
         enumValues: [
-          { value: 'PTO',      label: 'PTO' },
-          { value: 'SICK',     label: 'Sick Leave' },
-          { value: 'HOLIDAY',  label: 'Holiday' },
-          { value: 'ANNUAL',   label: 'Annual Leave' },
-          { value: 'UNPAID',   label: 'Unpaid Leave' },
+          { value: 'PTO',       label: 'Annual / PTO' },
+          { value: 'SICK',      label: 'Sick Leave' },
+          { value: 'HOLIDAY',   label: 'Holiday' },
+          { value: 'UNPAID',    label: 'Unpaid Leave' },
           { value: 'MATERNITY', label: 'Maternity Leave' },
           { value: 'PATERNITY', label: 'Paternity Leave' },
-          { value: 'OTHER',    label: 'Other' },
-
-
+          { value: 'OTHER',     label: 'Other' },
         ]
       },
       { id: 'startDate',  name: 'startDate',  label: 'Start Date', fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 3 },
       { id: 'endDate',    name: 'endDate',    label: 'End Date',   fieldType: 'date',     required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 4 },
-      { id: 'reason',     name: 'reason',     label: 'Reason',     fieldType: 'text',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 5 },
-      { id: 'leaveStatus',     name: 'leaveStatus',     label: 'Status',     fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 6,
+      { id: 'notes',       name: 'notes',       label: 'Notes',      fieldType: 'text',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 5 },
+      { id: 'leaveStatus', name: 'leaveStatus', label: 'Status',     fieldType: 'enum',     required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: false, readOnly: true,  order: 6,
         enumValues: [
-          { value: 'PENDING',   label: 'Pending',  color: '#f57c00' },
-          { value: 'APPROVED',  label: 'Approved', color: '#388e3c' },
-          { value: 'REJECTED',  label: 'Rejected', color: '#e53935' },
+          { value: 'PENDING',              label: 'Pending',              color: '#f57c00' },
+          { value: 'APPROVED',             label: 'Approved',             color: '#388e3c' },
+          { value: 'REJECTED',             label: 'Rejected',             color: '#e53935' },
+          { value: 'CANCELLED',            label: 'Cancelled',            color: '#9e9e9e' },
+          { value: 'PENDING_CANCELLATION', label: 'Pending Cancellation', color: '#ab47bc' },
         ]
       },
     ]

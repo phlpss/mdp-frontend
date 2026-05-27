@@ -19,7 +19,7 @@ const routes: Routes = [
     { path: 'expenses',          component: ExpenseListComponent },
     { path: 'inventory',         component: InventoryListComponent },
     { path: 'payroll',           component: PayrollComponent,
-        canActivate: [RoleGuard], data: { roles: ['HR_MANAGER', 'ACCOUNTANT', 'BUSINESS_OWNER'] } },
+        canActivate: [RoleGuard], data: { roles: ['ACCOUNTANT'] } },
     { path: 'forecast',          component: ForecastComponent,
         canActivate: [RoleGuard], data: { roles: ['ACCOUNTANT', 'BUSINESS_OWNER', 'STORE_MANAGER'] } },
     { path: 'closing-report',    component: ClosingReportComponent,

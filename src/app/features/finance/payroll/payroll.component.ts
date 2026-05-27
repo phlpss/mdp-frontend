@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { KpiData } from '../../../core/models/api.model';
@@ -60,14 +60,16 @@ export class PayrollComponent implements OnInit {
         const periodStart = `${year}-${String(month).padStart(2, '0')}-01`;
         const lastDay = new Date(year, month, 0).getDate();
         const periodEnd = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+        const stub: PayrollRow[] = [
+            { employeeId: '1', employeeName: 'Alice Johnson', role: 'BARISTA',           baseSalary: 2800, hoursWorked: 160, bonus: 200, deductions: 350, netPay: 2650 },
+            { employeeId: '2', employeeName: 'Bob Smith',     role: 'CASHIER',           baseSalary: 2600, hoursWorked: 152, bonus: 0,   deductions: 325, netPay: 2275 },
+            { employeeId: '3', employeeName: 'Carol White',   role: 'STORE_MANAGER',     baseSalary: 4200, hoursWorked: 176, bonus: 500, deductions: 590, netPay: 4110 },
+            { employeeId: '4', employeeName: 'David Lee',     role: 'BARISTA',           baseSalary: 2800, hoursWorked: 168, bonus: 100, deductions: 350, netPay: 2550 },
+            { employeeId: '5', employeeName: 'Emma Davis',    role: 'SHIFT_SUPERVISOR',  baseSalary: 3400, hoursWorked: 176, bonus: 300, deductions: 450, netPay: 3250 },
+        ];
         this.api.get<PayrollRow[]>(`finance/payroll/calculate?periodStart=${periodStart}&periodEnd=${periodEnd}`).pipe(
-            catchError(() => of([
-                { employeeId: '1', employeeName: 'Alice Johnson', role: 'Barista',   baseSalary: 2800, hoursWorked: 160, bonus: 200,  deductions: 350, netPay: 2650 },
-                { employeeId: '2', employeeName: 'Bob Smith',     role: 'Cashier',   baseSalary: 2600, hoursWorked: 152, bonus: 0,    deductions: 325, netPay: 2275 },
-                { employeeId: '3', employeeName: 'Carol White',   role: 'Store Manager',   baseSalary: 4200, hoursWorked: 176, bonus: 500,  deductions: 590, netPay: 4110 },
-                { employeeId: '4', employeeName: 'David Lee',     role: 'Barista',   baseSalary: 2800, hoursWorked: 168, bonus: 100,  deductions: 350, netPay: 2550 },
-                { employeeId: '5', employeeName: 'Emma Davis',    role: 'Shift Supervisor',baseSalary: 3400, hoursWorked: 176, bonus: 300,  deductions: 450, netPay: 3250 },
-            ] as PayrollRow[]))
+            map(data => Array.isArray(data) ? data : stub),
+            catchError(() => of(stub))
         ).subscribe(data => {
             this.payrollData = data;
             this.loading = false;

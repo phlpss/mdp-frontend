@@ -28,7 +28,7 @@ const ALL_NAV: NavItem[] = [
   { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
   { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR'] },
   { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
-  { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['HR_MANAGER','ACCOUNTANT','BUSINESS_OWNER'] },
+  { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['ACCOUNTANT'] },
   { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','BUSINESS_OWNER','STORE_MANAGER'] },
   // Admin section
   { label: 'Locations',      icon: 'store',            route: '/admin/locations', roles: ['BUSINESS_OWNER','IT_SPECIALIST','STORE_MANAGER'], divider: true },
