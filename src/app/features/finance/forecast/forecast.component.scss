@@ -9,5 +9,20 @@
   .subtitle { margin: 4px 0 0; color: #666; }
 }
 .header-actions { display: flex; gap: 8px; }
-.chart-container { height: 360px; padding: 8px 0; }
-.chart-container-sm { height: 280px; padding: 8px 0; }
+.chart-container {
+  height: 360px;
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  canvas { width: 75% !important; }
+}
+
+.chart-container-sm {
+  height: 280px;
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  canvas { width: 75% !important; }
+}
