@@ -6,6 +6,20 @@ import { MetadataActions } from './metadata.actions';
 import { MetadataService } from '../../core/services/metadata.service';
 import { NotificationService } from '../../core/services/notification.service';
 
+const FIELD_TYPE_TO_DATA_TYPE: Record<string, string> = {
+  string: 'STRING', number: 'INTEGER', currency: 'DECIMAL',
+  boolean: 'BOOLEAN', date: 'DATE', datetime: 'DATETIME', enum: 'ENUM',
+  email: 'STRING', phone: 'STRING', text: 'STRING', file: 'STRING', reference: 'STRING',
+};
+
+function toBackendAttr(attr: any): any {
+  return {
+    ...attr,
+    dataType: FIELD_TYPE_TO_DATA_TYPE[attr.fieldType ?? 'string'] ?? 'STRING',
+    mandatory: attr.required ?? false,
+  };
+}
+
 @Injectable()
 export class MetadataEffects {
   loadTypes$ = createEffect(() =>
@@ -23,11 +37,13 @@ export class MetadataEffects {
   createType$ = createEffect(() =>
     this.actions$.pipe(
       ofType(MetadataActions.createType),
-      switchMap(({ metaType }) =>
-        this.metaService.createType(metaType).pipe(
+      switchMap(({ metaType: payload }) =>
+        this.metaService.createType(payload).pipe(
           map(created => {
-            this.notifications.success(`Type '${created.label}' created.`);
-            return MetadataActions.createTypeSuccess({ metaType: created });
+            // Backend returns {name, attributes, sensitiveFields}; merge to preserve label/icon from the form.
+            const merged = { ...payload, ...created, label: payload.label ?? created.name } as any;
+            this.notifications.success(`Type '${merged.label}' created.`);
+            return MetadataActions.createTypeSuccess({ metaType: merged });
           }),
           catchError(err => of(MetadataActions.createTypeFailure({ error: err?.message })))
         )
@@ -39,10 +55,12 @@ export class MetadataEffects {
     this.actions$.pipe(
       ofType(MetadataActions.addAttribute),
       switchMap(({ typeName, attribute }) =>
-        this.metaService.addAttribute(typeName, attribute).pipe(
-          map(attr => {
-            this.notifications.success(`Attribute '${attr.label}' added.`);
-            return MetadataActions.addAttributeSuccess({ typeName, attribute: attr });
+        // Map frontend field names (fieldType, required) to backend names (dataType, mandatory).
+        // Backend returns the full MetaType, not just the attribute, so reload all types after success.
+        this.metaService.addAttribute(typeName, toBackendAttr(attribute)).pipe(
+          map(() => {
+            this.notifications.success(`Attribute '${(attribute as any).label ?? (attribute as any).name}' added.`);
+            return MetadataActions.loadTypes();
           }),
           catchError(err => of(MetadataActions.addAttributeFailure({ error: err?.message })))
         )
@@ -54,10 +72,11 @@ export class MetadataEffects {
     this.actions$.pipe(
       ofType(MetadataActions.updateAttribute),
       switchMap(({ typeName, attrName, attribute }) =>
-        this.metaService.updateAttribute(typeName, attrName, attribute).pipe(
-          map(attr => {
-            this.notifications.success(`Attribute '${attr.label}' updated.`);
-            return MetadataActions.updateAttributeSuccess({ typeName, attribute: attr });
+        // Same field-name mapping as addAttribute. Reload after success for correct state.
+        this.metaService.updateAttribute(typeName, attrName, toBackendAttr(attribute)).pipe(
+          map(() => {
+            this.notifications.success(`Attribute '${(attribute as any).label ?? attrName}' updated.`);
+            return MetadataActions.loadTypes();
           }),
           catchError(err => of(MetadataActions.updateAttributeFailure({ error: err?.message })))
         )

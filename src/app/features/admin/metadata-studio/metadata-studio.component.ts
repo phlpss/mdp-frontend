@@ -22,11 +22,15 @@ export class MetadataStudioComponent implements OnInit {
   loading$!: Observable<boolean>;
   selectedTypeName: string | null = null;
   selectedType$!: Observable<MetaType | null>;
+
   showAddAttrForm = false;
   addAttrForm!: FormGroup;
-  generatedCypher: string | null = null;
-  cypherCopied = false;
-  metadataActions = MetadataActions;   // expose for template
+
+  showNewTypeForm = false;
+  newTypeForm!: FormGroup;
+
+  editingAttr: MetaAttribute | null = null;
+  editAttrForm!: FormGroup;
 
   readonly fieldTypes: FieldType[] = [
     'string','number','boolean','date','datetime',
@@ -48,6 +52,8 @@ export class MetadataStudioComponent implements OnInit {
     this.loading$ = this.store.select(selectMetaLoading);
     this.store.dispatch(MetadataActions.loadTypes());
     this.initAttrForm();
+    this.initNewTypeForm();
+    this.initEditAttrForm();
   }
 
   private initAttrForm(): void {
@@ -64,8 +70,6 @@ export class MetadataStudioComponent implements OnInit {
       readOnly:    [false],
       min:         [null],
       max:         [null],
-      minLength:   [null],
-      maxLength:   [null],
       placeholder: [''],
       hint:        [''],
       group:       [''],
@@ -73,39 +77,106 @@ export class MetadataStudioComponent implements OnInit {
     });
   }
 
+  private initNewTypeForm(): void {
+    this.newTypeForm = this.fb.group({
+      name:        ['', [Validators.required, Validators.pattern(/^[a-z][a-z0-9_]*$/)]],
+      label:       ['', Validators.required],
+      pluralLabel: [''],
+      description: [''],
+      icon:        ['table_chart'],
+    });
+  }
+
+  private initEditAttrForm(attr?: MetaAttribute): void {
+    this.editAttrForm = this.fb.group({
+      label:       [attr?.label ?? '', Validators.required],
+      fieldType:   [attr?.fieldType ?? 'string', Validators.required],
+      required:    [attr?.required ?? false],
+      sensitive:   [attr?.sensitive ?? false],
+      sortable:    [attr?.sortable ?? true],
+      filterable:  [attr?.filterable ?? false],
+      showInList:  [attr?.showInList ?? false],
+      showInForm:  [attr?.showInForm ?? true],
+      readOnly:    [attr?.readOnly ?? false],
+      min:         [attr?.min ?? null],
+      max:         [attr?.max ?? null],
+      placeholder: [attr?.placeholder ?? ''],
+      hint:        [attr?.hint ?? ''],
+      group:       [attr?.group ?? ''],
+      order:       [attr?.order ?? 99],
+    });
+  }
+
   selectType(typeName: string): void {
     this.selectedTypeName = typeName;
     this.selectedType$ = this.store.select(selectTypeByName(typeName));
     this.showAddAttrForm = false;
+    this.editingAttr = null;
     this.initAttrForm();
   }
 
   toggleAddAttrForm(): void {
     this.showAddAttrForm = !this.showAddAttrForm;
+    this.editingAttr = null;
     if (!this.showAddAttrForm) this.initAttrForm();
+  }
+
+  toggleNewTypeForm(): void {
+    this.showNewTypeForm = !this.showNewTypeForm;
+    if (!this.showNewTypeForm) this.initNewTypeForm();
+  }
+
+  submitCreateType(): void {
+    if (this.newTypeForm.invalid) { this.newTypeForm.markAllAsTouched(); return; }
+    const v = this.newTypeForm.value;
+    this.store.dispatch(MetadataActions.createType({
+      metaType: {
+        name: v.name,
+        label: v.label,
+        pluralLabel: v.pluralLabel || v.label + 's',
+        description: v.description,
+        icon: v.icon || 'table_chart',
+        attributes: [],
+      }
+    }));
+    this.showNewTypeForm = false;
+    this.initNewTypeForm();
   }
 
   submitAddAttr(): void {
     if (!this.selectedTypeName || this.addAttrForm.invalid) {
       this.addAttrForm.markAllAsTouched(); return;
     }
-    const v = this.addAttrForm.value;
-    this.generatedCypher =
-        `MATCH (t:MetaType {name: "${this.selectedTypeName}"})\n` +
-        `CREATE (t)-[:HAS_ATTRIBUTE]->(:MetaAttribute {\n` +
-        `  name: "${v.name}", dataType: "${v.fieldType}", mandatory: ${v.required}` +
-        (v.sensitive ? `, sensitive: false` : '') +
-        (v.min !== null ? `, min: ${v.min}` : '') +
-        (v.max !== null ? `, max: ${v.max}` : '') +
-        `\n})`;
+    this.store.dispatch(MetadataActions.addAttribute({
+      typeName: this.selectedTypeName,
+      attribute: this.addAttrForm.value,
+    }));
     this.showAddAttrForm = false;
     this.initAttrForm();
   }
 
-  copyCypher(): void {
-    navigator.clipboard.writeText(this.generatedCypher ?? '');
-    this.cypherCopied = true;
-    setTimeout(() => this.cypherCopied = false, 2000);
+  startEditAttr(attr: MetaAttribute): void {
+    this.editingAttr = attr;
+    this.showAddAttrForm = false;
+    this.initEditAttrForm(attr);
+  }
+
+  cancelEditAttr(): void {
+    this.editingAttr = null;
+    this.initEditAttrForm();
+  }
+
+  submitEditAttr(): void {
+    if (!this.selectedTypeName || !this.editingAttr || this.editAttrForm.invalid) {
+      this.editAttrForm.markAllAsTouched(); return;
+    }
+    this.store.dispatch(MetadataActions.updateAttribute({
+      typeName: this.selectedTypeName,
+      attrName: this.editingAttr.name,
+      attribute: this.editAttrForm.value,
+    }));
+    this.editingAttr = null;
+    this.initEditAttrForm();
   }
 
   reloadSchema(): void {
@@ -139,6 +210,13 @@ export class MetadataStudioComponent implements OnInit {
 
   getBoolColor(val: boolean): string {
     return val ? 'primary' : '';
+  }
+
+  liveVal(attr: MetaAttribute, field: 'required' | 'sensitive' | 'sortable' | 'filterable' | 'showInList' | 'showInForm'): boolean {
+    if (this.editingAttr?.name === attr.name) {
+      return this.editAttrForm.get(field)?.value ?? attr[field];
+    }
+    return attr[field];
   }
 
   sortedAttributes(attrs: MetaAttribute[]): MetaAttribute[] {
