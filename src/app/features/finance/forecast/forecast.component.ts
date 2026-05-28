@@ -1,7 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ChartConfiguration } from 'chart.js';
+import {
+  Chart, ChartConfiguration,
+  BarController, BarElement,
+  LineController, LineElement, PointElement,
+  CategoryScale, LinearScale,
+  Tooltip, Legend, Filler,
+} from 'chart.js';
 import { of } from 'rxjs';
+
+Chart.register(
+  BarController, BarElement,
+  LineController, LineElement, PointElement,
+  CategoryScale, LinearScale,
+  Tooltip, Legend, Filler,
+);
 import { catchError } from 'rxjs/operators';
 import { ApiService } from '../../../core/services/api.service';
 import { KpiData } from '../../../core/models/api.model';
