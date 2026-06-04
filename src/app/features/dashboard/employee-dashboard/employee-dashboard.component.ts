@@ -97,11 +97,24 @@ export class EmployeeDashboardComponent implements OnInit {
         },
         {
           label: 'Hours This Week',
-          value: shifts.reduce((acc, s) => {
-            const [sh, sm] = s.startTime.split(':').map(Number);
-            const [eh, em] = s.endTime.split(':').map(Number);
-            return acc + (eh * 60 + em - (sh * 60 + sm)) / 60;
-          }, 0).toFixed(1),
+          value: shifts
+            .filter(s => {
+              if (!s.date) return false;
+              const [y, m, d] = s.date.split('-').map(Number);
+              const shiftDay = new Date(y, m - 1, d);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const weekEnd = new Date(today);
+              weekEnd.setDate(today.getDate() + (6 - today.getDay())); // through Sunday
+              return shiftDay >= today && shiftDay <= weekEnd;
+            })
+            .reduce((acc, s) => {
+              const [sh = 0, sm = 0] = (s.startTime || '').split(':').map(Number);
+              const [eh = 0, em = 0] = (s.endTime || '').split(':').map(Number);
+              const mins = eh * 60 + em - (sh * 60 + sm);
+              return acc + (mins > 0 ? mins : 0) / 60;
+            }, 0)
+            .toFixed(1),
           unit: 'hrs',
           icon: 'timer',
           color: '#f57c00',
