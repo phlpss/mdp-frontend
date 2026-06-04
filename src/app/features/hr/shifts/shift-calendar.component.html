@@ -1,73 +1,145 @@
-<div class="mdp-container">
-    <div class="page-header">
-        <div>
-            <h2>Shift Calendar</h2>
-            <p class="subtitle">Weekly overview</p>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MONTHLY VIEW — individual employee ("My Shifts")
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<ng-container *ngIf="myShiftsOnly; else weeklyView">
+    <div class="mdp-container">
+
+        <div class="page-header">
+            <div>
+                <h2>My Shifts</h2>
+                <p class="subtitle">Monthly overview</p>
+            </div>
+            <div class="month-nav">
+                <button mat-icon-button (click)="prevMonth()" matTooltip="Previous month">
+                    <mat-icon>chevron_left</mat-icon>
+                </button>
+                <span class="month-label">{{ viewMonth | date:'MMMM y' }}</span>
+                <button mat-icon-button (click)="nextMonth()" matTooltip="Next month">
+                    <mat-icon>chevron_right</mat-icon>
+                </button>
+                <button mat-stroked-button (click)="goToToday()">Today</button>
+            </div>
         </div>
-        <div class="week-nav">
-            <button mat-icon-button (click)="prevWeek()" matTooltip="Previous week">
-                <mat-icon>chevron_left</mat-icon>
-            </button>
-            <span class="week-label">
-        {{ weekDays[0] | date:'d MMM' }} – {{ weekDays[6] | date:'d MMM, y' }}
-      </span>
-            <button mat-icon-button (click)="nextWeek()" matTooltip="Next week">
-                <mat-icon>chevron_right</mat-icon>
-            </button>
-            <button mat-stroked-button (click)="goToToday()">Today</button>
-        </div>
-        <button *ngIf="canEdit" mat-raised-button color="primary" (click)="openAddShiftDialog()">
-            <mat-icon>add</mat-icon> Add Shift
-        </button>
+
+        <mat-card class="cal-card">
+            <mat-progress-bar *ngIf="loading" mode="indeterminate" class="cal-loader"></mat-progress-bar>
+            <mat-card-content class="cal-card-content">
+
+                <!-- Day-of-week header row -->
+                <div class="month-grid">
+                    <div class="dow-header" *ngFor="let d of dowLabels">{{ d }}</div>
+
+                    <!-- Calendar days -->
+                    <ng-container *ngFor="let week of calendarGrid">
+                        <div *ngFor="let day of week"
+                             class="day-cell"
+                             [class.other-month]="!day.inMonth"
+                             [class.is-today]="isToday(day.date)">
+
+                            <span class="day-number">{{ day.date.getDate() }}</span>
+
+                            <ng-container *ngIf="day.inMonth">
+                                <ng-container *ngIf="getShiftForDay(day.date) as shift">
+                                    <div class="cal-chip" [ngClass]="getStatusClass(shift.status)">
+                                        <mat-icon class="chip-icon">schedule</mat-icon>
+                                        {{ shift.startTime }}–{{ shift.endTime }}
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                        </div>
+                    </ng-container>
+                </div>
+
+                <!-- Legend -->
+                <div class="legend">
+                    <span class="legend-item shift-scheduled">Scheduled</span>
+                    <span class="legend-item shift-completed">Completed</span>
+                    <span class="legend-item shift-cancelled">Cancelled</span>
+                    <span class="legend-item shift-noshow">No Show</span>
+                </div>
+
+            </mat-card-content>
+        </mat-card>
     </div>
+</ng-container>
 
-    <mat-card>
-        <mat-card-content>
-            <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 
-            <div class="calendar-grid-wrapper">
-                <table class="calendar-grid">
-                    <thead>
-                    <tr>
-                        <th *ngIf="!myShiftsOnly" class="employee-col">Employee</th>
-                        <th *ngFor="let day of weekDays" [class.today-col]="isToday(day)">
-                            {{ formatDate(day) }}
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let emp of employees">
-                        <td *ngIf="!myShiftsOnly" class="employee-cell">
-                            <div class="emp-name">{{ emp.name }}</div>
-                        </td>
-                        <td *ngFor="let day of weekDays" class="shift-cell" [class.today-col]="isToday(day)">
-                            <div *ngFor="let shift of getShiftsForCell(emp.id, day)"
-                                 class="shift-chip" [ngClass]="getStatusClass(shift.status)">
-                                {{ shift.startTime }}–{{ shift.endTime }}
-                                <button *ngIf="canEdit && shift.status === 'SCHEDULED'"
-                                        mat-icon-button class="cancel-shift-btn"
-                                        matTooltip="Cancel shift"
-                                        (click)="cancelShift(shift.id!); $event.stopPropagation()">
-                                    <mat-icon style="font-size:14px">close</mat-icon>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     WEEKLY VIEW — HR / manager (unchanged)
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<ng-template #weeklyView>
+    <div class="mdp-container">
+        <div class="page-header">
+            <div>
+                <h2>Shift Calendar</h2>
+                <p class="subtitle">Weekly overview</p>
+            </div>
+            <div class="week-nav">
+                <button mat-icon-button (click)="prevWeek()" matTooltip="Previous week">
+                    <mat-icon>chevron_left</mat-icon>
+                </button>
+                <span class="week-label">
+          {{ weekDays[0] | date:'d MMM' }} – {{ weekDays[6] | date:'d MMM, y' }}
+        </span>
+                <button mat-icon-button (click)="nextWeek()" matTooltip="Next week">
+                    <mat-icon>chevron_right</mat-icon>
+                </button>
+                <button mat-stroked-button (click)="goToToday()">Today</button>
+            </div>
+            <button *ngIf="canEdit" mat-raised-button color="primary" (click)="openAddShiftDialog()">
+                <mat-icon>add</mat-icon> Add Shift
+            </button>
+        </div>
+
+        <mat-card>
+            <mat-card-content>
+                <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+                <div class="calendar-grid-wrapper">
+                    <table class="calendar-grid">
+                        <thead>
+                        <tr>
+                            <th class="employee-col">Employee</th>
+                            <th *ngFor="let day of weekDays" [class.today-col]="isToday(day)">
+                                {{ formatDate(day) }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let emp of employees">
+                            <td class="employee-cell">
+                                <div class="emp-name">{{ emp.name }}</div>
+                            </td>
+                            <td *ngFor="let day of weekDays" class="shift-cell" [class.today-col]="isToday(day)">
+                                <div *ngFor="let shift of getShiftsForCell(emp.id, day)"
+                                     class="shift-chip" [ngClass]="getStatusClass(shift.status)">
+                                    {{ shift.startTime }}–{{ shift.endTime }}
+                                    <button *ngIf="canEdit && shift.status === 'SCHEDULED'"
+                                            mat-icon-button class="cancel-shift-btn"
+                                            matTooltip="Cancel shift"
+                                            (click)="cancelShift(shift.id!); $event.stopPropagation()">
+                                        <mat-icon style="font-size:14px">close</mat-icon>
+                                    </button>
+                                </div>
+                                <button *ngIf="canEdit && getShiftsForCell(emp.id, day).length === 0"
+                                        mat-icon-button class="add-shift-btn" matTooltip="Add shift"
+                                        (click)="openAddShiftDialog(emp.id, day)">
+                                    <mat-icon>add</mat-icon>
                                 </button>
-                            </div>
-                            <button *ngIf="canEdit && getShiftsForCell(emp.id, day).length === 0"
-                                    mat-icon-button class="add-shift-btn" matTooltip="Add shift"
-                                    (click)="openAddShiftDialog(emp.id, day)">
-                                <mat-icon>add</mat-icon>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="legend">
-                <span class="legend-item shift-scheduled">Scheduled</span>
-                <span class="legend-item shift-completed">Completed</span>
-                <span class="legend-item shift-cancelled">Cancelled</span>
-                <span class="legend-item shift-noshow">No Show</span>
-            </div>
-        </mat-card-content>
-    </mat-card>
-</div>
+                <div class="legend">
+                    <span class="legend-item shift-scheduled">Scheduled</span>
+                    <span class="legend-item shift-completed">Completed</span>
+                    <span class="legend-item shift-cancelled">Cancelled</span>
+                    <span class="legend-item shift-noshow">No Show</span>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</ng-template>

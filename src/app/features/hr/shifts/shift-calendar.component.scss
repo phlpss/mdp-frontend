@@ -1,3 +1,5 @@
+// ─── shared ──────────────────────────────────────────────────────────────────
+
 .page-header {
   display: flex;
   align-items: center;
@@ -5,16 +7,150 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 12px;
-  h2 { margin: 0; }
-  .subtitle { margin: 4px 0 0; color: #666; }
+
+  h2     { margin: 0; }
+  .subtitle { margin: 4px 0 0; color: #787774; font-size: 13px; }
 }
+
+// ─── shift status colours (shared by both views) ─────────────────────────────
+
+.shift-scheduled { background: #e3f2fd; color: #1565c0; }
+.shift-completed { background: #e8f5e9; color: #2e7d32; }
+.shift-cancelled { background: #fce4ec; color: #c62828; }
+.shift-noshow    { background: #fff8e1; color: #f57f17; }
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+
+  .legend-item {
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+// ─── MONTHLY CALENDAR ────────────────────────────────────────────────────────
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .month-label {
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 148px;
+    text-align: center;
+    color: #37352f;
+  }
+}
+
+.cal-card {
+  overflow: hidden;
+
+  .cal-loader { border-radius: 0; }
+  .cal-card-content { padding: 0 16px 16px; }
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-left: 1px solid #e0e0e0;
+  border-top: 1px solid #e0e0e0;
+
+  // Day-of-week header
+  .dow-header {
+    background: #F1F1EF;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #787774;
+    padding: 10px 0;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  // Individual day cell
+  .day-cell {
+    min-height: 88px;
+    padding: 6px 8px 8px;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+    transition: background 0.12s;
+
+    // Day number
+    .day-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #37352f;
+      border-radius: 50%;
+      margin-bottom: 4px;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    // Today highlight: filled circle on the number
+    &.is-today .day-number {
+      background: #337EA9;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    // Days outside the current month
+    &.other-month {
+      background: #fafafa;
+
+      .day-number { color: #c8c7c4; }
+    }
+  }
+}
+
+// Shift chip inside a calendar day
+.cal-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px 3px 5px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+
+  .chip-icon {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    flex-shrink: 0;
+  }
+}
+
+// ─── WEEKLY CALENDAR (HR / manager view — unchanged) ─────────────────────────
 
 .week-nav {
   display: flex;
   align-items: center;
   gap: 8px;
 
-  .week-label { font-size: 15px; font-weight: 500; min-width: 180px; text-align: center; }
+  .week-label {
+    font-size: 15px;
+    font-weight: 500;
+    min-width: 180px;
+    text-align: center;
+  }
 }
 
 .calendar-grid-wrapper {
@@ -44,15 +180,10 @@
     z-index: 1;
   }
 
-  .employee-col {
-    min-width: 140px;
-    text-align: left;
-  }
+  .employee-col { min-width: 140px; text-align: left; }
 
-  .today-col {
-    background: #E7F3F8;
-    th#{&} { background: #337EA9; color: white; }
-  }
+  .today-col { background: #E7F3F8; }
+  th.today-col { background: #337EA9; color: white; }
 }
 
 .employee-cell {
@@ -73,11 +204,6 @@
   font-weight: 500;
   margin: 2px;
   cursor: pointer;
-
-  &.shift-scheduled { background: #e3f2fd; color: #1565c0; }
-  &.shift-completed { background: #e8f5e9; color: #2e7d32; }
-  &.shift-cancelled { background: #fce4ec; color: #c62828; }
-  &.shift-noshow    { background: #fff8e1; color: #f57f17; }
 }
 
 .add-shift-btn {
@@ -89,18 +215,11 @@
 
   mat-icon { font-size: 16px; }
 }
-
 .shift-cell:hover .add-shift-btn { opacity: 0.5; }
 
-.legend {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-
-  .legend-item {
-    padding: 2px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-  }
+.cancel-shift-btn {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  vertical-align: middle;
 }
