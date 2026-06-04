@@ -13,7 +13,7 @@ import {ActivatedRoute} from '@angular/router';
 
 function parseTime(value: string | null | undefined): string {
     if (!value) return '';
-    return value.includes('T') ? value.substring(11, 16) : value.substring(0, 5);
+    return value.includes('T') ? value.substring(23, 28) : value.substring(0, 5);
 }
 
 interface ShiftCell {
@@ -98,8 +98,8 @@ export class ShiftCalendarComponent implements OnInit {
                     employeeId: this.currentUserId!,
                     employeeName: '',
                     date: (s.payload['shiftDate'] as string)?.substring(0, 10),
-                    startTime: (s.payload['startTime'] as string)?.substring(11, 16),
-                    endTime:   (s.payload['endTime']   as string)?.substring(11, 16),
+                    startTime: (s.payload['startTime'] as string)?.substring(24, 28),
+                    endTime:   (s.payload['endTime']   as string)?.substring(24, 28),
                     status:    s.payload['shiftStatus'] as string,
                 }));
                 this.loading = false;

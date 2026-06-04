@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 function parseShiftTime(value: string | null | undefined): string {
     if (!value) return '–';
-    return value.includes('T') ? value.substring(11, 16) : value.substring(0, 5);
+    return value.includes('T') ? value.substring(23, 28) : value.substring(0, 5);
 }
 
 function calcShiftMinutes(start: string, end: string): number | null {

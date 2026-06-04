@@ -38,21 +38,32 @@ export class EmployeeDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser$ = this.store.select(selectCurrentUser);
 
-    this.upcomingShifts$ = this.api.get<{ id: string; payload: { shiftDate: string; startTime: string; endTime: string; shiftStatus: string } }[]>('shifts/my/upcoming').pipe(
+    this.upcomingShifts$ = this.api.get<{
+        id: string;
+        payload: {
+            shiftDate: string;
+            startTime: string;
+            endTime: string;
+            shiftStatus: string }
+    }[]>('shifts/my/upcoming').pipe(
       map(items => items
         .map(item => ({
           id: item.id,
           date: (item.payload.shiftDate ?? '').substring(0, 10),
-          startTime: (item.payload.startTime ?? '').substring(11, 16),
-          endTime: (item.payload.endTime ?? '').substring(11, 16),
+          startTime: (item.payload.startTime ?? '').substring(23, 28),
+          endTime: (item.payload.endTime ?? '').substring(23, 28),
           status: item.payload.shiftStatus,
         }))
-        .filter(shift =>
-          !!shift.date &&
-          new Date(shift.date) >= new Date(new Date().toDateString()) &&
-          shift.status !== 'COMPLETED' &&
-          shift.status !== 'CANCELLED'
-        )
+        .filter(shift => {
+            if (!shift.date) return false;
+            const [y, m, d] = shift.date.split('-').map(Number);
+            const shiftDay = new Date(y, m - 1, d);          // local midnight
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);                        // local midnight
+            return shiftDay >= today
+                && shift.status !== 'COMPLETED'
+                && shift.status !== 'CANCELLED';
+        })
       ),
       catchError(() => of([]))
     );
