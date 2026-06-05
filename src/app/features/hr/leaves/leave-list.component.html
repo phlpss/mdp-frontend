@@ -29,7 +29,8 @@
                     typeName="LeaveRequest"
                     [apiPath]="apiPath"
                     [filters]="filters"
-                    [actions]="tableActions">
+                    [actions]="tableActions"
+                    [reloadTrigger]="reloadTrigger">
             </mdp-entity-table>
         </mat-card-content>
     </mat-card>
@@ -46,7 +47,8 @@
                     typeName="LeaveRequest"
                     [apiPath]="apiPath"
                     [filters]="{ status: 'PENDING_CANCELLATION' }"
-                    [actions]="cancellationActions">
+                    [actions]="cancellationActions"
+                    [reloadTrigger]="reloadTrigger">
             </mdp-entity-table>
         </mat-card-content>
     </mat-card>

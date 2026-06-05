@@ -32,6 +32,7 @@ export class EntityTableComponent implements OnInit, OnChanges {
   @Input() filters: FilterParams = {};
   @Input() actions: TableAction[] = [];
   @Input() selectable = false;
+  @Input() reloadTrigger = 0;
   @Output() rowClick      = new EventEmitter<unknown>();
   @Output() selectionChange = new EventEmitter<unknown[]>();
 
@@ -103,7 +104,8 @@ export class EntityTableComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['filters'] || changes['apiPath']) && !changes['filters']?.firstChange) {
+    const relevant = changes['filters'] || changes['apiPath'] || changes['reloadTrigger'];
+    if (relevant && !changes['filters']?.firstChange && !changes['reloadTrigger']?.firstChange) {
       this.pageIndex = 0;
       this.load();
     }

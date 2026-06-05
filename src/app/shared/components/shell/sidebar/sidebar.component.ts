@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { selectCurrentUser } from '../../../../store/auth/auth.selectors';
-import { hasRole, User, UserRole } from '../../../../core/models/user.model';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole, User, UserRole } from '@core/models/user.model';
 
 interface NavItem {
   label: string;
@@ -16,7 +16,7 @@ interface NavItem {
 
 const ALL_NAV: NavItem[] = [
   { label: 'Dashboard',      icon: 'dashboard',        route: '/dashboard' },
-  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my/upcoming',      roles: ['BARISTA','CASHIER','EMPLOYEE'] },
+  { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my/upcoming',   roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions',    roles: ['CASHIER'] },
   // HR / Manager section
