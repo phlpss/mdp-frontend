@@ -29,7 +29,6 @@
   <!-- User menu -->
   <ng-container *ngIf="currentUser$ | async as user">
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-btn">
-      <div class="avatar">{{ getInitials(user) }}</div>
       <span class="user-name">{{ user.fullName || user.email || user.username }}</span>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
