@@ -12,39 +12,46 @@
   </div>
 
   <!-- KPI Cards -->
-  <div class="mdp-grid cols-3" *ngIf="kpis$ | async as kpis">
-    <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
-  </div>
+  <mat-card class="mdp-card" style="background-color: #F1F1EF; box-shadow: 0 0 0 0">
+      <div class="mdp-grid cols-3" *ngIf="kpis$ | async as kpis">
+          <mdp-kpi-card *ngFor="let kpi of kpis" [data]="kpi"></mdp-kpi-card>
+      </div>
+  </mat-card>
 
-  <!-- Upcoming Shifts -->
   <mat-card class="mdp-card">
-    <mat-card-header>
-      <mat-icon mat-card-avatar>schedule</mat-icon>
-      <mat-card-title>Upcoming Shifts</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <ng-container *ngIf="upcomingShifts$ | async as shifts">
-        <div *ngIf="shifts.length === 0" class="empty-state">
-          <mat-icon>event_available</mat-icon>
-          <p>No upcoming shifts scheduled</p>
-        </div>
-        <div class="shift-list">
-          <div *ngFor="let shift of shifts" class="shift-item">
-            <div class="shift-date">
-              <span class="day">{{ shift.date | date:'EEE' }}</span>
-              <span class="date">{{ shift.date | date:'d MMM' }}</span>
-            </div>
-            <div class="shift-info">
-              <strong>{{ shift.startTime }} – {{ shift.endTime }}</strong>
-              <span *ngIf="shift.locationName" class="location">{{ shift.locationName }}</span>
-            </div>
-            <div class="shift-status">
-              <span class="badge" [ngClass]="getShiftStatusClass(shift.status)">{{ shift.status }}</span>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-    </mat-card-content>
+      <mat-card-header>
+          <mat-icon mat-card-avatar>schedule</mat-icon>
+          <mat-card-title>Upcoming Shifts</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+          <ng-container *ngIf="upcomingShifts$ | async as shifts">
+              <div *ngIf="shifts.length === 0" class="empty-state">
+                  <mat-icon>event_available</mat-icon>
+                  <p>No upcoming shifts scheduled</p>
+              </div>
+              <div class="shift-list">
+                  <div *ngFor="let shift of shifts | slice:0:3" class="shift-item">
+                      <div class="shift-date">
+                          <span class="day">{{ shift.date | date:'EEE' }}</span>
+                          <span class="date">{{ shift.date | date:'d MMM' }}</span>
+                      </div>
+                      <div class="shift-info">
+                          <strong>{{ shift.startTime }} – {{ shift.endTime }}</strong>
+                          <span *ngIf="shift.locationName" class="location">{{ shift.locationName }}</span>
+                      </div>
+                      <div class="shift-status">
+                          <span class="badge" [ngClass]="getShiftStatusClass(shift.status)">{{ shift.status }}</span>
+                      </div>
+                  </div>
+              </div>
+              <div *ngIf="shifts.length > 3" class="show-more">
+                  <button mat-button color="primary" routerLink="/shifts">
+                      Show more ({{ shifts.length - 3 }} more)
+                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                  </button>
+              </div>
+          </ng-container>
+      </mat-card-content>
   </mat-card>
 
   <!-- Leave Balances -->
