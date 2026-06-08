@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { ShellComponent } from './shared/components/shell/shell.component';
-import { ForbiddenComponent } from './shared/components/forbidden/forbidden.component';
+import { AuthGuard } from '@core/guards/auth.guard';
+import { ShellComponent } from '@shared/components/shell/shell.component';
+import { ForbiddenComponent } from '@shared/components/forbidden/forbidden.component';
 
 const routes: Routes = [
   // Public routes

@@ -3,12 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { MetadataActions } from '../../../store/metadata/metadata.actions';
-import { selectAllTypes, selectMetaLoading, selectTypeByName } from '../../../store/metadata/metadata.selectors';
-import { MetaAttribute, MetaType, FieldType } from '../../../core/models/meta.model';
-import { NotificationService } from '../../../core/services/notification.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { ApiService } from '../../../core/services/api.service';
+import { MetadataActions } from '@store/metadata/metadata.actions';
+import { selectAllTypes, selectMetaLoading, selectTypeByName } from '@store/metadata/metadata.selectors';
+import { MetaAttribute, MetaType, FieldType } from '@core/models/meta.model';
+import { NotificationService } from '@core/services/notification.service';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '@core/services/api.service';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 

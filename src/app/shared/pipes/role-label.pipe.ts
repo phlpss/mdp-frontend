@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { UserRole } from '../../core/models/user.model';
+import { UserRole } from '@core/models/user.model';
 
 const ROLE_LABELS: Record<UserRole, string> = {
   EMPLOYEE:         'Employee',

@@ -16,8 +16,8 @@ Chart.register(
   Tooltip, Legend, Filler,
 );
 import { catchError } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { KpiData } from '../../../core/models/api.model';
+import { ApiService } from '@core/services/api.service';
+import { KpiData } from '@core/models/api.model';
 
 @Component({
   selector: 'mdp-forecast',

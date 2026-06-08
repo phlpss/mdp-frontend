@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { take } from 'rxjs/operators';
-import { selectCurrentUser } from '../../store/auth/auth.selectors';
-import { hasRole } from '../../core/models/user.model';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole } from '@core/models/user.model';
 
 @Component({
   selector: 'mdp-dashboard-routing',

@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { MetaAttribute } from '../../../core/models/meta.model';
-import { FilterParams } from '../../../core/models/api.model';
-import { selectFilterableAttributesForType } from '../../../store/metadata/metadata.selectors';
+import { MetaAttribute } from '@core/models/meta.model';
+import { FilterParams } from '@core/models/api.model';
+import { selectFilterableAttributesForType } from '@store/metadata/metadata.selectors';
 
 @Component({
   selector: 'mdp-meta-filter-bar',

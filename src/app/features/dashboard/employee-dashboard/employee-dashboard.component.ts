@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { selectCurrentUser } from '../../../store/auth/auth.selectors';
-import { ApiService } from '../../../core/services/api.service';
-import { KpiData } from '../../../core/models/api.model';
-import { User } from '../../../core/models/user.model';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { ApiService } from '@core/services/api.service';
+import { KpiData } from '@core/models/api.model';
+import { User } from '@core/models/user.model';
 
 interface UpcomingShift {
   id: string;

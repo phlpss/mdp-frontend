@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { selectSidebarOpen, selectLoading } from '../../../store/ui/ui.selectors';
-import { UiActions } from '../../../store/ui/ui.actions';
-import { AuthActions } from '../../../store/auth/auth.actions';
+import { selectSidebarOpen, selectLoading } from '@store/ui/ui.selectors';
+import { UiActions } from '@store/ui/ui.actions';
+import { AuthActions } from '@store/auth/auth.actions';
 
 @Component({
   selector: 'mdp-shell',

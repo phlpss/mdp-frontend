@@ -3,9 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, switchMap, take } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { selectActiveLocationId } from '../../../store/auth/auth.selectors';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { selectActiveLocationId } from '@store/auth/auth.selectors';
 
 interface SubmitResult {
     level: 'green' | 'amber' | 'red';

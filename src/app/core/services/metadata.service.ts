@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { BUILTIN_META_TYPES, MetaAttribute, MetaType } from '../models/meta.model';
 
 @Injectable({ providedIn: 'root' })

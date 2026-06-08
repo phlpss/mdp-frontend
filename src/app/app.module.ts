@@ -10,15 +10,15 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 // App
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CoreModule } from './core/core.module';
-import { SharedModule } from './shared/shared.module';
+import { CoreModule } from '@core/core.module';
+import { SharedModule } from '@shared/shared.module';
 
 // Store
-import { authReducer } from './store/auth/auth.reducer';
-import { metadataReducer } from './store/metadata/metadata.reducer';
-import { uiReducer } from './store/ui/ui.reducer';
-import { AuthEffects } from './store/auth/auth.effects';
-import { MetadataEffects } from './store/metadata/metadata.effects';
+import { authReducer } from '@store/auth/auth.reducer';
+import { metadataReducer } from '@store/metadata/metadata.reducer';
+import { uiReducer } from '@store/ui/ui.reducer';
+import { AuthEffects } from '@store/auth/auth.effects';
+import { MetadataEffects } from '@store/metadata/metadata.effects';
 
 @NgModule({
   declarations: [AppComponent],

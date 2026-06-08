@@ -3,10 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { FilterParams, PageResponse } from '../../../core/models/api.model';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { FilterParams, PageResponse } from '@core/models/api.model';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import {LocationFormDialogComponent} from "@features/admin/locations/location-form-dialog.component";
 
 interface Location {

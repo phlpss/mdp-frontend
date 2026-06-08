@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 const IDEMPOTENCY_HEADER = 'Idempotency-Key';
 const CACHE_KEY = 'mdp_idempotency_cache';

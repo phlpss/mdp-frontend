@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { KpiData } from '../../../core/models/api.model';
+import { KpiData } from '@core/models/api.model';
 
 @Component({
   selector: 'mdp-kpi-card',

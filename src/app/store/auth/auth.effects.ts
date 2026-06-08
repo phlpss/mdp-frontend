@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
 import { AuthActions } from './auth.actions';
-import { AuthService } from '../../core/services/auth.service';
-import { NotificationService } from '../../core/services/notification.service';
+import { AuthService } from '@core/services/auth.service';
+import { NotificationService } from '@core/services/notification.service';
 
 @Injectable()
 export class AuthEffects {

@@ -3,12 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { KpiData } from '../../../core/models/api.model';
-import { selectCanViewSensitive } from '../../../store/auth/auth.selectors';
+import { ApiService } from '@core/services/api.service';
+import { NotificationService } from '@core/services/notification.service';
+import { KpiData } from '@core/models/api.model';
+import { selectCanViewSensitive } from '@store/auth/auth.selectors';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 interface PayrollRow {
     employeeId: string;

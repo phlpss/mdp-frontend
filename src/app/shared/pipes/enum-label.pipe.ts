@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { EnumValue } from '../../core/models/meta.model';
+import { EnumValue } from '@core/models/meta.model';
 
 @Pipe({ name: 'enumLabel' })
 export class EnumLabelPipe implements PipeTransform {

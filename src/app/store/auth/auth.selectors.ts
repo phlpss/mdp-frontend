@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { AuthState } from './auth.reducer';
-import { canViewSensitive, hasRole, UserRole } from '../../core/models/user.model';
+import { canViewSensitive, hasRole, UserRole } from '@core/models/user.model';
 
 export const selectAuthState = createFeatureSelector<AuthState>('auth');
 

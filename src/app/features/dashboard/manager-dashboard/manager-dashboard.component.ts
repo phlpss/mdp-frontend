@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
-import { ApiService } from '../../../core/services/api.service';
-import { KpiData } from '../../../core/models/api.model';
-import { selectActiveLocationId, selectCurrentUser } from '../../../store/auth/auth.selectors';
-import { hasRole } from '../../../core/models/user.model';
+import { ApiService } from '@core/services/api.service';
+import { KpiData } from '@core/models/api.model';
+import { selectActiveLocationId, selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole } from '@core/models/user.model';
 
 interface Alert {
   type: 'warning' | 'info' | 'error';

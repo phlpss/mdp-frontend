@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { MetadataActions } from './metadata.actions';
-import { MetaType, MetaAttribute, FieldType, BUILTIN_META_TYPES } from '../../core/models/meta.model';
+import { MetaType, MetaAttribute, FieldType, BUILTIN_META_TYPES } from '@core/models/meta.model';
 
 export interface MetadataState {
   types: Record<string, MetaType>;

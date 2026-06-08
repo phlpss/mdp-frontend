@@ -3,8 +3,8 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { MetadataActions } from './metadata.actions';
-import { MetadataService } from '../../core/services/metadata.service';
-import { NotificationService } from '../../core/services/notification.service';
+import { MetadataService } from '@core/services/metadata.service';
+import { NotificationService } from '@core/services/notification.service';
 
 const FIELD_TYPE_TO_DATA_TYPE: Record<string, string> = {
   string: 'STRING', number: 'INTEGER', currency: 'DECIMAL',

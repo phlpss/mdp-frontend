@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AuthActions } from './store/auth/auth.actions';
-import { MetadataActions } from './store/metadata/metadata.actions';
-import { AuthService } from './core/services/auth.service';
+import { AuthActions } from '@store/auth/auth.actions';
+import { MetadataActions } from '@store/metadata/metadata.actions';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'mdp-root',
