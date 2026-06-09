@@ -8,7 +8,7 @@
 
             <div class="fields-grid" [class.three-col]="group.columns === 3">
                 <ng-container *ngFor="let attr of group.attributes">
-                    <ng-container>
+                    <ng-container *ngIf="!isHidden(attr.name)">
 
                         <!-- MASKED: sensitive field, read-only, no permission -->
                         <div *ngIf="attr.sensitive && !canView && readOnly"
@@ -113,6 +113,9 @@
             </div>
         </ng-container>
     </ng-container>
+
+    <!-- Projected slot: content placed above the action buttons (e.g. Initial Password) -->
+    <ng-content select="[slot=before-actions]"></ng-content>
 
     <!-- Form Actions -->
     <div *ngIf="!readOnly" class="form-actions">

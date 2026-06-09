@@ -1,16 +1,16 @@
 export type FieldType =
-  | 'string'
-  | 'number'
-  | 'boolean'
-  | 'date'
-  | 'datetime'
-  | 'enum'
-  | 'email'
-  | 'phone'
-  | 'currency'
-  | 'text'
-  | 'file'
-  | 'reference';
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'date'
+    | 'datetime'
+    | 'enum'
+    | 'email'
+    | 'phone'
+    | 'currency'
+    | 'text'
+    | 'file'
+    | 'reference';
 
 export interface MetaAttribute {
   id: string;
@@ -77,28 +77,81 @@ export const BUILTIN_META_TYPES: MetaType[] = [
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     attributes: [
-      { id: 'fullName',       name: 'fullName',       label: 'Full Name',              fieldType: 'string',    required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1,  group: 'Personal Information' },
-      { id: 'email',          name: 'email',          label: 'Email',                  fieldType: 'email',     required: true,  sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 2,  group: 'Personal Information' },
-      { id: 'phone',          name: 'phone',          label: 'Phone',                  fieldType: 'phone',     required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 3,  group: 'Personal Information', fullWidth: true },
-      { id: 'role',           name: 'role',           label: 'Role',                   fieldType: 'enum',      required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 4,  group: 'Employment Details',
+      // ── Personal Information ───────────────────────────────────────────
+      { id: 'fullName', name: 'fullName', label: 'Full Name', fieldType: 'string',  required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 1,  group: 'Personal Information' },
+      { id: 'email',    name: 'email',    label: 'Email',     fieldType: 'email',   required: true,  sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 2,  group: 'Personal Information' },
+      { id: 'phone',    name: 'phone',    label: 'Phone',     fieldType: 'phone',   required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 3,  group: 'Personal Information', fullWidth: true },
+
+      // ── Employment Details ─────────────────────────────────────────────
+      { id: 'role', name: 'role', label: 'Role', fieldType: 'enum', required: true, sensitive: false, sortable: true, filterable: true, showInList: true, showInForm: true, readOnly: false, order: 4, group: 'Employment Details',
         enumValues: [
-          { value: 'BARISTA',          label: 'Barista',        color: '#9F6B53' },
-          { value: 'CASHIER',          label: 'Cashier',        color: '#787774' },
-          { value: 'STORE_MANAGER',    label: 'Store Manager',  color: '#337EA9' },
+          { value: 'BARISTA',          label: 'Barista',         color: '#9F6B53' },
+          { value: 'CASHIER',          label: 'Cashier',         color: '#787774' },
+          { value: 'STORE_MANAGER',    label: 'Store Manager',   color: '#337EA9' },
           { value: 'SHIFT_SUPERVISOR', label: 'Shift Supervisor', color: '#448361' },
-          { value: 'HR_MANAGER',       label: 'HR Manager',     color: '#9065B0' },
-          { value: 'ACCOUNTANT',       label: 'Accountant',     color: '#D9730D' },
-          { value: 'BUSINESS_OWNER',   label: 'Business Owner', color: '#337EA9' },
-          { value: 'IT_SPECIALIST',    label: 'IT Specialist',  color: '#C14C8A' },
+          { value: 'HR_MANAGER',       label: 'HR Manager',      color: '#9065B0' },
+          { value: 'ACCOUNTANT',       label: 'Accountant',      color: '#D9730D' },
+          { value: 'BUSINESS_OWNER',   label: 'Business Owner',  color: '#337EA9' },
+          { value: 'IT_SPECIALIST',    label: 'IT Specialist',   color: '#C14C8A' },
         ]
       },
-      { id: 'hireDate',       name: 'hireDate',       label: 'Hire Date',              fieldType: 'date',      required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 5,  group: 'Employment Details' },
-      { id: 'locationId',     name: 'locationId',     label: 'Location',               fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 6,  group: 'Employment Details', referenceType: 'StoreLocation' },
-      { id: 'salary',         name: 'salary',         label: 'Salary',                 fieldType: 'currency',  required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 7,  group: 'Employment Details', min: 0 },
-      { id: 'isActive',       name: 'isActive',       label: 'Active',                 fieldType: 'boolean',   required: true,  sensitive: false, sortable: false, filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 8,  group: 'Employment Details', defaultValue: true },
-      { id: 'ptoBalance',     name: 'ptoBalance',     label: 'PTO Balance (days)',     fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 9,  group: 'Leave Balances', min: 0, defaultValue: 20, groupColumns: 3 },
-      { id: 'sickBalance',    name: 'sickBalance',    label: 'Sick Balance (days)',    fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 10, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
-      { id: 'holidayBalance', name: 'holidayBalance', label: 'Holiday Balance (days)', fieldType: 'number',    required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true,  readOnly: false, order: 11, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
+      { id: 'hireDate',   name: 'hireDate',   label: 'Hire Date', fieldType: 'date',      required: true,  sensitive: false, sortable: true,  filterable: false, showInList: true,  showInForm: true,  readOnly: false, order: 5,  group: 'Employment Details' },
+      { id: 'locationId', name: 'locationId', label: 'Location',  fieldType: 'reference', required: true,  sensitive: false, sortable: true,  filterable: true,  showInList: true,  showInForm: true,  readOnly: false, order: 6,  group: 'Employment Details', referenceType: 'StoreLocation' },
+      { id: 'skillLevel', name: 'skillLevel', label: 'Skill Level', fieldType: 'enum', required: false, sensitive: false, sortable: true, filterable: true, showInList: false, showInForm: true, readOnly: false, order: 7, group: 'Employment Details',
+        enumValues: [
+          { value: 'TRAINEE', label: 'Trainee', color: '#9e9e9e' },
+          { value: 'JUNIOR',  label: 'Junior',  color: '#1976d2' },
+          { value: 'MIDDLE',  label: 'Middle',  color: '#388e3c' },
+          { value: 'SENIOR',  label: 'Senior',  color: '#7b1fa2' },
+        ]
+      },
+      { id: 'employmentType', name: 'employmentType', label: 'Employment Type', fieldType: 'enum', required: false, sensitive: false, sortable: true, filterable: true, showInList: false, showInForm: true, readOnly: false, order: 8, group: 'Employment Details',
+        enumValues: [
+          { value: 'FULL_TIME',   label: 'Full-Time',   color: '#388e3c' },
+          { value: 'PART_TIME',   label: 'Part-Time',   color: '#1976d2' },
+          { value: 'CONTRACT',    label: 'Contract',    color: '#D9730D' },
+          { value: 'HOURLY',      label: 'Hourly',      color: '#9065B0' },
+          { value: 'INTERN',      label: 'Intern',      color: '#787774' },
+          { value: 'FREELANCE',   label: 'Freelance',   color: '#C14C8A' },
+        ]
+      },
+      { id: 'jobStatus', name: 'jobStatus', label: 'Job Status', fieldType: 'enum', required: false, sensitive: false, sortable: true, filterable: true, showInList: false, showInForm: true, readOnly: false, order: 9, group: 'Employment Details',
+        enumValues: [
+          { value: 'PROBATION',   label: 'Probation',    color: '#f57c00' },
+          { value: 'ACTIVE',      label: 'Active',       color: '#388e3c' },
+          { value: 'ON_LEAVE',    label: 'On Leave',     color: '#1976d2' },
+          { value: 'SUSPENDED',   label: 'Suspended',    color: '#e53935' },
+          { value: 'TERMINATED',  label: 'Terminated',   color: '#9e9e9e' },
+        ]
+      },
+      { id: 'paymentType', name: 'paymentType', label: 'Payment Type', fieldType: 'enum', required: false, sensitive: false, sortable: true, filterable: true, showInList: false, showInForm: true, readOnly: false, order: 10, group: 'Employment Details',
+        enumValues: [
+          { value: 'MONTHLY_SALARY', label: 'Monthly Salary', color: '#388e3c' },
+          { value: 'HOURLY_RATE',    label: 'Hourly Rate',    color: '#1976d2' },
+          { value: 'COMMISSION',     label: 'Commission',     color: '#D9730D' },
+          { value: 'STIPEND',        label: 'Stipend',        color: '#787774' },
+        ]
+      },
+      // Visible only when paymentType === 'MONTHLY_SALARY' (enforced in dialog)
+      { id: 'monthlySalary', name: 'monthlySalary', label: 'Monthly Salary', fieldType: 'currency', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 11, group: 'Employment Details', min: 0,
+        hint: 'Fixed monthly compensation'
+      },
+      // Visible only when paymentType === 'HOURLY_RATE' or employmentType === 'HOURLY' (enforced in dialog)
+      { id: 'hourlyRate', name: 'hourlyRate', label: 'Hourly Rate', fieldType: 'currency', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 12, group: 'Employment Details', min: 0,
+        hint: 'Rate per hour worked'
+      },
+      // isActive moved to bottom of Employment Details
+      { id: 'isActive', name: 'isActive', label: 'Active', fieldType: 'boolean', required: true, sensitive: false, sortable: false, filterable: true, showInList: true, showInForm: true, readOnly: false, order: 13, group: 'Employment Details', defaultValue: true },
+
+      // ── Emergency Contact ──────────────────────────────────────────────
+      { id: 'emergencyName',  name: 'emergencyName',  label: 'Contact Name',         fieldType: 'string', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 14, group: 'Emergency Contact' },
+      { id: 'emergencyPhone', name: 'emergencyPhone', label: 'Contact Phone',        fieldType: 'phone',  required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 15, group: 'Emergency Contact' },
+      { id: 'emergencyRel',   name: 'emergencyRel',   label: 'Relationship',         fieldType: 'string', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 16, group: 'Emergency Contact', fullWidth: true },
+
+      // ── Leave Balances ─────────────────────────────────────────────────
+      { id: 'ptoBalance',     name: 'ptoBalance',     label: 'PTO Balance (days)',     fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 17, group: 'Leave Balances', min: 0, defaultValue: 20, groupColumns: 3 },
+      { id: 'sickBalance',    name: 'sickBalance',    label: 'Sick Balance (days)',    fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 18, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
+      { id: 'holidayBalance', name: 'holidayBalance', label: 'Holiday Balance (days)', fieldType: 'number', required: false, sensitive: false, sortable: false, filterable: false, showInList: false, showInForm: true, readOnly: false, order: 19, group: 'Leave Balances', min: 0, defaultValue: 10, groupColumns: 3 },
     ]
   },
   {
