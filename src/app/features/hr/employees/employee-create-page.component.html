@@ -1,0 +1,82 @@
+<div class="create-page-wrapper">
+
+  <!-- Page header -->
+  <div class="page-header-zone">
+    <div class="create-page-container">
+      <div class="breadcrumb">
+        <button mat-icon-button class="back-btn" (click)="cancel()" matTooltip="Back to Employees">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <a class="breadcrumb-link" routerLink="/hr/employees">HR</a>
+        <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+        <a class="breadcrumb-link" routerLink="/hr/employees">Employees</a>
+        <mat-icon class="breadcrumb-sep">chevron_right</mat-icon>
+        <span class="breadcrumb-current">New</span>
+      </div>
+      <div class="header-body">
+        <h1 class="page-title">Add Employee</h1>
+        <p class="page-subtitle">Fill in the details below to create a new employee record.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading skeleton -->
+  <div class="create-page-container" *ngIf="!(metaReady$ | async)">
+    <mat-card class="loading-card">
+      <mat-card-content>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <p class="loading-label">Loading form…</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Form body -->
+  <div class="create-page-container form-area" *ngIf="metaReady$ | async">
+    <mat-card class="form-card">
+      <mat-card-content>
+        <mdp-dynamic-form
+          #dynForm
+          typeName="Employee"
+          [hiddenFields]="hiddenFields"
+          [hideActions]="true"
+          (formValuesChange)="onValuesChange($event)"
+          (formSubmit)="onSubmit($event)">
+
+          <!-- Initial password projected before the (suppressed) form action bar -->
+          <ng-container slot="before-actions">
+            <mat-form-field appearance="outline" class="password-field">
+              <mat-label>Initial Password</mat-label>
+              <input matInput
+                     [type]="showPassword ? 'text' : 'password'"
+                     [(ngModel)]="password"
+                     name="initialPassword"
+                     required />
+              <button mat-icon-button matSuffix type="button"
+                      (click)="showPassword = !showPassword">
+                <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+            </mat-form-field>
+          </ng-container>
+
+        </mdp-dynamic-form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Sticky action bar -->
+  <div class="sticky-bar" *ngIf="metaReady$ | async">
+    <div class="sticky-bar-inner create-page-container">
+      <button mat-stroked-button [disabled]="saving" (click)="cancel()">
+        Cancel
+      </button>
+      <button mat-raised-button color="primary"
+              [disabled]="saving || !password.trim()"
+              (click)="triggerSubmit()">
+        <mat-spinner *ngIf="saving" diameter="18" class="btn-spinner"></mat-spinner>
+        <mat-icon *ngIf="!saving">person_add</mat-icon>
+        {{ saving ? 'Creating…' : 'Create Employee' }}
+      </button>
+    </div>
+  </div>
+
+</div>

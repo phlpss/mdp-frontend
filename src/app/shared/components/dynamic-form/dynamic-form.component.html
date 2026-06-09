@@ -118,7 +118,7 @@
     <ng-content select="[slot=before-actions]"></ng-content>
 
     <!-- Form Actions -->
-    <div *ngIf="!readOnly" class="form-actions">
+    <div *ngIf="!readOnly && !hideActions" class="form-actions">
         <button mat-raised-button color="primary" type="submit">
             <mat-icon>save</mat-icon> {{ submitLabel }}
         </button>

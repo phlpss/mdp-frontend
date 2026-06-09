@@ -4,7 +4,7 @@
             <h2>Employees</h2>
             <p class="subtitle">Manage your team</p>
         </div>
-        <button *ngIf="canAdd" mat-raised-button color="primary" (click)="openAddDialog()">
+        <button *ngIf="canAdd" mat-raised-button color="primary" routerLink="/hr/employees/new">
             <mat-icon>person_add</mat-icon> Add Employee
         </button>
     </div>

@@ -16,6 +16,7 @@ import {RoleGuard} from '@core/guards/role.guard';
 
 import {EmployeeListComponent} from './employees/employee-list.component';
 import {EmployeeDetailComponent} from './employees/employee-detail.component';
+import {EmployeeCreatePageComponent} from './employees/employee-create-page.component';
 import {EmployeeFormDialogComponent} from './employees/employee-form-dialog.component';
 import {ShiftCalendarComponent, ShiftFormDialogComponent} from './shifts/shift-calendar.component';
 import {LeaveListComponent} from './leaves/leave-list.component';
@@ -24,6 +25,10 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
  const routes: Routes = [
     {path: '', redirectTo: 'employees', pathMatch: 'full'},
     {path: 'employees', component: EmployeeListComponent},
+    {
+        path: 'employees/new', component: EmployeeCreatePageComponent,
+        canActivate: [RoleGuard], data: {roles: ['HR_MANAGER', 'IT_SPECIALIST']},
+    },
     {path: 'employees/:id', component: EmployeeDetailComponent},
     {path: 'shifts/my', component: ShiftCalendarComponent},
     {path: 'shifts/my/upcoming', component: ShiftCalendarComponent},
@@ -42,6 +47,7 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
     declarations: [
         EmployeeListComponent,
         EmployeeDetailComponent,
+        EmployeeCreatePageComponent,
         EmployeeFormDialogComponent,
         ShiftCalendarComponent,
         ShiftFormDialogComponent,

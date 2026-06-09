@@ -50,19 +50,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   openAddDialog(): void {
-    const ref = this.dialog.open(EmployeeFormDialogComponent, {
-      width: '720px',
-      maxWidth: '95vw',
-      data: { formData: null },
-    });
-    ref.afterClosed().subscribe(data => {
-      if (data) {
-          this.api.post('hr/employees', data).subscribe(() => {
-          this.notifications.success('Employee created.');
-          this.reloadTrigger++;
-        });
-      }
-    });
+    this.router.navigate(['/hr/employees/new']);
   }
 
   openEditDialog(employee: Record<string, unknown>): void {

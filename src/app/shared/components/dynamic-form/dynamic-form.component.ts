@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 import { MetaAttribute } from '@core/models/meta.model';
 import { selectFormAttributesForType } from '@store/metadata/metadata.selectors';
 import { selectCanViewSensitive } from '@store/auth/auth.selectors';
@@ -19,13 +19,16 @@ interface FormGroup_ {
   templateUrl: './dynamic-form.component.html',
   styleUrls: ['./dynamic-form.component.scss'],
 })
-export class DynamicFormComponent implements OnInit, OnChanges {
+export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
   @Input() typeName!: string;
   @Input() formData: Record<string, unknown> | null = null;
   @Input() readOnly = false;
   @Input() submitLabel = 'Save';
   /** Field names that should be hidden (but still in the form group) */
   @Input() hiddenFields: string[] = [];
+  @Input() extraFields!: { [p: string]: unknown };
+  /** When true, the built-in Save/Cancel buttons are suppressed so the host can render its own action bar */
+  @Input() hideActions = false;
 
   @Output() formSubmit = new EventEmitter<Record<string, unknown>>();
   @Output() formCancel = new EventEmitter<void>();
@@ -41,7 +44,8 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   canView = false;
 
   private valueSub?: Subscription;
-  @Input() extraFields!: { [p: string]: unknown };
+  private attrSub?: Subscription;
+  private canViewSub?: Subscription;
 
   constructor(
       private store: Store,
@@ -51,72 +55,105 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.attributes$ = this.store.select(selectFormAttributesForType(this.typeName));
-    this.attributes$.pipe(first(attrs => attrs.length > 0)).subscribe(attrs => {
-      attrs.filter(a => a.fieldType === 'reference' && a.referenceType).forEach(attr => {
-        this.api.getPage<unknown>(
-            `entities/${attr.referenceType}`,
-            { page: 0, size: 100 }, {}
-        ).subscribe((page: any) => {
-          this.referenceOptions[attr.name] = page.content.map((item: any) => ({
-            id: item.id,
-            label: item.payload?.storeName ?? item.payload?.name ?? item.payload?.fullName ?? item.id,
-          }));
-        });
-      });
-    });
-
+    this.canViewSub = this.store.select(selectCanViewSensitive)
+        .subscribe(v => { this.canView = !!v; });
     this.canViewSensitive$ = this.store.select(selectCanViewSensitive);
-    this.canViewSensitive$.subscribe(v => { this.canView = !!v; });
-    this.fieldGroups$ = this.attributes$.pipe(map(attrs => this.groupAttributes(attrs)));
-    this.buildForm();
+    this.setupForType();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['typeName'] && !changes['typeName'].firstChange) {
+      this.setupForType();
+      return;
+    }
     if (changes['formData'] && this.form) {
       this.patchFormValues();
     }
-    if (changes['typeName'] && !changes['typeName'].firstChange) {
-      this.buildForm();
-    }
+  }
+
+  ngOnDestroy(): void {
+    this.valueSub?.unsubscribe();
+    this.attrSub?.unsubscribe();
+    this.canViewSub?.unsubscribe();
+  }
+
+  /**
+   * Subscribe to the resolved (merged) metadata for this type and rebuild
+   * BOTH the view groups and the form whenever it changes. The store seeds
+   * builtin metadata first and then merges the backend response, so the form
+   * MUST react to every emission — using first()/one-shot here desyncs the
+   * form controls from the rendered fields and corrupts the layout.
+   */
+  private setupForType(): void {
+    this.attrSub?.unsubscribe();
+
+    // Single shared, filtered stream — one source of truth for view + form.
+    this.attributes$ = this.store.select(selectFormAttributesForType(this.typeName)).pipe(
+        filter(attrs => attrs.length > 0),
+        shareReplay({ bufferSize: 1, refCount: true }),
+    );
+
+    this.fieldGroups$ = this.attributes$.pipe(map(attrs => this.groupAttributes(attrs)));
+
+    this.attrSub = this.attributes$.subscribe(attrs => {
+      this.buildForm(attrs);
+      this.loadReferenceOptions(attrs);
+    });
   }
 
   isHidden(attrName: string): boolean {
     return this.hiddenFields.includes(attrName);
   }
 
-  private buildForm(): void {
-    this.attributes$.pipe(first(attrs => attrs.length > 0)).subscribe(attrs => {
-      const controls: Record<string, AbstractControl> = {};
-      attrs.forEach(attr => {
-        const validators: ValidatorFn[] = [];
-        if (attr.required && !attr.readOnly) validators.push(Validators.required);
-        if (attr.minLength) validators.push(Validators.minLength(attr.minLength));
-        if (attr.maxLength) validators.push(Validators.maxLength(attr.maxLength));
-        if (attr.min !== undefined && ['number', 'currency'].includes(attr.fieldType)) {
-          validators.push(Validators.min(attr.min));
-        }
-        if (attr.max !== undefined && ['number', 'currency'].includes(attr.fieldType)) {
-          validators.push(Validators.max(attr.max));
-        }
-        if (attr.fieldType === 'email') validators.push(Validators.email);
-        if (attr.pattern) validators.push(Validators.pattern(attr.pattern));
-        controls[attr.name] = this.fb.control(
-            { value: attr.defaultValue ?? null, disabled: attr.readOnly || this.readOnly },
-            validators,
-        );
-      });
-      this.form = this.fb.group(controls);
-      this.patchFormValues();
+  private buildForm(attrs: MetaAttribute[]): void {
+    // Preserve anything already entered so a late metadata refresh doesn't wipe input.
+    const previous = this.form ? this.form.getRawValue() : {};
 
-      // Subscribe to value changes to emit to parent
-      this.valueSub?.unsubscribe();
-      this.valueSub = this.form.valueChanges.subscribe(values => {
-        this.formValuesChange.emit(values);
-      });
-
-      this.cdr.detectChanges();
+    const controls: Record<string, AbstractControl> = {};
+    attrs.forEach(attr => {
+      const validators: ValidatorFn[] = [];
+      if (attr.required && !attr.readOnly) validators.push(Validators.required);
+      if (attr.minLength) validators.push(Validators.minLength(attr.minLength));
+      if (attr.maxLength) validators.push(Validators.maxLength(attr.maxLength));
+      if (attr.min !== undefined && ['number', 'currency'].includes(attr.fieldType)) {
+        validators.push(Validators.min(attr.min));
+      }
+      if (attr.max !== undefined && ['number', 'currency'].includes(attr.fieldType)) {
+        validators.push(Validators.max(attr.max));
+      }
+      if (attr.fieldType === 'email') validators.push(Validators.email);
+      if (attr.pattern) validators.push(Validators.pattern(attr.pattern));
+      controls[attr.name] = this.fb.control(
+          { value: attr.defaultValue ?? null, disabled: attr.readOnly || this.readOnly },
+          validators,
+      );
     });
+
+    this.form = this.fb.group(controls);
+    this.patchFormValues();                                  // edit data (formData input)
+    this.form.patchValue(previous, { emitEvent: false });    // keep user edits, if any
+
+    this.valueSub?.unsubscribe();
+    this.valueSub = this.form.valueChanges.subscribe(values => {
+      this.formValuesChange.emit(values);
+    });
+
+    this.cdr.detectChanges();
+  }
+
+  private loadReferenceOptions(attrs: MetaAttribute[]): void {
+    attrs
+        .filter(a => a.fieldType === 'reference' && a.referenceType)
+        .forEach(attr => {
+          this.api.getPage<unknown>(`entities/${attr.referenceType}`, { page: 0, size: 100 }, {})
+              .subscribe((page: any) => {
+                this.referenceOptions[attr.name] = page.content.map((item: any) => ({
+                  id: item.id,
+                  label: item.payload?.storeName ?? item.payload?.name ?? item.payload?.fullName ?? item.id,
+                }));
+                this.cdr.detectChanges();
+              });
+        });
   }
 
   private patchFormValues(): void {
