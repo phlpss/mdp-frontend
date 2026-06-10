@@ -56,7 +56,7 @@
                                 <mat-icon>edit</mat-icon>
                             </button>
                             <button mat-icon-button
-                                    [color]="loc.isActive ? 'warn' : 'primary'"
+                                    [color]="loc.isActive ? 'primary' : 'warn'"
                                     [matTooltip]="loc.isActive ? 'Deactivate' : 'Activate'"
                                     (click)="toggleActive(loc)">
                                 <mat-icon>{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
