@@ -33,7 +33,7 @@ function backendAttrToMeta(ba: any, order: number, sensitive: boolean, builtin?:
     id: ba.id ?? builtin?.id ?? ba.name,
     name: ba.name,
     label: ba.label ?? builtin?.label ?? toDisplayLabel(ba.name),
-    fieldType: ba.fieldType ?? DATA_TYPE_MAP[(ba.dataType ?? '').toUpperCase()] ?? builtin?.fieldType ?? 'string',
+    fieldType: (ba.uiWidget === 'Reference' || ba.referenceType || builtin?.referenceType) ? 'reference' : ba.fieldType ?? ((ba.uiWidget === 'Select' || ba.allowedValues?.length) ? 'enum' : DATA_TYPE_MAP[(ba.dataType ?? '').toUpperCase()] ?? builtin?.fieldType ?? 'string'),
     required: ba.required !== undefined ? !!ba.required : (ba.mandatory !== undefined ? !!ba.mandatory : (builtin?.required ?? false)),
     sensitive: ba.sensitive !== undefined ? !!ba.sensitive : sensitive,
     sortable: ba.sortable !== undefined ? !!ba.sortable : (builtin?.sortable ?? true),
