@@ -42,6 +42,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
 
   referenceOptions: Record<string, { id: string; label: string }[]> = {};
   canView = false;
+  private currentAttrs: MetaAttribute[] = [];
 
   private valueSub?: Subscription;
   private attrSub?: Subscription;
@@ -106,6 +107,7 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private buildForm(attrs: MetaAttribute[]): void {
+    this.currentAttrs = attrs;
     // Preserve anything already entered so a late metadata refresh doesn't wipe input.
     const previous = this.form ? this.form.getRawValue() : {};
 
@@ -177,7 +179,18 @@ export class DynamicFormComponent implements OnInit, OnChanges, OnDestroy {
 
   submit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.formSubmit.emit(this.form.getRawValue() as Record<string, unknown>);
+    const raw = this.form.getRawValue() as Record<string, unknown>;
+    const dateFields = new Set(this.currentAttrs.filter(a => a.fieldType === 'date').map(a => a.name));
+    const payload: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(raw)) {
+      if (dateFields.has(key) && val instanceof Date) {
+        const d = val;
+        payload[key] = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      } else {
+        payload[key] = val;
+      }
+    }
+    this.formSubmit.emit(payload);
   }
 
   cancel(): void {

@@ -1,150 +1,55 @@
 <div class="mdp-container" *ngIf="!loading; else loadingTpl">
-  <div class="page-header">
-    <div class="breadcrumb">
-      <a mat-button routerLink="/hr/employees"><mat-icon>arrow_back</mat-icon> Employees</a>
-      <span class="breadcrumb-sep">/</span>
-      <span>{{ fullName }}</span>
+    <div class="page-header">
+        <div class="breadcrumb">
+            <a mat-button routerLink="/hr/employees"><mat-icon>arrow_back</mat-icon> Employees</a>
+            <span class="breadcrumb-sep">/</span>
+            <span>{{ fullName }}</span>
+        </div>
+        <div class="header-actions">
+            <button *ngIf="canEdit" mat-stroked-button (click)="openEditDialog()">
+                <mat-icon>edit</mat-icon> Edit
+            </button>
+            <button *ngIf="canDeactivate && employee?.['isActive']" mat-raised-button color="warn" (click)="deactivate()">
+                <mat-icon>person_off</mat-icon> Deactivate
+            </button>
+        </div>
     </div>
-    <div class="header-actions">
-      <button *ngIf="canEdit" mat-stroked-button (click)="openEditDialog()">
-        <mat-icon>edit</mat-icon> Edit
-      </button>
-      <button *ngIf="canDeactivate && employee?.['isActive']" mat-raised-button color="warn" (click)="deactivate()">
-        <mat-icon>person_off</mat-icon> Deactivate
-      </button>
-    </div>
-  </div>
 
-  <div class="detail-grid">
-    <!-- Profile card -->
-    <mat-card class="profile-card">
-      <mat-card-content>
-        <div class="avatar-section">
-          <div class="big-avatar">{{ fullName.charAt(0) }}{{ employee?.['lastName'] ? $any(employee?.['lastName']).charAt(0) : '' }}</div>
-          <h3>{{ fullName }}</h3>
-          <span class="badge" [ngClass]="employee?.['isActive'] ? 'badge-active' : 'badge-inactive'">
+    <div class="detail-grid">
+        <mat-card class="profile-card">
+            <mat-card-content>
+                <div class="avatar-section">
+                    <div class="big-avatar">{{ initials }}</div>
+                    <h3>{{ fullName }}</h3>
+                    <span class="badge" [ngClass]="employee?.['isActive'] ? 'badge-active' : 'badge-inactive'">
             {{ employee?.['isActive'] ? 'Active' : 'Inactive' }}
           </span>
-          <div class="role-chip">{{ employee?.['role'] }}</div>
-        </div>
+                    <div class="role-chip">{{ employee?.['role'] }}</div>
+                </div>
 
-        <mat-divider style="margin: 16px 0"></mat-divider>
-          <div class="profile-fields" *ngIf="employee">
-              <div class="field-row">
-                  <span class="field-label">Full Name</span>
-                  <span class="field-value">{{ employee['fullName'] }}</span>
-              </div>
-              <div class="field-row">
-                  <span class="field-label">Email</span>
-                  <span class="field-value">{{ employee['email'] || '–' }}</span>
-              </div>
-              <div class="field-row">
-                  <span class="field-label">Phone</span>
-                  <span class="field-value">{{ employee['phone'] || '–' }}</span>
-              </div>
-              <div class="field-row">
-                  <span class="field-label">Position</span>
-                  <span class="field-value">{{ employee['role'] || '–' }}</span>
-              </div>
-<!--              <div class="field-row">-->
-<!--                  <span class="field-label">Job Status</span>-->
-<!--                  <span class="field-value">{{ employee['jobStatus'] || '–' }}</span>-->
-<!--              </div>-->
-<!--              <div class="field-row">-->
-<!--                  <span class="field-label">Pay Type</span>-->
-<!--                  <span class="field-value">{{ employee['payType'] || '–' }}</span>-->
-<!--              </div>-->
-              <div class="field-row">
-                  <span class="field-label">Salary / Rate</span>
-                  <span class="field-value">{{ employee['salary'] ? ('$' + employee['salary']) : '–' }}</span>
-              </div>
-              <div class="field-row">
-                  <span class="field-label">Hire Date</span>
-                  <span class="field-value">{{ employee['hireDate'] ? ($any(employee['hireDate']) | date:'yyyy-MM-dd') : '–' }}</span>
-              </div>
-              <div class="field-row">
-                  <span class="field-label">Location</span>
-                  <span class="field-value">{{ locationName }}</span>
-              </div>
-          </div>
-      </mat-card-content>
-    </mat-card>
+                <mat-divider style="margin: 16px 0"></mat-divider>
 
-      <!-- Upcoming shifts -->
-      <div class="right-panel">
-          <!-- Quick Stats -->
-          <mat-card class="stats-card">
-              <mat-card-header>
-                  <mat-card-title>Quick Stats</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                  <div class="stats-grid">
-                      <div class="stat-item"><span class="stat-label">Shifts this month</span><span
-                              class="stat-value">{{ quickStats.shiftsThisMonth }}</span></div>
-                      <div class="stat-item"><span class="stat-label">Hours worked</span><span
-                              class="stat-value">{{ quickStats.hoursWorked | number:'1.0-0' }}</span></div>
-                      <div class="stat-item"><span class="stat-label">Leave used (PTO)</span><span
-                              class="stat-value">{{ quickStats.leaveUsed }} days</span></div>
-                      <div class="stat-item"><span class="stat-label">Leave remaining</span><span
-                              class="stat-value">{{ quickStats.leaveRemaining }} days</span></div>
-                  </div>
-              </mat-card-content>
-          </mat-card>
-
-          <!-- Leave Balances -->
-          <mat-card class="leave-card">
-              <mat-card-header>
-                  <mat-card-title>Leave Balances</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                  <div *ngFor="let b of leaveBalances" class="leave-row">
-                      <span class="leave-type">{{ b.type }}</span>
-                      <mat-progress-bar mode="determinate" [value]="(b.used / b.total) * 100"></mat-progress-bar>
-                      <span class="leave-count">{{ b.used }}/{{ b.total }} d</span>
-                  </div>
-                  <a mat-button color="primary" routerLink="/leaves/my" class="leave-history-link">
-                      View Leave History
-                      <mat-icon>arrow_forward</mat-icon>
-                  </a>
-              </mat-card-content>
-          </mat-card>
-
-          <!-- Shift History -->
-          <mat-card class="shift-history-card">
-              <mat-card-header>
-                  <mat-card-title>Shift History (last 30 days)</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                  <mat-progress-bar *ngIf="shiftsLoading" mode="indeterminate"></mat-progress-bar>
-                  <div *ngIf="!shiftsLoading && shifts.length === 0" class="empty-state">No shifts found</div>
-                  <table *ngIf="shifts.length > 0" class="shift-table">
-                      <thead>
-                      <tr>
-                          <th>Date</th>
-                          <th>Clock In</th>
-                          <th>Clock Out</th>
-                          <th>Paid Min</th>
-                          <th>Status</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr *ngFor="let s of shifts">
-                          <td>{{ $any(s).date | date:'MMM d' }}</td>
-                          <td>{{ $any(s).startTime }}</td>
-                          <td>{{ $any(s).endTime }}</td>
-                          <td>{{ $any(s).paidMinutes }}</td>
-                          <td><span class="badge"
-                                    [ngClass]="'shift-' + $any(s).status?.toLowerCase()">{{ $any(s).status }}</span>
-                          </td>
-                      </tr>
-                      </tbody>
-                  </table>
-              </mat-card-content>
-          </mat-card>
-      </div>
-  </div>
+                <div class="profile-sections" *ngIf="employee">
+                    <div class="profile-section" *ngFor="let g of fieldGroups">
+                        <h4 class="section-title" *ngIf="g.groupName">{{ g.groupName }}</h4>
+                        <div class="field-row" *ngFor="let attr of g.attributes">
+                            <span class="field-label">{{ attr.label }}</span>
+                            <span class="field-value">
+                {{ displayValue(attr) }}
+                                <button *ngIf="isSensitive(attr) && canViewSensitive" mat-icon-button type="button"
+                                        class="reveal-btn" (click)="toggleReveal(attr)"
+                                        [matTooltip]="revealed[attr.name] ? 'Hide' : 'Show'">
+                  <mat-icon>{{ revealed[attr.name] ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </span>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
 </div>
 
 <ng-template #loadingTpl>
-  <div class="loading-overlay"><mat-spinner></mat-spinner></div>
+    <div class="loading-overlay"><mat-spinner></mat-spinner></div>
 </ng-template>
