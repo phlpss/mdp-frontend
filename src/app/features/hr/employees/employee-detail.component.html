@@ -15,40 +15,77 @@
         </div>
     </div>
 
-    <div class="detail-grid">
-        <mat-card class="profile-card">
-            <mat-card-content>
-                <div class="avatar-section">
-                    <div class="big-avatar">{{ initials }}</div>
-                    <h3>{{ fullName }}</h3>
-                    <span class="badge" [ngClass]="employee?.['isActive'] ? 'badge-active' : 'badge-inactive'">
-            {{ employee?.['isActive'] ? 'Active' : 'Inactive' }}
-          </span>
-                    <div class="role-chip">{{ employee?.['role'] }}</div>
+    <!-- Identity header -->
+    <mat-card class="identity-card" *ngIf="employee">
+        <div class="identity-main">
+<!--            <div class="big-avatar">{{ initials }}</div>-->
+            <div class="identity-text">
+                <h2>{{ fullName }}</h2>
+                <div class="identity-sub">
+                    <span class="role">{{ employee['role'] }}</span>
+                    <span class="status-dot" [class.active]="employee['isActive']"></span>
+                    <span class="status-text">{{ employee['isActive'] ? 'Active' : 'Inactive' }}</span>
                 </div>
+            </div>
+        </div>
+        <div class="identity-meta">
+            <div class="meta-item">
+                <span class="meta-label">Email</span>
+                <span class="meta-value">{{ employee['email'] || '—' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Phone</span>
+                <span class="meta-value">{{ employee['phone'] || '—' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Hire Date</span>
+                <span class="meta-value">{{ employee['hireDate'] ? ($any(employee['hireDate']) | date:'mediumDate') : '—' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Employee ID</span>
+                <span class="meta-value">{{ employee['id'] }}</span>
+            </div>
+        </div>
+    </mat-card>
 
-                <mat-divider style="margin: 16px 0"></mat-divider>
-
-                <div class="profile-sections" *ngIf="employee">
-                    <div class="profile-section" *ngFor="let g of fieldGroups">
-                        <h4 class="section-title" *ngIf="g.groupName">{{ g.groupName }}</h4>
-                        <div class="field-row" *ngFor="let attr of g.attributes">
-                            <span class="field-label">{{ attr.label }}</span>
-                            <span class="field-value">
-                {{ displayValue(attr) }}
-                                <button *ngIf="isSensitive(attr) && canViewSensitive" mat-icon-button type="button"
-                                        class="reveal-btn" (click)="toggleReveal(attr)"
-                                        [matTooltip]="revealed[attr.name] ? 'Hide' : 'Show'">
-                  <mat-icon>{{ revealed[attr.name] ? 'visibility_off' : 'visibility' }}</mat-icon>
-                </button>
-              </span>
-                        </div>
-                    </div>
-                </div>
-            </mat-card-content>
-        </mat-card>
+    <!-- Section cards -->
+    <div class="sections-grid" *ngIf="employee">
+        <div class="sections-col">
+            <ng-container
+                    *ngTemplateOutlet="sectionTpl; context: { $implicit: group('Employment Details') }"></ng-container>
+        </div>
+        <div class="sections-col">
+            <ng-container
+                    *ngTemplateOutlet="sectionTpl; context: { $implicit: group('Emergency Contact') }"></ng-container>
+            <ng-container
+                    *ngTemplateOutlet="sectionTpl; context: { $implicit: group('Leave Balances') }"></ng-container>
+        </div>
     </div>
 </div>
+
+<ng-template #sectionTpl let-g>
+    <mat-card class="section-card" *ngIf="g">
+        <div class="section-head">
+            <h4 class="section-title">{{ g.groupName || 'Details' }}</h4>
+            <button *ngIf="canEdit" mat-icon-button class="edit-btn" (click)="openEditDialog()" matTooltip="Edit">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </div>
+        <div class="section-fields">
+            <div class="field" *ngFor="let attr of g.attributes" [class.full]="attr.fullWidth">
+                <span class="field-label">{{ attr.label }}</span>
+                <span class="field-value">
+          {{ displayValue(attr) }}
+                    <button *ngIf="isSensitive(attr) && canViewSensitive" mat-icon-button type="button"
+                            class="reveal-btn"
+                            (click)="toggleReveal(attr)" [matTooltip]="revealed[attr.name] ? 'Hide' : 'Show'">
+            <mat-icon>{{ revealed[attr.name] ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </span>
+            </div>
+        </div>
+    </mat-card>
+</ng-template>
 
 <ng-template #loadingTpl>
     <div class="loading-overlay"><mat-spinner></mat-spinner></div>

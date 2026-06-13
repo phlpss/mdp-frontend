@@ -107,6 +107,10 @@ export class EmployeeDetailComponent implements OnInit {
         return this.formatValue(attr, raw);
     }
 
+    group(name: string): { groupName: string; attributes: MetaAttribute[] } | undefined {
+        return this.fieldGroups.find(g => g.groupName === name);
+    }
+
     private formatValue(attr: MetaAttribute, raw: unknown): string {
         switch (attr.fieldType) {
             case 'reference': return this.referenceNames[attr.name]?.[String(raw)] ?? String(raw);
