@@ -19,6 +19,7 @@ const ALL_NAV: NavItem[] = [
   { label: 'My Shifts',      icon: 'schedule',         route: '/hr/shifts/my/upcoming',   roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'My Leaves',      icon: 'event_busy',       route: '/hr/leaves/my',            roles: ['BARISTA','CASHIER','EMPLOYEE'] },
   { label: 'POS',            icon: 'point_of_sale',    route: '/finance/transactions',    roles: ['CASHIER'] },
+  { label: 'Time Clock',     icon: 'punch_clock',      route: '/hr/shifts/clock',         roles: ['BARISTA','CASHIER','EMPLOYEE','SHIFT_SUPERVISOR','STORE_MANAGER', 'IT_SPECIALIST', 'HR_MANAGER', 'ACCOUNTANT'] },
   // HR / Manager section
   { label: 'Employees',      icon: 'people',           route: '/hr/employees',            roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'], divider: true },
   { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'] },

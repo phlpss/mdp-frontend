@@ -1,0 +1,47 @@
+<ng-container *ngIf="!loading; else loadingTpl">
+<mat-card class="clock-card" *ngIf="!loading; else loadingTpl">
+    <div class="clock-head">
+        <div>
+            <h3>Time Clock</h3>
+            <span class="clock-date">{{ now | date:'EEEE, MMM d' }}</span>
+        </div>
+        <span class="status-pill" [class.on]="isClockedIn">
+      <span class="dot"></span>{{ isClockedIn ? 'On shift' : 'Off shift' }}
+    </span>
+    </div>
+
+    <div class="clock-time">{{ isClockedIn ? elapsed : (now | date:'h:mm:ss a') }}</div>
+    <div class="clock-sub" *ngIf="isClockedIn">
+        Since {{ $any(activeShift?.payload?.['clockInTime']) | date:'h:mm a' }}
+    </div>
+
+    <div class="clock-actions">
+        <button *ngIf="!isClockedIn" mat-raised-button color="primary" class="big-btn"
+                [disabled]="busy || locationMissing" (click)="clockIn()">
+            <mat-icon>login</mat-icon> Clock In
+        </button>
+        <button *ngIf="isClockedIn" mat-raised-button color="warn" class="big-btn"
+                [disabled]="busy" (click)="clockOut()">
+            <mat-icon>logout</mat-icon> Clock Out
+        </button>
+    </div>
+
+    <div class="clock-hint" *ngIf="locationMissing && !isClockedIn">
+        <mat-icon>info</mat-icon> No location assigned to your account.
+    </div>
+</mat-card>
+</ng-container>
+
+<ng-template #loadingTpl>
+    <mat-card class="clock-card"><mat-spinner diameter="36"></mat-spinner></mat-card>
+</ng-template>
+
+<ng-template #notApplicableTpl>
+    <mat-card class="clock-card">
+        <div class="clock-head"><h3>Time Clock</h3></div>
+        <div class="clock-hint">
+            <mat-icon>info</mat-icon>
+            Time tracking is not required for salaried employees.
+        </div>
+    </mat-card>
+</ng-template>

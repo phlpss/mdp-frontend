@@ -8,6 +8,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -21,6 +22,8 @@ import {EmployeeFormDialogComponent} from './employees/employee-form-dialog.comp
 import {ShiftCalendarComponent, ShiftFormDialogComponent} from './shifts/shift-calendar.component';
 import {LeaveListComponent} from './leaves/leave-list.component';
 import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.component';
+import {ClockWidgetComponent} from "@features/hr/shifts/clock-widget.component";
+import {AuthGuard} from "@core/guards/auth.guard";
 
  const routes: Routes = [
     {path: '', redirectTo: 'employees', pathMatch: 'full'},
@@ -41,6 +44,9 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
         path: 'leaves', component: LeaveListComponent,
         canActivate: [RoleGuard], data: {roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER', 'BUSINESS_OWNER']}
     },
+    {
+        path: 'shifts/clock', component: ClockWidgetComponent, canActivate: [AuthGuard]
+    },
 ];
 
 @NgModule({
@@ -53,6 +59,7 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
         ShiftFormDialogComponent,
         LeaveListComponent,
         LeaveRequestDialogComponent,
+        ClockWidgetComponent,
     ],
     imports: [
         CommonModule,
@@ -65,6 +72,7 @@ import {LeaveRequestDialogComponent} from './leaves/leave-request-dialog.compone
         MatDialogModule,
         MatChipsModule,
         MatProgressBarModule,
+        MatProgressSpinnerModule,
         MatListModule,
         MatDividerModule,
         MatTooltipModule,
