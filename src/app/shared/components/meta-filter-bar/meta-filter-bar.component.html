@@ -27,7 +27,16 @@
       </mat-select>
     </mat-form-field>
 
-    <!-- Text filter -->
+    <!-- Reference filter (e.g. Location) -->
+    <mat-form-field *ngIf="isRef(attr)" appearance="outline" class="filter-field">
+        <mat-label>{{ attr.label }}</mat-label>
+        <mat-select [formControlName]="attr.name">
+            <mat-option [value]="null">All</mat-option>
+            <mat-option *ngFor="let o of referenceOptions[attr.name]" [value]="o.id">{{ o.label }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+      <!-- Text filter -->
     <mat-form-field *ngIf="isText(attr)" appearance="outline" class="filter-field">
       <mat-label>{{ attr.label }}</mat-label>
       <input matInput [formControlName]="attr.name" [placeholder]="'Search ' + attr.label">
