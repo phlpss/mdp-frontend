@@ -22,7 +22,6 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
     user: User | null = null;
     loading = true;
     busy = false;
-    eligible = false;
 
     activeShift: ShiftRow | null = null;   // the current ACTIVE shift, if any
     elapsed = '00:00:00';
@@ -54,21 +53,9 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
             ).subscribe(emp => {
                 this.employeeId = emp?.id ?? empId;
                 this.locationId = emp?.payload?.['locationId'] ?? null;
-                this.eligible   = this.computeEligible(emp?.payload);
-                if (this.eligible) {
-                    this.refresh();
-                } else {
-                    this.loading = false;
-                }
+                this.refresh();
             });
         });
-    }
-
-    private computeEligible(payload: Record<string, any> | undefined): boolean {
-        const pay  = String(payload?.['paymentType'] ?? '').toUpperCase();
-        const empl = String(payload?.['employmentType'] ?? '').toUpperCase();
-        // hourly pay OR part-time → time-tracked; fixed/monthly full-time → not
-        return pay.includes('HOUR') || empl.includes('PART');
     }
 
     ngOnDestroy(): void {
@@ -119,10 +106,6 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
 
     clockIn(): void {
         if (!this.employeeId || this.busy) return;
-        if (!this.eligible) {
-            this.notifications.error('Time tracking does not apply to salaried employees.');
-            return;
-        }
         if (this.locationMissing) {
             this.notifications.error('No location is assigned to your employee record. Contact your manager.');
             return;
