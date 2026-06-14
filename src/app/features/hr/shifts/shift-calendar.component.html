@@ -113,16 +113,13 @@
                             </td>
                             <td *ngFor="let day of weekDays" class="shift-cell" [class.today-col]="isToday(day)">
                                 <div *ngFor="let shift of getShiftsForCell(emp.id, day)"
-                                     class="shift-chip" [ngClass]="getStatusClass(shift.status)">
+                                     class="shift-chip" [ngClass]="getStatusClass(shift.status)"
+                                     [class.clickable]="canEdit"
+                                     (click)="canEdit && openShiftDialog(shift)">
                                     {{ shift.startTime }}–{{ shift.endTime }}
-                                    <button *ngIf="canEdit && shift.status === 'SCHEDULED'"
-                                            mat-icon-button class="cancel-shift-btn"
-                                            matTooltip="Cancel shift"
-                                            (click)="cancelShift(shift.id!); $event.stopPropagation()">
-                                        <mat-icon style="font-size:14px">close</mat-icon>
-                                    </button>
                                 </div>
-                                <button *ngIf="canEdit && getShiftsForCell(emp.id, day).length === 0"
+
+                                <button *ngIf="canEdit"
                                         mat-icon-button class="add-shift-btn" matTooltip="Add shift"
                                         (click)="openAddShiftDialog(emp.id, day)">
                                     <mat-icon>add</mat-icon>

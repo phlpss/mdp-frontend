@@ -14,7 +14,8 @@ import {ActivatedRoute} from '@angular/router';
 /** Extracts HH:MM from an ISO datetime string ('2026-04-22T07:00:00') or a plain time ('07:00'). */
 function parseTime(value: string | null | undefined): string {
     if (!value) return '';
-    return value.includes('T') ? value.substring(23, 28) : value.substring(0, 5);
+    const t = value.includes('T') ? value.split('T')[1] : value;
+    return t.substring(0, 5);   // HH:MM
 }
 
 /** Formats a Date as 'YYYY-MM-DD' using local time (avoids UTC-shift from toISOString()). */
@@ -259,26 +260,122 @@ export class ShiftCalendarComponent implements OnInit {
     openAddShiftDialog(employeeId?: string, date?: Date): void {
         const ref = this.dialog.open(ShiftFormDialogComponent, {
             width: '480px',
-            data: {employeeId: employeeId ?? null, date: date ?? new Date(), employees: this.employees},
+            data: {mode: 'create', employeeId: employeeId ?? null, date: date ?? new Date(), employees: this.employees},
         });
         ref.afterClosed().subscribe(formData => {
             if (!formData) return;
-            const dateObj   = new Date(formData.date);
-            const shiftDate = dateObj.toISOString().split('T')[0];
-            const payload   = {
-                employeeId:      formData.employeeId,
+            const shiftDate = new Date(formData.date).toISOString().split('T')[0];
+            const payload = {
+                employeeId: formData.employeeId,
                 storeLocationId: this.locationId ?? '10000000-0000-0000-0000-000000000001',
                 shiftDate,
                 startTime: `${shiftDate}T${formData.startTime}:00`,
-                endTime:   `${shiftDate}T${formData.endTime}:00`,
+                endTime: `${shiftDate}T${formData.endTime}:00`,
             };
-            this.api.post('hr/shifts', payload).pipe(
-                catchError(() => of(null))
-            ).subscribe(() => {
-                this.notifications.success('Shift scheduled.');
-                this.loadData();
-            });
+            this.api.post('hr/shifts', payload).pipe(catchError(() => of(null)))
+                .subscribe(() => {
+                    this.notifications.success('Shift scheduled.');
+                    this.loadData();
+                });
         });
+    }
+
+    editShift(shift: ShiftCell): void {
+        if (shift.status !== 'SCHEDULED') {
+            this.notifications.error('Only scheduled shifts can be edited.');
+            return;
+        }
+        const ref = this.dialog.open(ShiftFormDialogComponent, {
+            width: '480px',
+            data: {
+                mode: 'edit',
+                employeeId: shift.employeeId,
+                date: new Date(shift.date),
+                startTime: shift.startTime || '08:00',
+                endTime: shift.endTime || '16:00',
+                employees: this.employees,
+            },
+        });
+        ref.afterClosed().subscribe(formData => {
+            if (!formData) return;
+            const shiftDate = new Date(formData.date).toISOString().split('T')[0];
+            const body = {
+                shiftDate,
+                startTime: `${shiftDate}T${formData.startTime}:00`,
+                endTime: `${shiftDate}T${formData.endTime}:00`,
+            };
+            this.api.put('hr/shifts', shift.id!, body).pipe(catchError(() => of(null)))
+                .subscribe(() => {
+                    this.notifications.success('Shift updated.');
+                    this.loadData();
+                });
+        });
+    }
+
+    renewShift(shift: ShiftCell): void {
+        const ref = this.dialog.open(ConfirmDialogComponent, {
+            data: {title: 'Renew Shift', message: 'Restore this cancelled shift to scheduled?', confirmText: 'Renew'},
+        });
+        ref.afterClosed().subscribe(confirmed => {
+            if (!confirmed) return;
+            this.api.patch('hr/shifts', shift.id + '/renew', {}).pipe(catchError(() => of(null)))
+                .subscribe((res) => {
+                    if (res) {
+                        this.notifications.success('Shift renewed.');
+                        this.loadData();
+                    } else {
+                        this.notifications.error('Could not renew (only upcoming cancelled shifts can be renewed).');
+                    }
+                });
+        });
+    }
+
+    openShiftDialog(shift: ShiftCell): void {
+        const ref = this.dialog.open(ShiftFormDialogComponent, {
+            width: '480px',
+            data: {
+                mode: 'edit',
+                status: shift.status,
+                canRenew: shift.status === 'CANCELLED' && this.isUpcoming(shift),
+                canCancel: shift.status === 'SCHEDULED',
+                editable: shift.status === 'SCHEDULED',
+                employeeId: shift.employeeId,
+                date: new Date(shift.date),
+                startTime: shift.startTime || '08:00',
+                endTime: shift.endTime || '16:00',
+                employees: this.employees,
+            },
+        });
+        ref.afterClosed().subscribe((result: any) => {
+            if (!result) return;
+
+            if (result.action === 'cancel') {
+                this.api.patch('hr/shifts', shift.id + '/cancel', {}).pipe(catchError(() => of(null)))
+                    .subscribe(() => { this.notifications.success('Shift cancelled.'); this.loadData(); });
+                return;
+            }
+            if (result.action === 'renew') {
+                this.api.patch('hr/shifts', shift.id + '/renew', {}).pipe(catchError(() => of(null)))
+                    .subscribe(res => {
+                        if (res) { this.notifications.success('Shift renewed.'); this.loadData(); }
+                        else { this.notifications.error('Could not renew (only upcoming cancelled shifts can be renewed).'); }
+                    });
+                return;
+            }
+            // action === 'save'
+            const shiftDate = new Date(result.date).toISOString().split('T')[0];
+            const body = {
+                shiftDate,
+                startTime: `${shiftDate}T${result.startTime}:00`,
+                endTime:   `${shiftDate}T${result.endTime}:00`,
+            };
+            this.api.put('hr/shifts', shift.id!, body).pipe(catchError(() => of(null)))
+                .subscribe(() => { this.notifications.success('Shift updated.'); this.loadData(); });
+        });
+    }
+
+    isUpcoming(shift: ShiftCell): boolean {
+        return shift.date >= toDateKey(new Date());
     }
 
     cancelShift(shiftId: string): void {
@@ -287,17 +384,16 @@ export class ShiftCalendarComponent implements OnInit {
                 title: 'Cancel Shift',
                 message: 'Cancel this shift?',
                 confirmText: 'Cancel Shift',
-                confirmColor: 'warn',
+                confirmColor: 'warn'
             },
         });
         ref.afterClosed().subscribe(confirmed => {
             if (confirmed) {
-                this.api.patch('hr/shifts', shiftId + '/cancel', {}).pipe(
-                    catchError(() => of(null))
-                ).subscribe(() => {
-                    this.notifications.success('Shift cancelled.');
-                    this.loadData();
-                });
+                this.api.patch('hr/shifts', shiftId + '/cancel', {}).pipe(catchError(() => of(null)))
+                    .subscribe(() => {
+                        this.notifications.success('Shift cancelled.');
+                        this.loadData();
+                    });
             }
         });
     }
@@ -308,12 +404,15 @@ export class ShiftCalendarComponent implements OnInit {
 @Component({
     selector: 'mdp-shift-form-dialog',
     template: `
-        <h2 mat-dialog-title>Schedule Shift</h2>
+        <h2 mat-dialog-title>{{ data.mode === 'edit' ? 'Shift Details' : 'Schedule Shift' }}</h2>
         <mat-dialog-content>
+            <div *ngIf="data.mode === 'edit'" class="status-line">
+                Status: <strong>{{ data.status }}</strong>
+            </div>
             <form [formGroup]="form" style="display:flex;flex-direction:column;gap:12px;padding-top:8px">
                 <mat-form-field appearance="outline">
                     <mat-label>Employee</mat-label>
-                    <mat-select formControlName="employeeId">
+                    <mat-select formControlName="employeeId" [disabled]="data.mode === 'edit'">
                         <mat-option *ngFor="let e of data.employees" [value]="e.id">{{ e.name }}</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -331,15 +430,15 @@ export class ShiftCalendarComponent implements OnInit {
                     <mat-label>End Time</mat-label>
                     <input matInput type="time" formControlName="endTime">
                 </mat-form-field>
-                <mat-form-field appearance="outline">
-                    <mat-label>Notes (optional)</mat-label>
-                    <textarea matInput formControlName="notes" rows="2"></textarea>
-                </mat-form-field>
             </form>
         </mat-dialog-content>
         <mat-dialog-actions align="end">
-            <button mat-button (click)="ref.close(null)">Cancel</button>
-            <button mat-raised-button color="primary" (click)="submit()">Schedule Shift</button>
+            <button mat-button (click)="ref.close(null)">Close</button>
+            <button *ngIf="data.canCancel" mat-button color="warn" (click)="ref.close({ action: 'cancel' })">Cancel Shift</button>
+            <button *ngIf="data.canRenew" mat-button color="primary" (click)="ref.close({ action: 'renew' })">Renew Shift</button>
+            <button *ngIf="data.mode === 'create' || data.editable" mat-raised-button color="primary" (click)="submit()">
+                {{ data.mode === 'edit' ? 'Save Changes' : 'Schedule Shift' }}
+            </button>
         </mat-dialog-actions>
     `,
 })
@@ -349,25 +448,32 @@ export class ShiftFormDialogComponent implements OnInit {
     constructor(
         public ref: MatDialogRef<ShiftFormDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: {
+            mode: 'create' | 'edit';
+            status?: string;
+            canCancel?: boolean;
+            canRenew?: boolean;
+            editable?: boolean;
             employeeId: string | null;
             date: Date;
-            employees: Array<{id: string; name: string}>;
+            startTime?: string;
+            endTime?: string;
+            employees: Array<{ id: string; name: string }>;
         },
         private fb: FormBuilder,
     ) {}
 
     ngOnInit(): void {
+        const disabled = this.data.mode === 'edit' && !this.data.editable;
         this.form = this.fb.group({
-            employeeId: [this.data.employeeId, Validators.required],
-            date:       [this.data.date,       Validators.required],
-            startTime:  ['08:00',              Validators.required],
-            endTime:    ['16:00',              Validators.required],
-            notes:      [''],
+            employeeId: [{ value: this.data.employeeId, disabled: this.data.mode === 'edit' }, Validators.required],
+            date:       [{ value: this.data.date, disabled }, Validators.required],
+            startTime:  [{ value: this.data.startTime ?? '08:00', disabled }, Validators.required],
+            endTime:    [{ value: this.data.endTime ?? '16:00', disabled }, Validators.required],
         });
     }
 
     submit(): void {
         if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-        this.ref.close(this.form.value);
+        this.ref.close({ action: 'save', ...this.form.getRawValue() });
     }
 }
