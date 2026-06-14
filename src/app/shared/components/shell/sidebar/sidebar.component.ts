@@ -22,13 +22,13 @@ const ALL_NAV: NavItem[] = [
   { label: 'Time Clock',     icon: 'punch_clock',      route: '/hr/shifts/clock',         roles: ['BARISTA','CASHIER','EMPLOYEE','SHIFT_SUPERVISOR','STORE_MANAGER', 'IT_SPECIALIST', 'HR_MANAGER', 'ACCOUNTANT'] },
   // HR / Manager section
   { label: 'Employees',      icon: 'people',           route: '/hr/employees',            roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'], divider: true },
-  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'] },
-  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Shifts',         icon: 'calendar_today',   route: '/hr/shifts',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER'] },
+  { label: 'Leave Approvals',icon: 'approval',         route: '/hr/leaves',               roles: ['STORE_MANAGER','SHIFT_SUPERVISOR','HR_MANAGER','BUSINESS_OWNER'] },
   // Finance section
-  { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'], divider: true },
-  { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Transactions',   icon: 'receipt',          route: '/finance/transactions',    roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER'], divider: true },
+  { label: 'Expenses',       icon: 'receipt_long',     route: '/finance/expenses',        roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER'] },
   { label: 'Closing Report', icon: 'summarize',        route: '/finance/closing-report',  roles: ['STORE_MANAGER', 'SHIFT_SUPERVISOR'] },
-  { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER','IT_SPECIALIST'] },
+  { label: 'Inventory',      icon: 'inventory_2',      route: '/finance/inventory',       roles: ['STORE_MANAGER','ACCOUNTANT','BUSINESS_OWNER'] },
   { label: 'Payroll',        icon: 'payments',         route: '/finance/payroll',         roles: ['ACCOUNTANT'] },
   { label: 'Forecast',       icon: 'trending_up',      route: '/finance/forecast',        roles: ['ACCOUNTANT','BUSINESS_OWNER','STORE_MANAGER'] },
   // Admin section
