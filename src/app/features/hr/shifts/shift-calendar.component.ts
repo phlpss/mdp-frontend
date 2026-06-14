@@ -83,7 +83,7 @@ export class ShiftCalendarComponent implements OnInit {
         this.buildCalendarGrid();
 
         this.store.select(selectCurrentUser).subscribe(user => {
-            this.canEdit = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER');
+            this.canEdit = hasRole(user, 'STORE_MANAGER', 'SHIFT_SUPERVISOR', 'HR_MANAGER', 'IT_SPECIALIST');
             this.locationId = user?.locationId ?? null;
             this.currentUserId = user?.id ?? null;
             if (this.myShiftsOnly) {

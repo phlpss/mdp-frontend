@@ -7,6 +7,9 @@ import { FilterParams, PageResponse } from '@core/models/api.model';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import {LocationFormDialogComponent} from "@features/admin/locations/location-form-dialog.component";
 import { Observable, of, forkJoin } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '@store/auth/auth.selectors';
+import { hasRole } from '@core/models/user.model';
 
 interface Location {
   id: string;
@@ -25,6 +28,7 @@ interface Location {
 export class LocationListComponent implements OnInit {
   locations: Location[] = [];
   loading = false;
+  isIt = false;
   filters: FilterParams = {};
   displayedColumns = ['name','address','phone','manager','isActive','actions'];
 
@@ -32,9 +36,11 @@ export class LocationListComponent implements OnInit {
       private api: ApiService,
       private dialog: MatDialog,
       private notifications: NotificationService,
+      private store: Store,
   ) {}
 
   ngOnInit(): void {
+    this.store.select(selectCurrentUser).subscribe(u => this.isIt = hasRole(u, 'IT_SPECIALIST'));
     this.loadLocations();
   }
 
@@ -100,6 +106,25 @@ export class LocationListComponent implements OnInit {
           this.loadLocations();
         });
       }
+    });
+  }
+
+  deleteEntity(row: { id: string; payload?: Record<string, unknown> }): void {
+    const name = row.payload?.['storeName'] ?? 'this store';
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete permanently',
+        message: `Permanently delete ${name}? This cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn',
+      },
+    });
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.api.delete('entities/StoreLocation', row.id).subscribe({
+        next: () => { this.notifications.success('Deleted permanently.'); this.loadLocations(); },
+        error: () => this.notifications.error('Delete failed.'),
+      });
     });
   }
 }

@@ -10,6 +10,7 @@ import { selectCurrentUser } from '@store/auth/auth.selectors';
 import { hasRole, User } from '@core/models/user.model';
 import { TableAction } from '@shared/components/entity-table/entity-table.component';
 import { EmployeeFormDialogComponent } from './employee-form-dialog.component';
+import {ConfirmDialogComponent} from "@shared/components/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'mdp-employee-list',
@@ -42,6 +43,36 @@ export class EmployeeListComponent implements OnInit {
     this.currentUser$ = this.store.select(selectCurrentUser);
     this.store.select(selectCurrentUser).subscribe(user => {
       this.canAdd = hasRole(user, 'HR_MANAGER', 'IT_SPECIALIST');
+      if (hasRole(user, 'IT_SPECIALIST') && !this.tableActions.some(a => a.label === 'Delete')) {
+        this.tableActions = [
+          ...this.tableActions,
+          {
+            icon: 'delete',
+            label: 'Delete',
+            color: 'warn',
+            handler: (row) => this.deleteEntity(row as { id: string; payload?: Record<string, unknown> }),
+          },
+        ];
+      }
+    });
+  }
+
+  deleteEntity(row: { id: string; payload?: Record<string, unknown> }): void {
+    const name = row.payload?.['fullName'] ?? 'this employee';
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Delete permanently',
+        message: `Permanently delete ${name}? This cannot be undone.`,
+        confirmText: 'Delete',
+        confirmColor: 'warn',
+      },
+    });
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.api.delete('entities/Employee', row.id).subscribe({
+        next: () => { this.notifications.success('Deleted permanently.'); this.reloadTrigger++; },
+        error: () => this.notifications.error('Delete failed.'),
+      });
     });
   }
 

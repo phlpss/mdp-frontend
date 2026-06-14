@@ -61,6 +61,11 @@
                                     (click)="toggleActive(loc)">
                                 <mat-icon>{{ loc.isActive ? 'toggle_off' : 'toggle_on' }}</mat-icon>
                             </button>
+                            <button *ngIf="isIt" mat-icon-button color="warn"
+                                    (click)="deleteEntity({ id: loc.id, payload: { storeName: loc.storeName } })"
+                                    matTooltip="Delete permanently">
+                                <mat-icon>delete</mat-icon>
+                            </button>
                         </td>
                     </ng-container>
 
