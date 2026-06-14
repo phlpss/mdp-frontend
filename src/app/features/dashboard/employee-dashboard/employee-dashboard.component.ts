@@ -7,6 +7,12 @@ import { ApiService } from '@core/services/api.service';
 import { KpiData } from '@core/models/api.model';
 import { User } from '@core/models/user.model';
 
+function parseTime(value: string | null | undefined): string {
+    if (!value) return '';
+    const t = value.includes('T') ? value.split('T')[1] : value;
+    return t.substring(0, 5);   // HH:MM
+}
+
 interface UpcomingShift {
   id: string;
   date: string;
@@ -50,8 +56,8 @@ export class EmployeeDashboardComponent implements OnInit {
         .map(item => ({
           id: item.id,
           date: (item.payload.shiftDate ?? '').substring(0, 10),
-          startTime: (item.payload.startTime ?? '').substring(23, 28),
-          endTime: (item.payload.endTime ?? '').substring(23, 28),
+          startTime:    parseTime(item.payload['startTime'] as string),
+          endTime:      parseTime(item.payload['endTime']   as string),
           status: item.payload.shiftStatus,
         }))
         .filter(shift => {
